@@ -138,7 +138,7 @@ def configure(ctx):
     for f in remove_flags:
         for flgs in flags:
             if f in flgs:
-                ctx.env.CXXFLAGS_MYSQL.remove(f)
+                flgs.remove(f)
 
     print ctx.env.CXXFLAGS_MYSQL
 
