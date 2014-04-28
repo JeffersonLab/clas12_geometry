@@ -140,8 +140,6 @@ def configure(ctx):
             if f in flgs:
                 flgs.remove(f)
 
-    print ctx.env.CXXFLAGS_MYSQL
-
     ctx.check_cxx(
         uselib_store = 'CCDB',
         lib          = ['ccdb'],

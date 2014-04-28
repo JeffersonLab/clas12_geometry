@@ -29,6 +29,7 @@ def build(ctx):
 
         use = '''
             C++11
+            BOOST
             CCDB
             MYSQL
             GEOMETRY

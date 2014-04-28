@@ -10,7 +10,7 @@ typedef map<string, map<string,string> > volmap_t;
 int main()
 {
     clog << "Opening library...\n";
-    void* handle = dlopen("libclas12_geometry_gemc.so.0", RTLD_NOW);
+    void* handle = dlopen("libclas12_geometry_gemc.so", RTLD_NOW);
 
     if (!handle)
     {
