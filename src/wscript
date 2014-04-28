@@ -29,31 +29,31 @@ def build(ctx):
 
         use = '''
             C++11
-            BOOST
-            MYSQL
             CCDB
+            MYSQL
             GEOMETRY
             PUGIXML
                 pugixml
         '''.split())
 
-    ctx.shlib(
-        target = 'clas12_magfield',
-        source = '''\
-            clas12/magfield/request.cpp
-        '''.split(),
+    if ctx.env.HAVE_EVIO:
+
+        ctx.shlib(
+            target = 'clas12_magfield',
+            source = ['clas12/magfield/request.cpp'],
 
             includes = ['.'],
 
             use = '''
                 C++11
                 BOOST
-                CLARA
-                CMSG
+                EVIO
+                EXPAT
             '''.split())
 
 
     if ctx.options.clara or ctx.options.all:
+
         ctx.shlib(
             target = 'clas12_geometry_service',
             source = ['clas12/geometry/geometry_service.cpp'],
@@ -63,13 +63,16 @@ def build(ctx):
             use = '''
                 C++11
                 BOOST
-                MYSQL
                 CCDB
+                MYSQL
                 GEOMETRY
                 PUGIXML
                     pugixml
                 CLARA
                 CMSG
+                CTOOLBOX
+                EVIO
+                EXPAT
             '''.split())
 
         ctx.shlib(
@@ -83,4 +86,7 @@ def build(ctx):
                 BOOST
                 CLARA
                 CMSG
+                CTOOLBOX
+                EVIO
+                EXPAT
             '''.split())
