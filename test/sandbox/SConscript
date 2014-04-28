@@ -1,0 +1,35 @@
+import os
+from os import path
+
+Import('env ccdbEnv blankEnv')
+
+progs = ccdbEnv.Program('ccdbtest.cpp')
+progs += ccdbEnv.Program('ccdbtest2.cpp')
+
+progs += ccdbEnv.Program('dc-test.cpp',
+    LIBS = ['clas12_geometry'] + ccdbEnv['LIBS'] )
+
+Alias('test', progs)
+
+# This is an example of dlopen using the "blank" SCons environment
+# so we have to add libs, and rpaths explicitly.
+dl_buildrpath = [env.Dir(env['buildLibDir']).abspath]
+
+hello_lib = blankEnv.Library('dlopen-example1-hello.cpp')['buildlib']
+
+hello_prog = blankEnv.Program(
+    source = 'dlopen-example1-main.cpp',
+    LIBS=['dl'], RPATH=dl_buildrpath)
+
+Alias('test', [hello_lib, hello_prog])
+
+# test program to dynamically link the clas12_geometry_gemc library
+gemc_testprog = blankEnv.Program(
+    source = 'dlopen-example-gemc.cpp',
+    LIBS = ['dl'],
+    RPATH=dl_buildrpath )
+
+import SCons.Script
+bld_targets = map(str, SCons.Script.BUILD_TARGETS)
+if 'test' in bld_targets:
+    Alias('gemc', [gemc_testprog])

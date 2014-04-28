@@ -1,0 +1,92 @@
+CLAS12 Geometry
+
+--- Building and Installation-------------------------------------------
+
+1. Build library and applications
+
+    typically you can run 'scons' from the root directory of this
+    project and all the compiled files will be placed in a directory
+    named 'build'.
+
+    Control over the build directory is given with the builddir option.
+    For example, to put all built files into build/linux, you could
+    run:
+
+        scons builddir=build/linux
+
+    To install programs, libraries and/or header files into specific
+    locations, see 'Installation' below. To build everything,
+    including tests, run:
+
+        scons all
+
+2. Installing project components
+
+    The project can be installed to the "prefix" directory can be
+    specified (default is /usr/local on unix-like):
+
+        scons prefix=$HOME/local install
+
+    The development ("devel") files can be installed into the
+    prefix directory with something like:
+
+        scons prefix=$HOME/local install devel
+
+    Finer control over the installation library and include
+    directories is given with the libdir and incdir options and you
+    can "reuse" directory settings like $prefix in the following
+    command:
+
+        scons prefix=$HOME/local libdir='$prefix/lib64'
+
+    See the output of:
+
+        scons -h
+
+    for all available command line options that are specific to
+    this project.
+
+3. Build testing programs
+
+    There are several test and example programs in the directory 'test'.
+    To build all these run:
+
+        scons test
+
+4. Build documentation
+
+    No dynamicaly built documentation yet.
+
+5. Troubleshooting
+
+    The first place to look if the build is failing is the output
+    of this command:
+
+        scons -h
+
+    This will print the settings used to compile and install the
+    software package. It also displays all the command-line options
+    you can issue that are specific to this project. If everything
+    looks good there, you can first tell scons to continue on errors
+    and compile everything that it can. Then have it print the complete
+    commands used with the verbose=3 option:
+
+        scons -k
+        scons verbose=3
+
+    At this point, typically the first error issued by the compiler
+    is the most important to understand. If, after all this you
+    suspect the build system itself, you can get a lot of debugging
+    information with:
+
+        scons verbose=5 --tree=prune
+
+--- Testing ------------------------------------------------------------
+
+1. Running Tests
+
+    No unit testing yet.
+
+2. Dealing with errors during unit tests
+
+    No unit testing yet.

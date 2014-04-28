@@ -1,0 +1,13 @@
+geometry
+
+Author(s):
+    John T. Goetz <goetz@jlab.org>
+
+This project contains basic geometric objects such as euclidean vectors, direction vectors, lines, planes and lorentz vectors along with some useful operations likes rotations, intersections, boosts, etc.
+
+See the INSTALL file for details on how to build, test, run and
+generate reference documentation for this project on your system.
+
+See the COPYING file for licensing and copyright information.
+
+Copyright 2012 John T. Goetz

@@ -1,0 +1,27 @@
+#! /usr/bin/env python
+# encoding: utf-8
+
+def build(ctx):
+    if ctx.options.test or ctx.options.all:
+
+        unit_tests = [
+            ('clas12-geometry-unit-test-dc',   'clas12/geometry/drift_chamber.cpp'),
+            ('clas12-geometry-unit-test-ftof', 'clas12/geometry/forward_tof.cpp'),
+        ]
+
+        for tgt,src in unit_tests:
+            ctx.program(
+                target = tgt,
+                source = [src],
+                use = '''\
+                    C++11
+                    BOOST
+                        boost_program_options
+                        boost_unit_test_framework
+                    MYSQL
+                    CCDB
+                    GEOMETRY
+                    PUGIXML
+                        pugixml
+                    clas12_geometry
+                '''.split())

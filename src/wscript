@@ -1,0 +1,86 @@
+#! /usr/bin/env python
+# encoding: utf-8
+
+def build(ctx):
+
+    ctx.shlib(
+        target = 'clas12_geometry',
+        source = '''\
+            clas12/geometry/forward_tof.cpp
+            clas12/geometry/forward_tof/panel.cpp
+            clas12/geometry/forward_tof/sector.cpp
+            clas12/geometry/drift_chamber.cpp
+            clas12/geometry/drift_chamber/superlayer.cpp
+            clas12/geometry/drift_chamber/guardlayer.cpp
+            clas12/geometry/drift_chamber/region.cpp
+            clas12/geometry/drift_chamber/sector.cpp
+            clas12/geometry/drift_chamber/senselayer.cpp
+            clas12/geometry/coordsys.cpp
+            clas12/geometry/central_tracker.cpp
+            clas12/geometry/request.cpp
+            clas12/geometry/central_tracker/barrel_svt.cpp
+            clas12/geometry/central_tracker/barrel_svt/layer.cpp
+            clas12/geometry/central_tracker/barrel_svt/region.cpp
+            clas12/geometry/central_tracker/barrel_svt/sector.cpp
+            clas12/geometry/central_tracker/forward_svt.cpp
+        '''.split(),
+
+        includes = ['.'],
+
+        use = '''
+            C++11
+            BOOST
+            MYSQL
+            CCDB
+            GEOMETRY
+            PUGIXML
+                pugixml
+        '''.split())
+
+    ctx.shlib(
+        target = 'clas12_magfield',
+        source = '''\
+            clas12/magfield/request.cpp
+        '''.split(),
+
+            includes = ['.'],
+
+            use = '''
+                C++11
+                BOOST
+                CLARA
+                CMSG
+            '''.split())
+
+
+    if ctx.options.clara or ctx.options.all:
+        ctx.shlib(
+            target = 'clas12_geometry_service',
+            source = ['clas12/geometry/geometry_service.cpp'],
+
+            includes = ['.'],
+
+            use = '''
+                C++11
+                BOOST
+                MYSQL
+                CCDB
+                GEOMETRY
+                PUGIXML
+                    pugixml
+                CLARA
+                CMSG
+            '''.split())
+
+        ctx.shlib(
+            target = 'clas12_magfield_service',
+            source = ['clas12/magfield/magfield_service.cpp'],
+
+            includes = ['.'],
+
+            use = '''
+                C++11
+                BOOST
+                CLARA
+                CMSG
+            '''.split())

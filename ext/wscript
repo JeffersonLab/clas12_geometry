@@ -1,0 +1,9 @@
+#! /usr/bin/env python
+# encoding: utf-8
+
+def configure(ctx):
+    ctx.recurse('pugixml')
+    ctx.recurse('geometry')
+
+def build(ctx):
+    ctx.recurse('pugixml')

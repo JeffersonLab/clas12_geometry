@@ -1,0 +1,29 @@
+import os
+from os import path
+
+Import('env claraEnv blankEnv')
+
+# the primary clara 1.7 geometry requesting service
+progs  = claraEnv.Program('clas12geom-request.cpp')
+
+# dynamically loaded class example
+libs   = claraEnv.Library('clas12_geometry_requester.cpp')
+progs += claraEnv.Program('clas12-geometry-request.cpp')
+Alias('test', libs['buildlib'])
+Alias('install-test', libs['lib'])
+
+# dynamically loaded function example
+libs   = claraEnv.Library('clas12_geometry_requester_fn.cpp',
+    LIBS=claraEnv['LIBS'],
+    LIBPATH=claraEnv['LIBPATH'],
+    RPATH=claraEnv['RPATH'])
+progs += blankEnv.Program('clas12-geometry-request-fn.cpp', LIBS=['dl'])
+Alias('test', libs['buildlib'])
+Alias('install-test', libs['lib'])
+
+# documentation example programs
+for p in env.Glob('doc/*.cpp'):
+    progs += env.Program(str(p))
+
+Alias('test', progs)
+Alias('install-test', env.Install(env['binDir'], progs))

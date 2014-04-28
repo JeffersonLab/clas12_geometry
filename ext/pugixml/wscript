@@ -1,0 +1,12 @@
+#! /usr/bin/env python
+# encoding: utf-8
+
+def configure(ctx):
+    ctx.parse_flags('-fPIC', 'PIC')
+    ctx.env.INCLUDES_PUGIXML = ['#ext/pugixml/src']
+
+def build(ctx):
+    pugixml_lib = ctx.stlib(
+        target = 'pugixml',
+        source = 'src/pugixml.cpp',
+        use = 'PIC')

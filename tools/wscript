@@ -1,0 +1,49 @@
+#! /usr/bin/env python
+# encoding: utf-8
+
+def build(ctx):
+
+    ctx.program(
+        target = 'clas12geom',
+        source = ['clas12geom.cpp'],
+
+        use = '''
+            C++11
+            BOOST
+                boost_program_options
+            MYSQL
+            CCDB
+            GEOMETRY
+            PUGIXML
+                pugixml
+            clas12_geometry
+        '''.split())
+
+    ctx.program(
+        target = 'clas12magfield',
+        source = ['clas12magfield.cpp'],
+
+        use = '''
+            C++11
+            BOOST
+                boost_program_options
+            EVIO
+            clas12_magfield
+        '''.split())
+
+    if ctx.options.gemc or ctx.options.all:
+        ctx.shlib(
+            target = 'clas12_geometry_gemc',
+            source = ['gemc/clas12_geometry_gemc.cpp'],
+
+            use = '''
+                C++11
+                BOOST
+                MYSQL
+                CCDB
+                GEOMETRY
+                PUGIXML
+                    pugixml
+                clas12_geometry
+            '''.split())
+

@@ -1,0 +1,20 @@
+#! /usr/bin/env python
+# encoding: utf-8
+
+def build(ctx):
+    if ctx.options.test:
+        ctx.program(
+            target = '',
+            source [''],
+            use = '''\
+            C++11
+            BOOST
+                boost_program_options
+            MYSQL
+            CCDB
+            GEOMETRY
+            PUGIXML
+                pugixml
+            clas12_geometry
+
+            '''.split())
