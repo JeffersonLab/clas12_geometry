@@ -11,25 +11,27 @@ def build(ctx):
             C++11
             BOOST
                 boost_program_options
-            MYSQL
             CCDB
+                MYSQL
             GEOMETRY
             PUGIXML
                 pugixml
             clas12_geometry
         '''.split())
 
-    ctx.program(
-        target = 'clas12magfield',
-        source = ['clas12magfield.cpp'],
+    if ctx.env.HAVE_EVIO:
+        ctx.program(
+            target = 'clas12magfield',
+            source = ['clas12magfield.cpp'],
 
-        use = '''
-            C++11
-            BOOST
-                boost_program_options
-            EVIO
-            clas12_magfield
-        '''.split())
+            use = '''
+                C++11
+                BOOST
+                    boost_program_options
+                EVIO
+                    EXPAT
+                clas12_magfield
+            '''.split())
 
     if ctx.options.gemc or ctx.options.all:
         ctx.shlib(
@@ -39,8 +41,8 @@ def build(ctx):
             use = '''
                 C++11
                 BOOST
-                MYSQL
                 CCDB
+                    MYSQL
                 GEOMETRY
                 PUGIXML
                     pugixml

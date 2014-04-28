@@ -1,15 +1,6 @@
 #! /usr/bin/env python
 # encoding: utf-8
 
-'''
-build consists of three steps:
-    1. configure
-    2. build
-    3. install
-To do them all with a single command you may run:
-    ./waf configure build install
-'''
-
 top     = '.'
 out     = 'build'
 VERSION = '0.5.0'
@@ -21,7 +12,30 @@ def options(ctx):
 
     ctx.load('compiler_cxx boost')
 
+    ### CONFIGURE options
     cfg_opts = ctx.exec_dict['opt'].get_option_group('configure options')
+
+    cfg_opts.add_option('--debug', dest='debug',
+        action='store_true', default=False,
+        help='Build in debug mode. default: %default')
+
+    cfg_opts.add_option('--includes', dest='includes',
+        default = None,
+        help = 'list of include paths applied to all targets. default: %default')
+
+    if 'win32' in sys.platform:
+        ldlibpathenv = 'PATH'
+    elif 'darwin' in sys.platform:
+        ldlibpathenv = 'DYLD_LIBRARY_PATH'
+    else: # linux-like
+        ldlibpathenv = 'LD_LIBRARY_PATH'
+
+    default_libpath = os.environ.get(ldlibpathenv,None)
+    cfg_opts.add_option('--libpath', dest='libpath',
+        default = default_libpath,
+        help = 'list of include paths applied to all targets. default: %default')
+
+    ### BUILD options
     bld_opts = ctx.exec_dict['opt'].get_option_group('build and install options')
 
     bld_opts.add_option('--all', dest='all',
@@ -37,62 +51,41 @@ def options(ctx):
         action='store_true', default=False,
         help='Build unit tests. default: %default')
 
-    bld_opts.add_option('--debug', dest='debug',
-        action='store_true', default=False,
-        help='Build in debug mode. default: %default')
-
-    cfg_opts.add_option('--includes', dest='includes',
-        default = None,
-        help = 'list of include paths applied to all targets. default: %default')
-
-    if 'win32' in sys.platform:
-        ldlibpathenv = 'PATH'
-    elif 'darwin' in sys.platform:
-        ldlibpathenv = 'DYLD_LIBRARY_PATH'
-    elif 'aix' in sys.platform:
-        ldlibpathenv = 'LIBPATH'
-    elif 'hpux' in sys.platform:
-        ldlibpathenv = 'SHLIB_PATH'
-    else: # linux-like
-        ldlibpathenv = 'LD_LIBRARY_PATH'
-
-    default_libpath = os.environ.get(ldlibpathenv,None)
-    cfg_opts.add_option('--libpath', dest='libpath',
-        default = default_libpath,
-        help = 'list of include paths applied to all targets. default: %default')
-
-    libnames = 'ccdb evio cmsg ctoolbox clara'.split(' ')
-    default_libs = dict(
-        ccdb     = ['ccdb'],
-        evio     = ['evioxx', 'evio', 'expat'],
-        cmsg     = ['cmsgxx', 'cmsg', 'cmsgRegex', 'pthread', 'rt', 'dl'],
-        ctoolbox = ['ctools', 'ctoolsev'],
-        clara    = ['clara'],
-    )
-
-    for libname in libnames:
-
-        cfg_opts.add_option(
-            '--{0}-inc'.format(libname),
-            dest    = '{0}_includes'.format(libname),
-            default = os.environ.get('{0}INC'.format(libname.upper()),None),
-            help    = 'path(s) to the {0} header files. default: %default'.format(libname))
-
-        cfg_opts.add_option(
-            '--{0}-libpath'.format(libname),
-            dest    = '{0}_libpath'.format(libname),
-            default = os.environ.get('{0}LIB'.format(libname.upper()),None),
-            help    = 'path(s) to the {0} shared library. default: %default'.format(libname))
-
-        cfg_opts.add_option(
-            '--{0}-libs'.format(libname),
-            dest    = '{0}_lib'.format(libname),
-            default = os.environ.get('{0}LIBS'.format(libname.upper()),
-                                     default_libs.get(libname, None)),
-            help    = 'comma sperated list of {0} shared libraries. default: %default'.format(libname))
-
 
 def configure(ctx):
+    '''
+    included requirements:
+        GEOMETRY
+        PUGIXML
+            pugixml
+
+
+    bare minimum external requirements (--gemc):
+        C++11
+        BOOST
+        CCDB
+        MYSQL
+
+
+    default requirements:
+        BOOST
+            program_options
+            filesystem
+            system
+        EVIO
+        EXPAT
+
+
+    clara service requirements (--clara):
+        CLARA
+        CMSG
+        CTOOLBOX
+
+
+    test requirements (--test):
+        BOOST
+            unit_test_framework
+    '''
 
     import os,re
 
@@ -103,7 +96,22 @@ def configure(ctx):
     if ctx.options.includes != None:
         ctx.env.INCLUDES = re.split('[:,]+', ctx.options.includes)
 
-    ctx.parse_flags('-std=c++11', 'C++11')
+
+    try:
+        cxx11_code = '#include <array>\nint main() {}\n'
+
+        cxx11env = ctx.env.derive()
+        ctx.parse_flags('-std=c++11', 'C++11', env=cxx11env)
+        ctx.check_cxx(fragment=cxx11_code, env=cxx11env, use='C++11', msg='C++11 support')
+        ctx.parse_flags('-std=c++11', 'C++11')
+
+    except ctx.errors.ConfigurationError:
+
+        cxx11env = ctx.env.derive()
+        ctx.parse_flags('-std=c++0x', 'C++11', env=cxx11env)
+        ctx.check_cxx(fragment=cxx11_code, env=cxx11env, use='C++11', msg='C++0x support')
+        ctx.parse_flags('-std=c++0x', 'C++11')
+
 
     ctx.load('boost')
     ctx.check_boost()
@@ -111,31 +119,57 @@ def configure(ctx):
     if not ctx.options.debug:
         ctx.env.DEFINES_BOOST = ['NDEBUG']
 
+    # The specific boost libraries are not strictly mandatory
     for l in 'program_options filesystem system unit_test_framework'.split(' '):
-        ctx.env['LIB_boost_'+l] = ctx.boost_get_libs(l)[-1]
+        try:
+            ctx.env['LIB_boost_'+l] = ctx.boost_get_libs(l)[-1]
+        except ctx.errors.ConfigurationError:
+            pass
 
+    ### MANDATORY DEPENDENCIES
     ctx.check_cfg(
         uselib_store = 'MYSQL',
         path         = 'mysql_config',
         args         = ['--cflags', '--libs'],
         package      = '' )
+    ctx.check_cxx(
+        uselib_store = 'CCDB',
+        lib          = ['ccdb'],
+        header_name  = ['CCDB/Providers/MySQLDataProvider.h'],
+        use          = 'MYSQL',
+        msg          = 'Checking for CCDB')
 
+    ### OPTIONAL DEPENDENCIES
     ctx.check_cfg(
         uselib_store = 'EXPAT',
         package      = 'expat',
-        args         = ['--cflags', '--libs'] )
-
-    libnames = 'ccdb evio cmsg ctoolbox clara'.split(' ')
-    varnames = 'includes libpath lib'.split(' ')
-    for libname in libnames:
-        for varname in varnames:
-            a = '{0}_{1}'.format(varname.upper(),libname.upper())
-            b = '{1}_{0}'.format(varname,libname)
-            res = getattr(ctx.options,b,None)
-            if res != None:
-                if not isinstance(res,list):
-                    res = re.split('[,:]+',res)
-            ctx.env[a] = res
+        args         = ['--cflags', '--libs'],
+        mandatory    = False )
+    ctx.check_cxx(
+        uselib_store = 'EVIO',
+        lib          = ['evioxx', 'evio', 'rt'],
+        use          = 'EXPAT',
+        msg          = 'Checking for EVIO',
+        mandatory    = False)
+    ctx.check_cxx(
+        uselib_store = 'CTOOLBOX',
+        lib          = ['ctools', 'ctoolsev'],
+        header_name  = ['PropertyList.hpp'],
+        use          = 'EVIO EXPAT C++11',
+        msg          = 'Checking for CToolBox',
+        mandatory    = False)
+    ctx.check_cxx(
+        uselib_store = 'CMSG',
+        lib          = ['cmsgxx', 'cmsg', 'cmsgRegex'],
+        msg          = 'Checking for cMsg',
+        mandatory    = False)
+    ctx.check_cxx(
+        uselib_store = 'CLARA',
+        lib          = ['clara'],
+        header_name  = ['CService.hpp', 'CioSerial.hpp'],
+        use          = 'CTOOLBOX EVIO EXPAT CMSG C++11',
+        msg          = 'Checking for Clara',
+        mandatory    = False)
 
     ctx.recurse('ext')
 
