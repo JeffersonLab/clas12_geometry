@@ -132,6 +132,16 @@ def configure(ctx):
         path         = 'mysql_config',
         args         = ['--cflags', '--libs'],
         package      = '' )
+
+    remove_flags = ['-fstack-protector-strong']
+    flags = [ctx.env.CXXFLAGS_MYSQL, ctx.env.CFLAGS_MYSQL, ctx.env.LINKFLAGS_MYSQL]
+    for f in remove_flags:
+        for flgs in flags:
+            if f in flgs:
+                ctx.env.CXXFLAGS_MYSQL.remove(f)
+
+    print ctx.env.CXXFLAGS_MYSQL
+
     ctx.check_cxx(
         uselib_store = 'CCDB',
         lib          = ['ccdb'],
