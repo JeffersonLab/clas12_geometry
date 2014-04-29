@@ -16,7 +16,7 @@ The underlying database uses the CCDB scheme borrowed (unchanged) from the Glue-
 See the [INSTALL.md file](INSTALL.md) for details on how to build, test, run and
 generate reference documentation for this project on your system.
 
-See the [COPYING.md file](COPYING.md) for licensing and copyright information.
+See the [COPYING file](COPYING) for licensing and copyright information.
 
 ```
 Copyright 2014 John T. Goetz, Yelena Prok
