@@ -196,7 +196,7 @@ class line<T,2>
 
     euclid_vector<T,2> projection(const euclid_vector<T,2>& v) const
     {
-        direction_vector<T,2> perp{_direction.phi() + cons::half_pi<T>()};
+        direction_vector<T,2> perp{_direction.phi() + 0.5 * cons::pi<T>()};
         return this->intersection(line<T,2>{v, perp});
     }
 };
