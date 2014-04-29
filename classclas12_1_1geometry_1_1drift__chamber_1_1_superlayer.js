@@ -1,0 +1,28 @@
+var classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer =
+[
+    [ "region", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#acc0120718aa910b0e89333b97c2a2872", null ],
+    [ "senselayers", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#a71b7cb89a9a8a5eeed7bf2feb2e2cc7b", null ],
+    [ "senselayer", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#aa27520971c06be9c35645b68620ca2d0", null ],
+    [ "guardlayers", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#adfce04dd4cd06087d2aefe01fc8e2a97", null ],
+    [ "guardlayer", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#a6ade636fdf053832e01381063a5169ee", null ],
+    [ "nfieldlayers", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#a021c1b2b0a3706f0ad63676b089a7c44", null ],
+    [ "thmin", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#a4b935887328066d390c27bb83d5f3aad", null ],
+    [ "wpdist", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#a1ee62be076f9d3369671bfef284260fc", null ],
+    [ "cellthickness", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#ae4e5ebfa13fa636a46c87e4d7d18c253", null ],
+    [ "thster", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#a08db717c7392123a3a546ad4afa03ea1", null ],
+    [ "layer_thickness", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#afa156b64a638d8276a31caa8977973c3", null ],
+    [ "nwireplanes", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#a4bafa6cbaa1a7778f95d9894fb652a0e", null ],
+    [ "nlayers", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#a67b8545f61b16cdea20ea80bc332158e", null ],
+    [ "thickness", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#ab63032c0957802846cc1bcd681a47127", null ],
+    [ "dist2tgt", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#aefb2bb39dccfb60afe8eb9c28949b275", null ],
+    [ "first_wire_mid_dist2tgt", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#af8da0dd2047c1b6f08399f256683376f", null ],
+    [ "first_wire_mid_x", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#a0c10b76a96e395a80c01e1a089c1bb0a", null ],
+    [ "first_wire_mid_z", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#acd38b45bea93c0fa193329279d36eb48", null ],
+    [ "wire_mid_spacing", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#add6fa0ed34518629f8479bb7b5de2568", null ],
+    [ "wire_dircos_x", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#a191b52b45e7b7bde0c6863d123b7f93f", null ],
+    [ "wire_dircos_y", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#a168418cee2cad45424f7e8fd47df28fe", null ],
+    [ "wire_dircos_z", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#adbcbc906f8c5f605fd7cf0f6b67072e8", null ],
+    [ "wire_direction", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#a0b4e45b95ce62695149bcb5ea58272ec", null ],
+    [ "::clas12::geometry::DriftChamber", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#a18fb155df553e29127431220827d356c", null ],
+    [ "Region", "classclas12_1_1geometry_1_1drift__chamber_1_1_superlayer.html#aae6f9325706131f3b6fb8accb1508d76", null ]
+];

@@ -1,0 +1,27 @@
+var classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer =
+[
+    [ "sector", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#aebce9e295e14e9ac4e8a98e4f7acb032", null ],
+    [ "strips", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#aa12760256b4001f6b08a4f0f537f9c34", null ],
+    [ "strip", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#ad54ce519bad0465d8d4dd148b352fb86", null ],
+    [ "readoutPitch", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#a9c2560fdbfe4a302266596e8136967d3", null ],
+    [ "siliconWidth", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#a4123f0aba4b6e0cfd7ff831d9c86fc88", null ],
+    [ "physSenLen", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#a5625ea006b0bf91ed7d9ddb80ef7ba55", null ],
+    [ "physSenWid", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#ac06abab0333c31fca09e26ea5bca557d", null ],
+    [ "activeSenLen", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#a07e65769a345f6e9f1083f0e7746df68", null ],
+    [ "activeSenWid", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#a06a8d4dc921453584f3e816c988183e9", null ],
+    [ "deadZnSenLen1", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#a21b8b36b332f9e4b802815d0fd52f931", null ],
+    [ "deadZnSenLen2", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#a37288c91ba4a1bce3bc35f32cc52df28", null ],
+    [ "deadZnSenLen3", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#a404b30d51b8097ee7c1afedba92d1e91", null ],
+    [ "deadZnSenWid", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#a1c07500f14980f364d777e66086fba34", null ],
+    [ "startAngle", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#ad97e6e24d24b64641ef44b5d82d0bdb6", null ],
+    [ "endAngle", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#a5eba5763609745a0d74599f66a7da8fa", null ],
+    [ "nstrips", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#a00dc514aa19633304ff92a3d973a31f5", null ],
+    [ "strip_index", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#ae5d5bac51762f712be5f34d76debeebb", null ],
+    [ "radius", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#a57d76ea64cd2523fcf4d19cc73af0093", null ],
+    [ "stripFirstPoint", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#a73fb71ad263bc5c855630093b95040a0", null ],
+    [ "stripSecondPoint", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#a600a9eb38f7ec0ebd1fa217d52cf14be", null ],
+    [ "siliconStrip", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#a14fe36576bf769b553599858f3665bdc", null ],
+    [ "siliconStrips", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#a989d7004207dbdb0e1686b3aa99d5c48", null ],
+    [ "::clas12::geometry::central_tracker::BarrelSVT", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#a73f82ee64a4f840ae458cb22004866db", null ],
+    [ "::clas12::geometry::central_tracker::barrel_svt::Sector", "classclas12_1_1geometry_1_1central__tracker_1_1barrel__svt_1_1_layer.html#ada7a98041bd134d53532e7448fbb8ec2", null ]
+];

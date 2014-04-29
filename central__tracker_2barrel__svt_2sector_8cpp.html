@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.3.1"/>
-<title>CLAS12 Geometry: CLAS12 Geometry library</title>
+<title>CLAS12 Geometry: src/clas12/geometry/central_tracker/barrel_svt/sector.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -46,9 +46,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
+      <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -67,6 +67,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>File&#160;List</span></a></li>
+    </ul>
+  </div>
 </div><!-- top -->
 <div id="side-nav" class="ui-resizable side-nav-resizable">
   <div id="nav-tree">
@@ -79,7 +84,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <script type="text/javascript">
-$(document).ready(function(){initNavTree('index.html','');});
+$(document).ready(function(){initNavTree('central__tracker_2barrel__svt_2sector_8cpp.html','');});
 </script>
 <div id="doc-content">
 <!-- window showing the filter options -->
@@ -97,56 +102,39 @@ $(document).ready(function(){initNavTree('index.html','');});
 </div>
 
 <div class="header">
+  <div class="summary">
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle">
-<div class="title">CLAS12 Geometry library </div>  </div>
+<div class="title">sector.cpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This project consists of two distinct libraries:</p>
-<ol type="1">
-<li>A collection of classes and objects used to describe the geometry of the CLAS12 detector</li>
-<li>A dynamically-loaded server interface for these geometry classes to be used as a service in the CLARA framework.</li>
-</ol>
-<h1><a class="anchor" id="sec_geom"></a>
-CLAS12 Geometry and the Constants Databse</h1>
-<p>The geometry classes currently include only the drift chamber which is entire encapsulated in the <a class="el" href="classclas12_1_1geometry_1_1_drift_chamber.html" title="The drift chamber geometry class for CLAS12.">clas12::geometry::DriftChamber</a> class. This is the only class the end-user has access to. It accesses the CCDB "CLAS12 constants database" to obtain the nominal geometry parameters as well as the alignment and calibration adjustments.</p>
-<p>This is an example of creating an instance of the DriftChamber geometry class, retrieving the nominal geometry parameters from the CCDB and printing out some information. </p>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
-<div class="line"></div>
-<div class="line"><span class="preprocessor">#include &quot;<a class="code" href="drift__chamber_8hpp.html">clas12/geometry/drift_chamber.hpp</a>&quot;</span></div>
-<div class="line"></div>
-<div class="line"><span class="keyword">using</span> std::clog;</div>
-<div class="line"><span class="keyword">using</span> std::endl;</div>
-<div class="line"></div>
-<div class="line"><span class="keyword">using</span> <a class="code" href="classclas12_1_1geometry_1_1_drift_chamber.html" title="The drift chamber geometry class for CLAS12.">clas12::geometry::DriftChamber</a>;</div>
-<div class="line"><span class="keyword">using</span> <a class="code" href="classclas12_1_1geometry_1_1drift__chamber_1_1_region.html" title="A region of superlayers in a sector of the drift chambers.">clas12::geometry::drift_chamber::Region</a>;</div>
-<div class="line"></div>
-<div class="line"><span class="keywordtype">int</span> main()</div>
-<div class="line">{</div>
-<div class="line">    <span class="comment">// create the DC geometry object and fetch</span></div>
-<div class="line">    <span class="comment">// the nominal geometry from the CCDB database</span></div>
-<div class="line">    DriftChamber dc(<span class="stringliteral">&quot;clasdb.jlab.org&quot;</span>, <span class="stringliteral">&quot;clasuser&quot;</span>, <span class="stringliteral">&quot;clas12&quot;</span>);</div>
-<div class="line"></div>
-<div class="line">    <span class="comment">// get a reference to the 3rd sector, 1st region</span></div>
-<div class="line">    <span class="comment">// note that indexes are (always!) counted from zero</span></div>
-<div class="line">    <span class="comment">// exceptions to this are considered bugs!</span></div>
-<div class="line"><span class="comment"></span>    <span class="keyword">const</span> Region&amp; sec3reg1 = dc.sector(2).region(0);</div>
-<div class="line"></div>
-<div class="line">    <span class="comment">// print the distance from the target to the 1st</span></div>
-<div class="line">    <span class="comment">// superlayer in this region</span></div>
-<div class="line">    clog &lt;&lt; <span class="stringliteral">&quot;3rd sector, 1st region, 1st superlayer\n&quot;</span></div>
-<div class="line">            <span class="stringliteral">&quot;distance to target: &quot;</span> &lt;&lt; sec3reg1.superlayer(0).dist2tgt()</div>
-<div class="line">            &lt;&lt; endl;</div>
-<div class="line">}</div>
-</div><!-- fragment --><p>Here is a snippet of the above example: </p>
-<div class="fragment"><div class="line">    <span class="keyword">const</span> Region&amp; sec3reg1 = dc.sector(2).region(0);</div>
-</div><!-- fragment --> <h1><a class="anchor" id="sec_server"></a>
-CLAS12 Geometry Server</h1>
-</div></div><!-- contents -->
+<div class="textblock"><code>#include &lt;cstddef&gt;</code><br/>
+<code>#include &quot;geometry/constants.hpp&quot;</code><br/>
+<code>#include &quot;geometry/direction_vector.hpp&quot;</code><br/>
+<code>#include &quot;geometry/euclid_vector.hpp&quot;</code><br/>
+<code>#include &quot;geometry/plane.hpp&quot;</code><br/>
+<code>#include &quot;<a class="el" href="central__tracker_8hpp_source.html">clas12/geometry/central_tracker.hpp</a>&quot;</code><br/>
+</div>
+<p><a href="central__tracker_2barrel__svt_2sector_8cpp_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespaceclas12"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclas12.html">clas12</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceclas12_1_1geometry"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclas12_1_1geometry.html">clas12::geometry</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceclas12_1_1geometry_1_1central__tracker"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclas12_1_1geometry_1_1central__tracker.html">clas12::geometry::central_tracker</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceclas12_1_1geometry_1_1central__tracker_1_1barrel__svt"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclas12_1_1geometry_1_1central__tracker_1_1barrel__svt.html">clas12::geometry::central_tracker::barrel_svt</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Apr 29 2014 15:02:04 for CLAS12 Geometry by
+    <li class="navelem"><a class="el" href="dir_4a29c3385233d975b8be03a822995bb8.html">src</a></li><li class="navelem"><a class="el" href="dir_9e2ea720fc22272e9ac62d9997be70cd.html">clas12</a></li><li class="navelem"><a class="el" href="dir_c27936c0a8f65fa6fe62f9ea76d20bf8.html">geometry</a></li><li class="navelem"><a class="el" href="dir_a5f3a9178445f9fc96b9f89fdd9e3862.html">central_tracker</a></li><li class="navelem"><a class="el" href="dir_d9acd2b5cc37d6094ed95e9bb27bb53f.html">barrel_svt</a></li><li class="navelem"><a class="el" href="central__tracker_2barrel__svt_2sector_8cpp.html">sector.cpp</a></li>
+    <li class="footer">Generated on Tue Apr 29 2014 15:02:00 for CLAS12 Geometry by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.3.1 </li>
   </ul>

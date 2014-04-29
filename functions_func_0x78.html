@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.3.1"/>
-<title>CLAS12 Geometry: CLAS12 Geometry library</title>
+<title>CLAS12 Geometry: Class Members - Functions</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -46,8 +46,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -67,6 +67,44 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
+      <li><a href="classes.html"><span>Class&#160;Index</span></a></li>
+      <li><a href="hierarchy.html"><span>Class&#160;Hierarchy</span></a></li>
+      <li class="current"><a href="functions.html"><span>Class&#160;Members</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow3" class="tabs2">
+    <ul class="tablist">
+      <li><a href="functions.html"><span>All</span></a></li>
+      <li class="current"><a href="functions_func.html"><span>Functions</span></a></li>
+      <li><a href="functions_vars.html"><span>Variables</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow4" class="tabs3">
+    <ul class="tablist">
+      <li><a href="functions_func.html#index_a"><span>a</span></a></li>
+      <li><a href="functions_func_0x62.html#index_b"><span>b</span></a></li>
+      <li><a href="functions_func_0x63.html#index_c"><span>c</span></a></li>
+      <li><a href="functions_func_0x64.html#index_d"><span>d</span></a></li>
+      <li><a href="functions_func_0x65.html#index_e"><span>e</span></a></li>
+      <li><a href="functions_func_0x66.html#index_f"><span>f</span></a></li>
+      <li><a href="functions_func_0x67.html#index_g"><span>g</span></a></li>
+      <li><a href="functions_func_0x69.html#index_i"><span>i</span></a></li>
+      <li><a href="functions_func_0x6c.html#index_l"><span>l</span></a></li>
+      <li><a href="functions_func_0x6d.html#index_m"><span>m</span></a></li>
+      <li><a href="functions_func_0x6e.html#index_n"><span>n</span></a></li>
+      <li><a href="functions_func_0x6f.html#index_o"><span>o</span></a></li>
+      <li><a href="functions_func_0x70.html#index_p"><span>p</span></a></li>
+      <li><a href="functions_func_0x72.html#index_r"><span>r</span></a></li>
+      <li><a href="functions_func_0x73.html#index_s"><span>s</span></a></li>
+      <li><a href="functions_func_0x74.html#index_t"><span>t</span></a></li>
+      <li><a href="functions_func_0x77.html#index_w"><span>w</span></a></li>
+      <li class="current"><a href="functions_func_0x78.html#index_x"><span>x</span></a></li>
+      <li><a href="functions_func_0x7a.html#index_z"><span>z</span></a></li>
+    </ul>
+  </div>
 </div><!-- top -->
 <div id="side-nav" class="ui-resizable side-nav-resizable">
   <div id="nav-tree">
@@ -79,7 +117,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <script type="text/javascript">
-$(document).ready(function(){initNavTree('index.html','');});
+$(document).ready(function(){initNavTree('functions_func_0x78.html','');});
 </script>
 <div id="doc-content">
 <!-- window showing the filter options -->
@@ -96,52 +134,15 @@ $(document).ready(function(){initNavTree('index.html','');});
 </iframe>
 </div>
 
-<div class="header">
-  <div class="headertitle">
-<div class="title">CLAS12 Geometry library </div>  </div>
-</div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This project consists of two distinct libraries:</p>
-<ol type="1">
-<li>A collection of classes and objects used to describe the geometry of the CLAS12 detector</li>
-<li>A dynamically-loaded server interface for these geometry classes to be used as a service in the CLARA framework.</li>
-</ol>
-<h1><a class="anchor" id="sec_geom"></a>
-CLAS12 Geometry and the Constants Databse</h1>
-<p>The geometry classes currently include only the drift chamber which is entire encapsulated in the <a class="el" href="classclas12_1_1geometry_1_1_drift_chamber.html" title="The drift chamber geometry class for CLAS12.">clas12::geometry::DriftChamber</a> class. This is the only class the end-user has access to. It accesses the CCDB "CLAS12 constants database" to obtain the nominal geometry parameters as well as the alignment and calibration adjustments.</p>
-<p>This is an example of creating an instance of the DriftChamber geometry class, retrieving the nominal geometry parameters from the CCDB and printing out some information. </p>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
-<div class="line"></div>
-<div class="line"><span class="preprocessor">#include &quot;<a class="code" href="drift__chamber_8hpp.html">clas12/geometry/drift_chamber.hpp</a>&quot;</span></div>
-<div class="line"></div>
-<div class="line"><span class="keyword">using</span> std::clog;</div>
-<div class="line"><span class="keyword">using</span> std::endl;</div>
-<div class="line"></div>
-<div class="line"><span class="keyword">using</span> <a class="code" href="classclas12_1_1geometry_1_1_drift_chamber.html" title="The drift chamber geometry class for CLAS12.">clas12::geometry::DriftChamber</a>;</div>
-<div class="line"><span class="keyword">using</span> <a class="code" href="classclas12_1_1geometry_1_1drift__chamber_1_1_region.html" title="A region of superlayers in a sector of the drift chambers.">clas12::geometry::drift_chamber::Region</a>;</div>
-<div class="line"></div>
-<div class="line"><span class="keywordtype">int</span> main()</div>
-<div class="line">{</div>
-<div class="line">    <span class="comment">// create the DC geometry object and fetch</span></div>
-<div class="line">    <span class="comment">// the nominal geometry from the CCDB database</span></div>
-<div class="line">    DriftChamber dc(<span class="stringliteral">&quot;clasdb.jlab.org&quot;</span>, <span class="stringliteral">&quot;clasuser&quot;</span>, <span class="stringliteral">&quot;clas12&quot;</span>);</div>
-<div class="line"></div>
-<div class="line">    <span class="comment">// get a reference to the 3rd sector, 1st region</span></div>
-<div class="line">    <span class="comment">// note that indexes are (always!) counted from zero</span></div>
-<div class="line">    <span class="comment">// exceptions to this are considered bugs!</span></div>
-<div class="line"><span class="comment"></span>    <span class="keyword">const</span> Region&amp; sec3reg1 = dc.sector(2).region(0);</div>
-<div class="line"></div>
-<div class="line">    <span class="comment">// print the distance from the target to the 1st</span></div>
-<div class="line">    <span class="comment">// superlayer in this region</span></div>
-<div class="line">    clog &lt;&lt; <span class="stringliteral">&quot;3rd sector, 1st region, 1st superlayer\n&quot;</span></div>
-<div class="line">            <span class="stringliteral">&quot;distance to target: &quot;</span> &lt;&lt; sec3reg1.superlayer(0).dist2tgt()</div>
-<div class="line">            &lt;&lt; endl;</div>
-<div class="line">}</div>
-</div><!-- fragment --><p>Here is a snippet of the above example: </p>
-<div class="fragment"><div class="line">    <span class="keyword">const</span> Region&amp; sec3reg1 = dc.sector(2).region(0);</div>
-</div><!-- fragment --> <h1><a class="anchor" id="sec_server"></a>
-CLAS12 Geometry Server</h1>
-</div></div><!-- contents -->
+&#160;
+
+<h3><a class="anchor" id="index_x"></a>- x -</h3><ul>
+<li>xdist()
+: <a class="el" href="classclas12_1_1geometry_1_1drift__chamber_1_1_region.html#a2d1bef5655f8356b51e8af471e2d5ce9">Region</a>
+</li>
+</ul>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
