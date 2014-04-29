@@ -113,8 +113,8 @@ volmap_t ftof_sector_volumes_map(const forward_tof::Sector& sector)
 
         stringstream panel_rot;
         panel_rot << "ordered: zxy"
-                  << " " <<  90. + panel.thtilt()*rad2deg << "*deg"
                   << " " << -90. - 60.*sector.index() << "*deg"
+                  << " " <<  90. + panel.thtilt()*rad2deg << "*deg"
                   << " " << 0 << "*deg";
 
         stringstream panel_dim;
@@ -134,7 +134,7 @@ volmap_t ftof_sector_volumes_map(const forward_tof::Sector& sector)
             {"color", "ff11aa5"},
             {"type", "Trd"},
             {"dimensions", panel_dim.str()},
-            {"material", "Air"},
+            {"material", "G4_AIR"},
             {"mfield", "no"},
             {"ncopy", "1"},
             {"pMany", "1"},
@@ -210,7 +210,7 @@ volmap_t ftof_sector_volumes_map(const forward_tof::Sector& sector)
                 {"color", "ff11aa"},
                 {"type", "Box"},
                 {"dimensions", paddle_dim.str()},
-                {"material", "Scintillator"},
+                {"material", "scintillator"},
                 {"mfield", "no"},
                 {"ncopy", "1"},
                 {"pMany", "1"},
