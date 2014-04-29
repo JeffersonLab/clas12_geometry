@@ -7,14 +7,13 @@ def build(ctx):
             target = '',
             source [''],
             use = '''\
-            C++11
-            BOOST
-                boost_program_options
-            MYSQL
-            CCDB
-            GEOMETRY
-            PUGIXML
-                pugixml
-            clas12_geometry
-
+                C++11
+                BOOST
+                    boost_program_options
+                MYSQL
+                CCDB
+                GEOMETRY
+                PUGIXML
+                    pugixml
+                clas12_geometry
             '''.split())

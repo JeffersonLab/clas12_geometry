@@ -53,40 +53,6 @@ def options(ctx):
 
 
 def configure(ctx):
-    '''
-    included requirements:
-        GEOMETRY
-        PUGIXML
-            pugixml
-
-
-    bare minimum external requirements (--gemc):
-        C++11
-        BOOST
-        CCDB
-        MYSQL
-
-
-    default requirements:
-        BOOST
-            program_options
-            filesystem
-            system
-        EVIO
-        EXPAT
-
-
-    clara service requirements (--clara):
-        CLARA
-        CMSG
-        CTOOLBOX
-
-
-    test requirements (--test):
-        BOOST
-            unit_test_framework
-    '''
-
     import os,re
 
     ctx.load('compiler_cxx')
@@ -97,6 +63,7 @@ def configure(ctx):
         ctx.env.INCLUDES = re.split('[:,]+', ctx.options.includes)
 
 
+    ### MANDATORY DEPENDENCIES
     try:
         cxx11_code = '#include <array>\nint main() {}\n'
 
@@ -112,33 +79,29 @@ def configure(ctx):
         ctx.check_cxx(fragment=cxx11_code, env=cxx11env, use='C++11', msg='C++0x support')
         ctx.parse_flags('-std=c++0x', 'C++11')
 
-
     ctx.load('boost')
     ctx.check_boost()
 
-    if not ctx.options.debug:
-        ctx.env.DEFINES_BOOST = ['NDEBUG']
+    ctx.env['LIB_boost_program_options'] = ctx.boost_get_libs('program_options')[-1]
 
-    # The specific boost libraries are not strictly mandatory
-    for l in 'program_options filesystem system unit_test_framework'.split(' '):
-        try:
-            ctx.env['LIB_boost_'+l] = ctx.boost_get_libs(l)[-1]
-        except ctx.errors.ConfigurationError:
-            pass
-
-    ### MANDATORY DEPENDENCIES
     ctx.check_cfg(
         uselib_store = 'MYSQL',
         path         = 'mysql_config',
         args         = ['--cflags', '--libs'],
         package      = '' )
 
-    remove_flags = ['-fstack-protector-strong']
-    flags = [ctx.env.CXXFLAGS_MYSQL, ctx.env.CFLAGS_MYSQL, ctx.env.LINKFLAGS_MYSQL]
-    for f in remove_flags:
-        for flgs in flags:
-            if f in flgs:
-                flgs.remove(f)
+    def remove_flags(ctx, package_name, *list_of_flags):
+        flagtypes = 'CXXFLAGS CFLAGS LINKFLAGS'.split(' ')
+        cenvlist = []
+        for ft in flagtypes:
+            cenvlist += [ctx.env[ft+'_'+package_name]]
+
+        for f in list_of_flags:
+            for cenv in cenvlist:
+                if f in cenv:
+                    cenv.remove(f)
+
+    remove_flags(ctx, 'MYSQL', '-fstack-protector-strong')
 
     ctx.check_cxx(
         uselib_store = 'CCDB',
@@ -147,12 +110,29 @@ def configure(ctx):
         use          = 'MYSQL',
         msg          = 'Checking for CCDB')
 
+
     ### OPTIONAL DEPENDENCIES
-    ctx.check_cfg(
-        uselib_store = 'EXPAT',
-        package      = 'expat',
-        args         = ['--cflags', '--libs'],
-        mandatory    = False )
+
+    for l in 'filesystem system unit_test_framework'.split(' '):
+        try:
+            ctx.env['LIB_boost_'+l] = ctx.boost_get_libs(l)[-1]
+            ctx.to_log('boost library found: {}'.format(l))
+        except ctx.errors.ConfigurationError:
+            ctx.to_log('boost library not found: {}'.format(l))
+
+    try:
+        ctx.check_cxx(
+            uselib_store = 'EXPAT',
+            lib          = 'expat',
+            header_name  = ['expat.h'],
+            msg          = 'Checking for expat')
+    except ctx.errors.ConfigurationError:
+        ctx.check_cfg(
+            uselib_store = 'EXPAT',
+            package      = 'expat',
+            args         = ['--cflags', '--libs'],
+            mandatory    = False )
+
     ctx.check_cxx(
         uselib_store = 'EVIO',
         lib          = ['evioxx', 'evio', 'rt'],
@@ -179,6 +159,14 @@ def configure(ctx):
         msg          = 'Checking for Clara',
         mandatory    = False)
 
+
+    ### some configuration based on the options above
+    if not ctx.options.debug:
+        ctx.env.DEFINES_BOOST = ['NDEBUG']
+
+
+    ### recurse into external dependencies that are included
+    ### with this project's source tree
     ctx.recurse('ext')
 
 
