@@ -1,6 +1,6 @@
 CLAS12 Detector Geometry Library
 
-Copyright 2012 John T. Goetz, Yelena Prok
+Copyright 2014 John T. Goetz, Yelena Prok
 
   CLAS12 Detector Geometry Library is free software: you can
   redistribute it and/or modify it under the terms of the GNU
@@ -44,10 +44,11 @@ At certain points during execution, programs within CLAS12 Detector
 Geometry Library may issue the following copyright notice. It is
 implied for all programs without such notices.
 
-  Copyright 2012 John T. Goetz, Yelena Prok This program comes with
-  ABSOLUTELY NO WARRANTY. This is free software, and you are welcome
-  to redistribute it under certain conditions; see the COPYING file
-  in the source tree of the CLAS12 Geometry project for details.
+  Copyright 2014 John T. Goetz, Yelena Prok This program comes with
+  ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to
+  redistribute it under certain conditions; see the COPYING file in the
+  source tree of the CLAS12 Detector Geometry Library project for
+  details.
 
 ------------------------------------------------------------------------
 

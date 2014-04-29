@@ -10,7 +10,7 @@ There are a number of mandatory dependencies for the minimum build which consist
 
 Dependencies which are needed for the Clara service include the following libraries with their associated header files:
 
-* Clara (C++)
+* Clara
 * cMsg
 * CToolBox
 * EVIO
