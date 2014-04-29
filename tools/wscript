@@ -6,7 +6,7 @@ def build(ctx):
     ctx.program(
         target = 'clas12geom',
         source = ['clas12geom.cpp'],
-        includes = ['src'],
+        includes = ['#src'],
 
         use = '''
             C++11
@@ -24,7 +24,7 @@ def build(ctx):
         ctx.program(
             target = 'clas12magfield',
             source = ['clas12magfield.cpp'],
-            includes = ['src'],
+            includes = ['#src'],
 
             use = '''
                 C++11
@@ -39,7 +39,7 @@ def build(ctx):
         ctx.shlib(
             target = 'clas12_geometry_gemc',
             source = ['gemc/clas12_geometry_gemc.cpp'],
-            includes = ['src'],
+            includes = ['#src'],
 
             use = '''
                 C++11
