@@ -1,5 +1,5 @@
-#ifndef __CLAS12_GEOMETRY_OUTPUT_DC_SECTOR_VOLUMES_HPP__
-#define __CLAS12_GEOMETRY_OUTPUT_DC_SECTOR_VOLUMES_HPP__
+#ifndef CLAS12_GEOMETRY_OUTPUT_DC_SECTOR_VOLUMES_HPP
+#define CLAS12_GEOMETRY_OUTPUT_DC_SECTOR_VOLUMES_HPP
 
 #include <iostream>
 using std::clog;
@@ -407,4 +407,4 @@ void dc_volumes_xml(xml_document& doc, const DriftChamber& dc)
 } // namespace clas12::geometry
 } // namespace clas12
 
-#endif // __CLAS12_GEOMETRY_OUTPUT_DC_SECTOR_VOLUMES_HPP__
+#endif // CLAS12_GEOMETRY_OUTPUT_DC_SECTOR_VOLUMES_HPP
