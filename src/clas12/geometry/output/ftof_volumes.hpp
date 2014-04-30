@@ -98,14 +98,11 @@ volmap_t ftof_volumes_map(const ForwardTOF& ftof)
                        << " Sector " << sector.index()+1
                        << " Panel " << sector.panel_name(pan);
 
-            // this needs to be checked
-
-            int last_idx = panel.npaddles()-1;
-            dx1 = panel.paddle_length(1)/2.0 + mothergap; // first or second paddle?
-            dx2 = panel.paddle_length(last_idx)/2.0 + mothergap
-               +(panel.paddle_length(last_idx)-panel.paddle_length(last_idx-1))/2.0;
-            dy  = panel.paddle_thickness()/2.0 + mothergap;
-            dz  = (panel.radial_extent())/2. + mothergap;
+            dx1 = 0.5 * panel.paddle_length(0) + mothergap;
+            dx2 = 0.5 * panel.paddle_length(-1) + mothergap
+                + 0.5 * (panel.paddle_length(-1) - panel.paddle_length(-2));
+            dy  = 0.5 * panel.paddle_thickness() + mothergap;
+            dz  = 0.5 * panel.radial_extent() + mothergap;
 
             //panel's center point in CLAS coordinate system
             euclid_vector<> panel_center = panel.center(COORDSYS::CLAS);
