@@ -13,6 +13,7 @@ def build(ctx):
             ctx.program(
                 target = tgt,
                 source = [src],
+                includes = ['#src'],
                 use = '''\
                     C++11
                     BOOST
