@@ -1,5 +1,5 @@
-#ifndef __CLAS12_GEOMETRY_OUTPUT_FTOF_PANELS_PARMS_HPP__
-#define __CLAS12_GEOMETRY_OUTPUT_FTOF_PANELS_PARMS_HPP__
+#ifndef CLAS12_GEOMETRY_OUTPUT_FTOF_PANELS_PARMS_HPP
+#define CLAS12_GEOMETRY_OUTPUT_FTOF_PANELS_PARMS_HPP
 
 #include <memory>
 #include <sstream>
@@ -135,4 +135,4 @@ void ftof_panels_parms_xml(xml_document& doc, const ForwardTOF& ftof, const stri
 } // namespace clas12::geometry
 } // namespace clas12
 
-#endif // __CLAS12_GEOMETRY_OUTPUT_FTOF_PANELS_PARMS_HPP__
+#endif // CLAS12_GEOMETRY_OUTPUT_FTOF_PANELS_PARMS_HPP

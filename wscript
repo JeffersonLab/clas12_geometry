@@ -82,7 +82,9 @@ def configure(ctx):
     ctx.load('boost')
     ctx.check_boost()
 
-    ctx.env['LIB_boost_program_options'] = ctx.boost_get_libs('program_options')[-1]
+    libpath,lib_po = ctx.boost_get_libs('program_options')
+    ctx.env.append_value('LIBPATH_BOOST',libpath)
+    ctx.env.append_value('LIB_boost_program_options', lib_po)
 
     ctx.check_cfg(
         uselib_store = 'MYSQL',
@@ -113,9 +115,16 @@ def configure(ctx):
 
     ### OPTIONAL DEPENDENCIES
 
-    for l in 'filesystem system unit_test_framework'.split(' '):
+    boost_libs = '''\
+        filesystem
+        system
+        unit_test_framework
+    '''.split()
+    for l in boost_libs:
         try:
-            ctx.env['LIB_boost_'+l] = ctx.boost_get_libs(l)[-1]
+            libpath,lib = ctx.boost_get_libs(l)
+            ctx.env.append_value('LIBPATH_BOOST',libpath)
+            ctx.env.append_value('LIB_boost_'+l, lib)
             ctx.to_log('boost library found: {}'.format(l))
         except ctx.errors.ConfigurationError:
             ctx.to_log('boost library not found: {}'.format(l))

@@ -1,5 +1,5 @@
-#ifndef __CLAS12_GEOMETRY_OUTPUT_BST_STRIP_ENDPOINTS_HPP__
-#define __CLAS12_GEOMETRY_OUTPUT_BST_STRIP_ENDPOINTS_HPP__
+#ifndef CLAS12_GEOMETRY_OUTPUT_BST_STRIP_ENDPOINTS_HPP
+#define CLAS12_GEOMETRY_OUTPUT_BST_STRIP_ENDPOINTS_HPP
 
 #include <memory>
 #include <sstream>
@@ -180,4 +180,4 @@ void bst_strip_endpoints_xml(xml_document& doc, const BarrelSVT& bst, const stri
 } // namespace clas12::geometry
 } // namespace clas12
 
-#endif // __CLAS12_GEOMETRY_OUTPUT_DC_WIRE_ENDPOINTS_HPP__
+#endif // CLAS12_GEOMETRY_OUTPUT_DC_WIRE_ENDPOINTS_HPP

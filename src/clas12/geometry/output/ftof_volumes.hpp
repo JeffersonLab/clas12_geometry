@@ -1,5 +1,5 @@
-#ifndef __CLAS12_GEOMETRY_OUTPUT_FTOF_SECTOR_VOLUMES_HPP__
-#define __CLAS12_GEOMETRY_OUTPUT_FTOF_SECTOR_VOLUMES_HPP__
+#ifndef CLAS12_GEOMETRY_OUTPUT_FTOF_SECTOR_VOLUMES_HPP
+#define CLAS12_GEOMETRY_OUTPUT_FTOF_SECTOR_VOLUMES_HPP
 
 #include <iostream>
 using std::clog;
@@ -53,7 +53,7 @@ typedef map<string, map<string,string> > volmap_t;
 static const double mothergap = 0.4; //cm
 
 
-volmap_t ftof_sector_volumes_map(const forward_tof::Sector& sector)
+volmap_t ftof_volumes_map(const ForwardTOF& ftof)
 {
     using namespace std;
     using namespace ::geometry;
@@ -72,174 +72,161 @@ volmap_t ftof_sector_volumes_map(const forward_tof::Sector& sector)
 
     volmap_t vols;
 
-    stringstream sector_name_ss;
-    sector_name_ss << "sector" << sector.index()+1;
-    string sector_name = sector_name_ss.str();
-
-    stringstream sector_desc;
-    sector_desc << "Forward Time Of Flight"
-            << " Sector " << sector.index()+1;
-
-
-    for (size_t pan=0; pan<sector.panels().size(); pan++)
+    for (size_t sec=0; sec<ftof.sectors().size(); sec++)
     {
-        const forward_tof::Panel& panel = sector.panel(pan);
+        const forward_tof::Sector& sector = ftof.sector(sec);
 
-        stringstream panel_name_ss;
-        panel_name_ss << "Panel" << sector.panel_name(pan) ; // NAME OF THE PANEL ???
-        string panel_name = panel_name_ss.str();
+        stringstream sector_name_ss;
+        sector_name_ss << "sec" << sector.index()+1;
+        string sector_name = sector_name_ss.str();
 
-        stringstream panel_desc;
-        panel_desc << "Forward Time Of Flight"
-                << " Sector " << sector.index()+1
-                << " Panel " << sector.panel_name(pan);
+        stringstream sector_desc;
+        sector_desc << "Forward Time Of Flight"
+                    << " Sector " << sector.index()+1;
 
-        // this needs to be checked
-
-        int last_idx = panel.npaddles()-1;
-        dx1 = panel.paddle_length(1)/2.0 + mothergap; // first or second paddle?
-        dx2 = panel.paddle_length(last_idx)/2.0 + mothergap
-           +(panel.paddle_length(last_idx)-panel.paddle_length(last_idx-1))/2.0;
-        dy  = panel.paddle_thickness()/2.0 + mothergap;
-        dz  = (panel.radial_extent())/2. + mothergap;
-
-        //panel's center point in CLAS coordinate system
-        euclid_vector<> panel_center = panel.center(COORDSYS::CLAS);
-
-        stringstream panel_pos;
-        panel_pos << panel_center.x() << "*cm "
-                  << panel_center.y() << "*cm "
-                  << panel_center.z() << "*cm";
-
-        stringstream panel_rot;
-        panel_rot << "ordered: zxy"
-                  << " " <<  90. + panel.thtilt()*rad2deg << "*deg"
-                  << " " << -90. - 60.*sector.index() << "*deg"
-                  << " " << 0 << "*deg";
-
-        stringstream panel_dim;
-        panel_dim << dx1 << "*cm "
-                  << dx2 << "*cm "
-                  << dy << "*cm "
-                  << dy << "*cm "
-                  << dz << "*cm ";
-
-
-        // The Panel mother volume
-        vols[panel_name] = {
-            {"mother", "root"},
-            {"description", panel_desc.str()},
-            {"pos", panel_pos.str()},
-            {"rotation",  panel_rot.str()},
-            {"color", "ff11aa5"},
-            {"type", "Trd"},
-            {"dimensions", panel_dim.str()},
-            {"material", "Air"},
-            {"mfield", "no"},
-            {"ncopy", "1"},
-            {"pMany", "1"},
-            {"exist", "1"},
-            {"visible", "0"},
-            {"style", "0"},
-            {"sensitivity", "no"},
-            {"hit_type", ""},
-            {"identifiers", ""}
-        };
-
-
-
-        for (int pad = 0; pad<panel.paddles().size(); pad++)
+        for (size_t pan=0; pan<sector.panels().size(); pan++)
         {
+            const forward_tof::Panel& panel = sector.panel(pan);
 
-            /*
-            generating parameters for the paddle volumes following
-            the BOX constructor:
-                pDx     Half-length along the x-axis
-                pDy     Half-length along the y-axis
-                pDz     Half-length along the z-axis
-            */
+            stringstream panel_name_ss;
+            panel_name_ss << "sec" << sector.index()+1
+                          << "_pan" << sector.panel_name(pan);
+            string panel_name = panel_name_ss.str();
 
-            double dx = panel.paddle_length(pad)/2.0;
-            double dy = panel.paddle_thickness()/2.0;
-            double dz = panel.paddle_width()/2.0;
+            stringstream panel_desc;
+            panel_desc << "Forward Time Of Flight"
+                       << " Sector " << sector.index()+1
+                       << " Panel " << sector.panel_name(pan);
 
-            // posz is the GEANT z position of each paddle
-            // (corresponding to x in sector coords)
-            double posz =
-                (panel.paddle_center_x(pad) - panel_center.x())
-                / cos(panel.thtilt());
+            dx1 = 0.5 * panel.paddle_length(0) + mothergap;
+            dx2 = 0.5 * panel.paddle_length(-1) + mothergap
+                + 0.5 * (panel.paddle_length(-1) - panel.paddle_length(-2));
+            dy  = 0.5 * panel.paddle_thickness() + mothergap;
+            dz  = 0.5 * panel.radial_extent() + mothergap;
 
-            stringstream paddle_name_ss;
-            paddle_name_ss << "sec" << sector.index()+1
-                           << "_pan" << sector.panel_name(pan)
-                           << "_pad" << pad+1;
-            string paddle_name = paddle_name_ss.str();
+            //panel's center point in CLAS coordinate system
+            euclid_vector<> panel_center = panel.center(COORDSYS::CLAS);
 
-            stringstream paddle_desc;
-            paddle_desc << "Forward Time Of Flight"
-                        << " Sector " << sector.index()+1
-                        << " Panel " << sector.panel_name(pan)
-                        << " Paddle " << pad+1;
+            stringstream panel_pos;
+            panel_pos << panel_center.x() << "*cm "
+                      << panel_center.y() << "*cm "
+                      << panel_center.z() << "*cm";
 
-            //paddle's position relative to the panel (mother volume)
-            euclid_vector<> paddle_position = {0,0,posz};
+            stringstream panel_rot;
+            panel_rot << "ordered: zxy"
+                      << " " << -90. - 60.*sector.index() << "*deg"
+                      << " " << -90. + panel.thtilt()*rad2deg << "*deg"
+                      << " " << 0 << "*deg";
 
-            stringstream paddle_pos;
-            paddle_pos << paddle_position.x() << "*cm "
-                       << paddle_position.y() << "*cm "
-                       << paddle_position.z() << "*cm";
+            stringstream panel_dim;
+            panel_dim << dx1 << "*cm "
+                      << dx2 << "*cm "
+                      << dy << "*cm "
+                      << dy << "*cm "
+                      << dz << "*cm ";
 
-            stringstream paddle_rot;
-            paddle_rot << "0*deg 0*deg 0*deg";
-
-            stringstream paddle_dim;
-            paddle_dim << dx << "*cm "<< dy << "*cm "<< dz << "*cm ";
-
-            stringstream paddle_ids;
-            stringstream paddle_sens;
-
-            paddle_ids    << "sector ncopy 0 paddle manual " << pad+1 ;
-            paddle_sens   << "FTOF_"<<sector.panel_name(pan);
-
-            // The paddle volume
-            vols[paddle_name] = {
-                {"mother", panel_name},
-                {"description", paddle_desc.str()},
-                {"pos", paddle_pos.str()},
-                {"rotation", paddle_rot.str()},
-                {"color", "ff11aa"},
-                {"type", "Box"},
-                {"dimensions", paddle_dim.str()},
-                {"material", "Scintillator"},
+            // The Panel mother volume
+            vols[panel_name] = {
+                {"mother", "root"},
+                {"description", panel_desc.str()},
+                {"pos", panel_pos.str()},
+                {"rotation",  panel_rot.str()},
+                {"color", "ff11aa5"},
+                {"type", "Trd"},
+                {"dimensions", panel_dim.str()},
+                {"material", "G4_AIR"},
                 {"mfield", "no"},
                 {"ncopy", "1"},
                 {"pMany", "1"},
                 {"exist", "1"},
-                {"visible", "1"},
-                {"style", "1"},
-                {"sensitivity", paddle_sens.str()},
-                {"hit_type", paddle_sens.str()},
-                {"identifiers", paddle_ids.str()}
+                {"visible", "0"},
+                {"style", "0"},
+                {"sensitivity", "no"},
+                {"hit_type", ""},
+                {"identifiers", ""}
             };
 
-        } // loop over paddles
+            for (int pad = 0; pad<panel.paddles().size(); pad++)
+            {
 
-    }  //loop over panels
+                /*
+                generating parameters for the paddle volumes following
+                the BOX constructor:
+                    pDx     Half-length along the x-axis
+                    pDy     Half-length along the y-axis
+                    pDz     Half-length along the z-axis
+                */
+
+                double dx = panel.paddle_length(pad)/2.0;
+                double dy = panel.paddle_thickness()/2.0;
+                double dz = panel.paddle_width()/2.0;
+
+                // posz is the GEANT z position of each paddle
+                // (corresponding to x in sector coords)
+                double posz =
+                    (panel.paddle_center_x(pad) - panel_center.x())
+                    / cos(panel.thtilt());
+
+                stringstream paddle_name_ss;
+                paddle_name_ss << "sec" << sector.index()+1
+                               << "_pan" << sector.panel_name(pan)
+                               << "_pad" << pad+1;
+                string paddle_name = paddle_name_ss.str();
+
+                stringstream paddle_desc;
+                paddle_desc << "Forward Time Of Flight"
+                            << " Sector " << sector.index()+1
+                            << " Panel " << sector.panel_name(pan)
+                            << " Paddle " << pad+1;
+
+                //paddle's position relative to the panel (mother volume)
+                euclid_vector<> paddle_position = {0,0,posz};
+
+                stringstream paddle_pos;
+                paddle_pos << paddle_position.x() << "*cm "
+                           << paddle_position.y() << "*cm "
+                           << paddle_position.z() << "*cm";
+
+                stringstream paddle_rot;
+                paddle_rot << "0*deg 0*deg 0*deg";
+
+                stringstream paddle_dim;
+                paddle_dim << dx << "*cm "<< dy << "*cm "<< dz << "*cm ";
+
+                stringstream paddle_ids;
+                stringstream paddle_sens;
+
+                paddle_ids    << "sector ncopy 0 paddle manual " << pad+1 ;
+                paddle_sens   << "FTOF_"<<sector.panel_name(pan);
+
+                // The paddle volume
+                vols[paddle_name] = {
+                    {"mother", panel_name},
+                    {"description", paddle_desc.str()},
+                    {"pos", paddle_pos.str()},
+                    {"rotation", paddle_rot.str()},
+                    {"color", "ff11aa"},
+                    {"type", "Box"},
+                    {"dimensions", paddle_dim.str()},
+                    {"material", "scintillator"},
+                    {"mfield", "no"},
+                    {"ncopy", "1"},
+                    {"pMany", "1"},
+                    {"exist", "1"},
+                    {"visible", "1"},
+                    {"style", "1"},
+                    {"sensitivity", paddle_sens.str()},
+                    {"hit_type", paddle_sens.str()},
+                    {"identifiers", paddle_ids.str()}
+                };
+
+            } // loop over paddles
+
+        }  // loop over panels
+
+    } // loop over sectors
 
     return vols;
-}
-
-volmap_t ftof_volumes_map(const ForwardTOF& ftof)
-{
-    volmap_t vmap;
-
-    for (const unique_ptr<forward_tof::Sector>& sector : ftof.sectors())
-    {
-        volmap_t secmap = ftof_sector_volumes_map(*sector);
-        vmap.insert(secmap.begin(), secmap.end());
-    }
-
-    return vmap;
 }
 
 void ftof_volumes_xml(xml_document& doc, const ForwardTOF& ftof)
@@ -277,4 +264,4 @@ void ftof_volumes_xml(xml_document& doc, const ForwardTOF& ftof)
 } // namespace clas12::geometry
 } // namespace clas12
 
-#endif // __CLAS12_GEOMETRY_OUTPUT_FTOF_SECTOR_VOLUMES_HPP__
+#endif // CLAS12_GEOMETRY_OUTPUT_FTOF_SECTOR_VOLUMES_HPP

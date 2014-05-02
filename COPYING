@@ -1,16 +1,17 @@
-CLAS12 Geometry
+CLAS12 Detector Geometry Library
 
-Copyright 2012 John T. Goetz, Yelena Prok
+Copyright 2014 John T. Goetz, Yelena Prok
 
-  CLAS12 Geometry is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
+  CLAS12 Detector Geometry Library is free software: you can
+  redistribute it and/or modify it under the terms of the GNU
+  General Public License as published by the Free Software
+  Foundation, either version 3 of the License, or (at your option)
+  any later version.
 
-  CLAS12 Geometry is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+  CLAS12 Detector Geometry Library is distributed in the hope that
+  it will be useful, but WITHOUT ANY WARRANTY; without even the
+  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.  See the GNU General Public License for more details.
 
   A copy of the GNU General Public License should be given in this file
   below. If not, see <http://www.gnu.org/licenses/>.
@@ -22,31 +23,32 @@ src, test and tools. Third-party components which are included in
 the directory ext have their own licensing which may be different
 and should be included along with the source files.
 
-  This file is part of CLAS12 Geometry.
+  This file is part of CLAS12 Detector Geometry Library.
 
-  CLAS12 Geometry is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
+  CLAS12 Detector Geometry Library is free software: you can
+  redistribute it and/or modify it under the terms of the GNU
+  General Public License as published by the Free Software
+  Foundation, either version 3 of the License, or (at your option)
+  any later version.
 
-  CLAS12 Geometry is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+  CLAS12 Detector Geometry Library is distributed in the hope that
+  it will be useful, but WITHOUT ANY WARRANTY; without even the
+  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.  See the GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
   along with CLAS12 Geometry in a file named COPYING.  If not, see
   <http://www.gnu.org/licenses/>.
 
-At certain points during execution, programs within CLAS12 Geometry
-may issue the following copyright notice. It is implied for all
-programs without such notices.
+At certain points during execution, programs within CLAS12 Detector
+Geometry Library may issue the following copyright notice. It is
+implied for all programs without such notices.
 
-  <program name> Copyright 2012 John T. Goetz, Yelena Prok
-  This program comes with ABSOLUTELY NO WARRANTY. This is free
-  software, and you are welcome to redistribute it under certain
-  conditions; see the COPYING file in the source tree of the
-  CLAS12 Geometry project for details.
+  Copyright 2014 John T. Goetz, Yelena Prok This program comes with
+  ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to
+  redistribute it under certain conditions; see the COPYING file in the
+  source tree of the CLAS12 Detector Geometry Library project for
+  details.
 
 ------------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
-#ifndef __CLAS12_GEOMETRY_OUTPUT_DC_SECTOR_VOLUMES_HPP__
-#define __CLAS12_GEOMETRY_OUTPUT_DC_SECTOR_VOLUMES_HPP__
+#ifndef CLAS12_GEOMETRY_OUTPUT_DC_SECTOR_VOLUMES_HPP
+#define CLAS12_GEOMETRY_OUTPUT_DC_SECTOR_VOLUMES_HPP
 
 #include <iostream>
 using std::clog;
@@ -119,7 +119,7 @@ volmap_t dc_sector_volumes_map(const drift_chamber::Sector& sector)
         // x and y are reversed for gemc's coordinate system
         dz    = 0.5 * region.thickness();
         theta = - region.thtilt();
-        phi   = cons::half_pi<double>();
+        phi   = 0.5 * cons::pi<double>();
         dy1   = 0.5 * (guardwire1_endpoint.x() - guardwire0_endpoint.x())
                 / cos(region.thtilt());
         dx1   = guardwire0_endpoint.y();
@@ -275,7 +275,7 @@ if ((edge01.mid_point().y() - p0.y()) < 0.)
 
 dz    = hflyrthk - microgap;
 theta = - region.thtilt();
-phi   = cons::half_pi<double>();
+phi   = 0.5 * cons::pi<double>();
 dy1   = 0.5 * line_segment<double,3>(edge00.mid_point(), p0).length();
 dx1   = 0.5 * edge00.length();
 dx2   = 0.5 * edge01.length();
@@ -407,4 +407,4 @@ void dc_volumes_xml(xml_document& doc, const DriftChamber& dc)
 } // namespace clas12::geometry
 } // namespace clas12
 
-#endif // __CLAS12_GEOMETRY_OUTPUT_DC_SECTOR_VOLUMES_HPP__
+#endif // CLAS12_GEOMETRY_OUTPUT_DC_SECTOR_VOLUMES_HPP
