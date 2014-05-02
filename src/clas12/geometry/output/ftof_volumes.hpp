@@ -115,7 +115,7 @@ volmap_t ftof_volumes_map(const ForwardTOF& ftof)
             stringstream panel_rot;
             panel_rot << "ordered: zxy"
                       << " " << -90. - 60.*sector.index() << "*deg"
-                      << " " << -90. + panel.thtilt()*rad2deg << "*deg"
+                      << " " << -90. - panel.thtilt()*rad2deg << "*deg"
                       << " " << 0 << "*deg";
 
             stringstream panel_dim;

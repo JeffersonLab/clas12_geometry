@@ -1,5 +1,5 @@
-#ifndef __CLAS12_GEOMETRY_DRIFT_CHAMBER_HPP__
-#define __CLAS12_GEOMETRY_DRIFT_CHAMBER_HPP__
+#ifndef CLAS12_GEOMETRY_DRIFT_CHAMBER_HPP
+#define CLAS12_GEOMETRY_DRIFT_CHAMBER_HPP
 
 #include <cstddef>
 #include <memory>
@@ -76,7 +76,7 @@ const DCSector& DriftChamber::sector(const size_t& sec) const
     return *_sectors[sec];
 }
 
-} /* namespace clas12::geometry */
-} /* namespace clas12 */
+} // namespace clas12::geometry
+} // namespace clas12
 
-#endif /* __CLAS12_GEOMETRY_DRIFT_CHAMBER_HPP__ */
+#endif // CLAS12_GEOMETRY_DRIFT_CHAMBER_HPP

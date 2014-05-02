@@ -1,5 +1,5 @@
-#ifndef __CLAS12_GEOMETRY_DETAIL_UTILITIES_HPP__
-#define __CLAS12_GEOMETRY_DETAIL_UTILITIES_HPP__
+#ifndef CLAS12_GEOMETRY_DETAIL_UTILITIES_HPP
+#define CLAS12_GEOMETRY_DETAIL_UTILITIES_HPP
 
 #include <array>
 #include <cstdlib>
@@ -44,9 +44,9 @@ void print_container(const ContainerType& v)
     clog << endl;
 }
 
-} /* namespace clas12::geometry */
-} /* namespace clas12 */
+} // namespace clas12::geometry
+} // namespace clas12
 
 
-#endif /* __CLAS12_GEOMETRY_DETAIL_UTILITIES_HPP__ */
+#endif // CLAS12_GEOMETRY_DETAIL_UTILITIES_HPP
 

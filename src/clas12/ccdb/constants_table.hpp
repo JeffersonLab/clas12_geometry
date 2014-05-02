@@ -1,5 +1,5 @@
-#ifndef __CLAS12_CCDB_CONSTANTS_TABLE_HPP__
-#define __CLAS12_CCDB_CONSTANTS_TABLE_HPP__
+#ifndef CLAS12_CCDB_CONSTANTS_TABLE_HPP
+#define CLAS12_CCDB_CONSTANTS_TABLE_HPP
 
 #include <iostream>
 using std::clog;
@@ -292,4 +292,4 @@ class ConstantsTable
 } // namespace clas12::ccdb
 } // namespace clas12
 
-#endif // __CLAS12_CCDB_CONSTANTS_TABLE_HPP__
+#endif // CLAS12_CCDB_CONSTANTS_TABLE_HPP

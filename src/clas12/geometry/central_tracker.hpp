@@ -1,5 +1,5 @@
-#ifndef __CLAS12_GEOMETRY_CENTRAL_TRACKER_HPP__
-#define __CLAS12_GEOMETRY_CENTRAL_TRACKER_HPP__
+#ifndef CLAS12_GEOMETRY_CENTRAL_TRACKER_HPP
+#define CLAS12_GEOMETRY_CENTRAL_TRACKER_HPP
 
 #include <cstddef>
 #include <string>
@@ -72,7 +72,7 @@ const BarrelSVT& CentralTracker::bst() const
     //return _fst;
 //}
 
-} /* namespace clas12::geometry */
-} /* namespace clas12 */
+} // namespace clas12::geometry
+} // namespace clas12
 
-#endif /* __CLAS12_GEOMETRY_CENTRAL_TRACKER_HPP__ */
+#endif // CLAS12_GEOMETRY_CENTRAL_TRACKER_HPP

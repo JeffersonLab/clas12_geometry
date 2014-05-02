@@ -1,5 +1,5 @@
-#ifndef __CLAS12_GEOMETRY_CENTRAL_TRACKER_BARREL_SVT_REGION_HPP__
-#define __CLAS12_GEOMETRY_CENTRAL_TRACKER_BARREL_SVT_REGION_HPP__
+#ifndef CLAS12_GEOMETRY_CENTRAL_TRACKER_BARREL_SVT_REGION_HPP
+#define CLAS12_GEOMETRY_CENTRAL_TRACKER_BARREL_SVT_REGION_HPP
 
 #include <iostream>
 using std::clog;
@@ -158,10 +158,10 @@ const double& Region::phi() const
     return _phi;
 }
 
-} /* namespace clas12::geometry::central_tracker::barrel_svt */
-} /* namespace clas12::geometry::central_tracker */
-} /* namespace clas12::geometry */
-} /* namespace clas12 */
+} // namespace clas12::geometry::central_tracker::barrel_svt
+} // namespace clas12::geometry::central_tracker
+} // namespace clas12::geometry
+} // namespace clas12
 
-#endif /* __CLAS12_GEOMETRY_CENTRAL_TRACKER_BARREL_SVT_REGION_HPP__ */
+#endif // CLAS12_GEOMETRY_CENTRAL_TRACKER_BARREL_SVT_REGION_HPP
 

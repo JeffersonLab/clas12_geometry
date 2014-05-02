@@ -1,5 +1,5 @@
-#ifndef __CLAS12_GEOMETRY_GEOMETRY_SERVICE_HPP__
-#define __CLAS12_GEOMETRY_GEOMETRY_SERVICE_HPP__
+#ifndef CLAS12_GEOMETRY_GEOMETRY_SERVICE_HPP
+#define CLAS12_GEOMETRY_GEOMETRY_SERVICE_HPP
 
 #include <cstdint>
 #include <list>
@@ -51,4 +51,4 @@ class GeometryService : public CService
 } // namespace clas12::geometry
 } // namespace clas12
 
-#endif // __CLAS12_GEOMETRY_GEOMETRY_SERVICE_HPP__
+#endif // CLAS12_GEOMETRY_GEOMETRY_SERVICE_HPP

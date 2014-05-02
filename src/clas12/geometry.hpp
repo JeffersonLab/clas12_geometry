@@ -1,5 +1,5 @@
-#ifndef __CLAS12_GEOMETRY_HPP__
-#define __CLAS12_GEOMETRY_HPP__
+#ifndef CLAS12_GEOMETRY_HPP
+#define CLAS12_GEOMETRY_HPP
 
 /**
 
@@ -37,4 +37,4 @@ Here is a snippet of the above example:
 #include "geometry/drift_chamber.hpp"
 #include "geometry/forward_tof.hpp"
 
-#endif /* __CLAS12_GEOMETRY_HPP__ */
+#endif // CLAS12_GEOMETRY_HPP

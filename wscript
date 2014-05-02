@@ -62,7 +62,6 @@ def configure(ctx):
     if ctx.options.includes != None:
         ctx.env.INCLUDES = re.split('[:,]+', ctx.options.includes)
 
-
     ### MANDATORY DEPENDENCIES
     try:
         cxx11_code = '#include <array>\nint main() {}\n'

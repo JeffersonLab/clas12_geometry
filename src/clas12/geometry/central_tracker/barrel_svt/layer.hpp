@@ -1,5 +1,5 @@
-#ifndef __CLAS12_GEOMETRY_CENTRAL_TRACKER_BARREL_SVT_LAYER_HPP__
-#define __CLAS12_GEOMETRY_CENTRAL_TRACKER_BARREL_SVT_LAYER_HPP__
+#ifndef CLAS12_GEOMETRY_CENTRAL_TRACKER_BARREL_SVT_LAYER_HPP
+#define CLAS12_GEOMETRY_CENTRAL_TRACKER_BARREL_SVT_LAYER_HPP
 
 #include <iostream>
 using std::clog;
@@ -332,10 +332,10 @@ size_t Layer::strip_index(const int& s) const
     return s < 0 ? (this->nstrips()+s) : s;
 }
 
-} /* namespace clas12::geometry::central_tracker::barrel_svt */
-} /* namespace clas12::geometry::central_tracker */
-} /* namespace clas12::geometry */
-} /* namespace clas12 */
+} // namespace clas12::geometry::central_tracker::barrel_svt
+} // namespace clas12::geometry::central_tracker
+} // namespace clas12::geometry
+} // namespace clas12
 
-#endif /* __CLAS12_GEOMETRY_CENTRAL_TRACKER_BARREL_SVT_LAYER_HPP__ */
+#endif // CLAS12_GEOMETRY_CENTRAL_TRACKER_BARREL_SVT_LAYER_HPP
 

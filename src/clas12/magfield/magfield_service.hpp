@@ -1,5 +1,5 @@
-#ifndef __CLAS12_MAGFIELD_MAGFIELD_SERVICE_HPP__
-#define __CLAS12_MAGFIELD_MAGFIELD_SERVICE_HPP__
+#ifndef CLAS12_MAGFIELD_MAGFIELD_SERVICE_HPP
+#define CLAS12_MAGFIELD_MAGFIELD_SERVICE_HPP
 
 #include <string>
 #include <vector>
@@ -44,4 +44,4 @@ class MagFieldService : public CService
 } // namespace clas12::magfield
 } // namespace clas12
 
-#endif // __CLAS12_MAGFIELD_MAGFIELD_SERVICE_HPP__
+#endif // CLAS12_MAGFIELD_MAGFIELD_SERVICE_HPP

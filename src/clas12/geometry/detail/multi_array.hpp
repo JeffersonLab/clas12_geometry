@@ -1,5 +1,5 @@
-#ifndef __CLAS12_GEOMETRY_DETAIL_MULTI_ARRAY_HPP__
-#define __CLAS12_GEOMETRY_DETAIL_MULTI_ARRAY_HPP__
+#ifndef CLAS12_GEOMETRY_DETAIL_MULTI_ARRAY_HPP
+#define CLAS12_GEOMETRY_DETAIL_MULTI_ARRAY_HPP
 
 #include <array>
 
@@ -38,7 +38,7 @@ struct multi_array_t<T, A>
 template <typename T, size_t... A>
 using multi_array = typename multi_array_t<T, A...>::type;
 
-} /* namespace clas12::geometry */
-} /* namespace clas12 */
+} // namespace clas12::geometry
+} // namespace clas12
 
-#endif /* __CLAS12_GEOMETRY_DETAIL_MULTI_ARRAY_HPP__ */
+#endif // CLAS12_GEOMETRY_DETAIL_MULTI_ARRAY_HPP
