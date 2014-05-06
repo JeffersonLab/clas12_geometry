@@ -1,5 +1,5 @@
-#ifndef __CLAS12_CCDB_CONSTANTS_TABLE_HPP__
-#define __CLAS12_CCDB_CONSTANTS_TABLE_HPP__
+#ifndef CLAS12_CCDB_CONSTANTS_TABLE_HPP
+#define CLAS12_CCDB_CONSTANTS_TABLE_HPP
 
 #include <iostream>
 using std::clog;
@@ -10,7 +10,7 @@ using std::endl;
 #include <sstream>
 #include <stdexcept>
 
-#include "CCDB/Providers/MySQLDataProvider.h"
+#include "CCDB/Providers/DataProvider.h"
 
 namespace clas12
 {
@@ -40,6 +40,9 @@ class ConstantsTable
 
     /// the types of the columns in string form
     vector<string> column_types;
+
+    /// data provider object connecting to the database
+    DataProvider* dataprovider;
 
     /** \brief find the index of the column associated with the name
      *  colname.
@@ -71,7 +74,10 @@ class ConstantsTable
 
   public:
 
-    ConstantsTable() {}
+    ConstantsTable(ccdb::DataProvider* dp)
+    {
+        dataprovider = dp;
+    }
 
     /** \brief combines the user, host and such into the MySQL connection
      * string used by MySQLCalibration::Connect().
@@ -81,14 +87,14 @@ class ConstantsTable
      *
      * \return the MySQL connection string
      **/
-    string connection_string(
+    string mysql_connection_string(
         const string& user = "clas12reader",
+        const string& passwd = "",
         const string& host = "clasdb.jlab.org",
         const string& port = "3306",
-        const string& db   = "clas12",
-        const string& passwd = "" )
+        const string& db   = "clas12" )
     {
-        /// forms the string: "mysql://clas12reader@clasdb.jlab.org:3306/clas12"
+        // forms the string: "mysql://clas12reader@clasdb.jlab.org:3306/clas12"
         stringstream conn_ss;
         conn_ss << "mysql://" << user;
         if (passwd != "")
@@ -100,13 +106,55 @@ class ConstantsTable
         return conn_ss.str();
     }
 
-    string constant_set_string(
-        const string& variation
-        )
+    /** \brief creates an SQLite connection string
+     *
+     * \return the SQLite connection string
+     **/
+    string sqlite_connection_string(const string& filepath = "clas12_ccdb.sqlite")
     {
-        stringstream constset_ss;
-        constset_ss << "default";
-        return constset_ss.str();
+        // forms the string: "sqlite:///path/to/clas12_ccdb.sqlite"
+        stringstream conn_ss;
+        conn_ss << "sqlite://" << filepath;
+        return conn_ss.str();
+    }
+
+    /** \brief builds the string to identify the constant set in CCDB
+     *
+     **/
+    string constant_set_string(
+        const string& path,
+        int run = INT_MAX,
+        const string& variation = "default",
+        const string& timestamp = "" )
+    {
+        stringstream ss;
+
+        ss << path;
+
+        if (run != INT_MAX)
+        {
+            ss << ":" << run;
+        }
+        else if (variation != "default" || timestamp != "")
+        {
+            ss << ":";
+        }
+
+        if (variation != "default")
+        {
+            ss << ":" << timestamp;
+        }
+        else if (timestamp != "")
+        {
+            ss << ":";
+        }
+
+        if (timestamp != "")
+        {
+            ss << ":" << timestamp;
+        }
+
+        return ss.str();
     }
 
     /** \brief clears all data in this set.
@@ -119,36 +167,63 @@ class ConstantsTable
         column_types.clear();
     }
 
-    /** \brief connects to the MySQL (CCDB) database and obtains the
+    /** \brief connects to the database and obtains the
      * data, the column names, and their types.
      **/
     void load_constants(
-        const string& constsetid_str,
-        const string& conn_str = "" )
+        const string& path,
+        int run = INT_MAX,
+        const string& variation = "default",
+        const string& timestamp = "" )
     {
         this->clear();
 
-        string conn;
-        if (conn_str == "")
+        bool disconnect = false;
+        if (!dataprovider->IsConnected())
         {
-            /// get default connection string
-            conn = this->connection_string();
-        }
-        else
-        {
-            /// use this one if specified
-            conn = conn_str;
+            dataprovider->Connect();
+            disconnect = true;
         }
 
-        MySQLDataProvider calib;
-        calib.Connect(conn);
-
+        string constsetid_str = this->constant_set_string(path,run,variation,timestamp);
         Assignment* assignment = calib.GetAssignmentFull(100,constsetid_str);
-        if (!assignment) return;
+        if (!assignment) { return; }
 
         values = assignment->GetData();
         columns = assignment->GetTypeTable()->GetColumnNames();
         column_types = assignment->GetTypeTable()->GetColumnTypeStrings();
+
+        if (disconnect)
+        {
+            dataprovider->Disconnect();
+        }
+    }
+
+    /** \brief connects to the database and obtains the
+     * data, the column names, and their types.
+     **/
+    void load_constants(int assignment_id)
+    {
+        this->clear();
+
+        bool disconnect = false;
+        if (!dataprovider->IsConnected())
+        {
+            dataprovider->Connect();
+            disconnect = true;
+        }
+
+        Assignment* assignment = calib.GetAssignmentFull(assignment_id);
+        if (!assignment) { return; }
+
+        values = assignment->GetData();
+        columns = assignment->GetTypeTable()->GetColumnNames();
+        column_types = assignment->GetTypeTable()->GetColumnTypeStrings();
+
+        if (disconnect)
+        {
+            dataprovider->Disconnect();
+        }
     }
 
     /** \return number of rows in this data set.
@@ -292,4 +367,4 @@ class ConstantsTable
 } // namespace clas12::ccdb
 } // namespace clas12
 
-#endif // __CLAS12_CCDB_CONSTANTS_TABLE_HPP__
+#endif // CLAS12_CCDB_CONSTANTS_TABLE_HPP

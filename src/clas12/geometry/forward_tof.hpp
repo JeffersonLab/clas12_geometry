@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "CCDB/Providers/DataProvider.h"
+
 #include "forward_tof/sector.hpp"
 
 namespace clas12
@@ -33,9 +35,7 @@ class ForwardTOF
   public:
     ForwardTOF();
     ForwardTOF(const ForwardTOF& that);
-    ForwardTOF( const string& host,
-                const string& user,
-                const string& db,
+    ForwardTOF( ccdb::DataProvider* dataprovider,
                 const bool& quiet = false,
                 const bool& verbose = false );
     ForwardTOF& operator=(const ForwardTOF& that);
@@ -45,9 +45,7 @@ class ForwardTOF
     const FTOFSector& sector(const size_t& sec) const;
 
     // members in cpp file
-    void fetch_nominal_parameters( const string& host,
-                                   const string& user,
-                                   const string& db );
+    void fetch_nominal_parameters(ccdb::DataProvider* dataprovider);
 
   private:
     /// \brief the sectors of the FTOF

@@ -62,13 +62,11 @@ ForwardTOF& ForwardTOF::operator=(const ForwardTOF& that)
  *
  * This calls ForwardTOF::fetch_nominal_parameters(host,user,db)
  **/
-ForwardTOF::ForwardTOF( const string& host,
-                        const string& user,
-                        const string& db,
+ForwardTOF::ForwardTOF( ccdb::DataProvider* dataprovider,
                         const bool& quiet /*= false*/,
                         const bool& verbose /*= false*/ )
 {
-    fetch_nominal_parameters(host,user,db);
+    fetch_nominal_parameters(dataprovider);
 }
 
 /**
@@ -85,9 +83,7 @@ ForwardTOF::ForwardTOF( const string& host,
  * \param [in] user the database user name. typically: clasuser
  * \param [in] db the database name. typically: clas12
  **/
-void ForwardTOF::fetch_nominal_parameters( const string& host,
-                                           const string& user,
-                                           const string& db )
+void ForwardTOF::fetch_nominal_parameters(ccdb::DataProvider* dataprovider)
 {
     #ifdef DEBUG
     clog << "ForwardTOF::fetch_nominal_parameters()...\n";
@@ -105,14 +101,15 @@ void ForwardTOF::fetch_nominal_parameters( const string& host,
     //panel1b/paddles
     //panel2/panel
     //panel2/paddles
-    clas12::ccdb::ConstantsTable table;
-    clas12::ccdb::ConstantsTable panel1a, panel1b, panel2;
-    string conn_str = panel1a.connection_string(user,host,"3306",db);
+    clas12::ccdb::ConstantsTable table(dataprovider);
+    clas12::ccdb::ConstantsTable panel1a(dataprovider);
+    clas12::ccdb::ConstantsTable panel1b(dataprovider);
+    clas12::ccdb::ConstantsTable panel2(dataprovider);
 
     #ifdef DEBUG
     clog << "ftof...\n";
     #endif
-    table.load_constants("/geometry/ftof/ftof", conn_str);
+    table.load_constants("/geometry/ftof/ftof");
     size_t nsectors = table.elem<size_t>("nsectors"); // n
     size_t npanels  = table.elem<size_t>("npanels"); // n
 
@@ -124,9 +121,9 @@ void ForwardTOF::fetch_nominal_parameters( const string& host,
     #ifdef DEBUG
     clog << "panels...\n";
     #endif
-    panel1a.load_constants("/geometry/ftof/panel1a/panel", conn_str);
-    panel1b.load_constants("/geometry/ftof/panel1b/panel", conn_str);
-    panel2.load_constants("/geometry/ftof/panel2/panel", conn_str);
+    panel1a.load_constants("/geometry/ftof/panel1a/panel");
+    panel1b.load_constants("/geometry/ftof/panel1b/panel");
+    panel2.load_constants("/geometry/ftof/panel2/panel");
 
 
     vector<double> paddle_width = {
@@ -169,9 +166,9 @@ void ForwardTOF::fetch_nominal_parameters( const string& host,
     #ifdef DEBUG
     clog << "paddles...\n";
     #endif
-    panel1a.load_constants("/geometry/ftof/panel1a/paddles", conn_str);
-    panel1b.load_constants("/geometry/ftof/panel1b/paddles", conn_str);
-    panel2.load_constants("/geometry/ftof/panel2/paddles", conn_str);
+    panel1a.load_constants("/geometry/ftof/panel1a/paddles");
+    panel1b.load_constants("/geometry/ftof/panel1b/paddles");
+    panel2.load_constants("/geometry/ftof/panel2/paddles");
 
 
     vector<vector<double>> paddle_meas_lengths = {

@@ -1,10 +1,12 @@
-#ifndef __CLAS12_GEOMETRY_DRIFT_CHAMBER_HPP__
-#define __CLAS12_GEOMETRY_DRIFT_CHAMBER_HPP__
+#ifndef CLAS12_GEOMETRY_DRIFT_CHAMBER_HPP
+#define CLAS12_GEOMETRY_DRIFT_CHAMBER_HPP
 
 #include <cstddef>
 #include <memory>
 #include <string>
 #include <vector>
+
+#include "CCDB/Providers/DataProvider.h"
 
 #include "drift_chamber/sector.hpp"
 
@@ -33,9 +35,7 @@ class DriftChamber
   public:
     DriftChamber();
     DriftChamber(const DriftChamber& that);
-    DriftChamber( const string& host,
-                  const string& user,
-                  const string& db,
+    DriftChamber( ccdb::DataProvider* dataprovider,
                   const bool& quiet = false,
                   const bool& verbose = false );
     DriftChamber& operator=(const DriftChamber& that);
@@ -45,9 +45,7 @@ class DriftChamber
     const DCSector& sector(const size_t& sec) const;
 
     // members in cpp file
-    void fetch_nominal_parameters( const string& host,
-                                   const string& user,
-                                   const string& db );
+    void fetch_nominal_parameters(ccdb::DataProvider* dataprovider);
 
   private:
     /// \brief the sectors of the DC
@@ -76,7 +74,7 @@ const DCSector& DriftChamber::sector(const size_t& sec) const
     return *_sectors[sec];
 }
 
-} /* namespace clas12::geometry */
-} /* namespace clas12 */
+} // namespace clas12::geometry
+} // namespace clas12
 
-#endif /* __CLAS12_GEOMETRY_DRIFT_CHAMBER_HPP__ */
+#endif // CLAS12_GEOMETRY_DRIFT_CHAMBER_HPP

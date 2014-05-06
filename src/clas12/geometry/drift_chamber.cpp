@@ -63,15 +63,13 @@ DriftChamber& DriftChamber::operator=(const DriftChamber& that)
 /**
  * \brief constructor which fetches the nominal geometry from the database
  *
- * This calls DriftChamber::fetch_nominal_parameters(host,user,db)
+ * This calls DriftChamber::fetch_nominal_parameters(dataprovider)
  **/
-DriftChamber::DriftChamber( const string& host,
-                            const string& user,
-                            const string& db,
+DriftChamber::DriftChamber( ccdb::DataProvider* dataprovider,
                             const bool& quiet /*= false*/,
                             const bool& verbose /*= false*/ )
 {
-    fetch_nominal_parameters(host,user,db);
+    fetch_nominal_parameters(dataprovider);
 }
 
 /**
@@ -83,14 +81,9 @@ DriftChamber::DriftChamber( const string& host,
  * it is expected that additional alignment paramters will be
  * obtained from the database in a later method-call.
  *
- * \param [in] host the calibration constants host name. typically:
- * clasdb.jlab.org
- * \param [in] user the database user name. typically: clasuser
- * \param [in] db the database name. typically: clas12
+ * \param [in] dataprovider the ccdb::DataProvider object
  **/
-void DriftChamber::fetch_nominal_parameters( const string& host,
-                                             const string& user,
-                                             const string& db )
+void DriftChamber::fetch_nominal_parameters(ccdb::DataProvider* dataprovider)
 {
     #ifdef DEBUG
     clog << "DriftChamber::fetch_nominal_parameters()...\n";
@@ -102,13 +95,12 @@ void DriftChamber::fetch_nominal_parameters( const string& host,
     // the nominal geometry parameters for the Drift Chamber.
     // These numbers come from four tables: dc, region, superlayer,
     // and layer.
-    clas12::ccdb::ConstantsTable table;
-    string conn_str = table.connection_string(user,host,"3306",db);
+    clas12::ccdb::ConstantsTable table(dataprovider);
 
     #ifdef DEBUG
     clog << "dc...\n";
     #endif
-    table.load_constants("/geometry/dc/dc", conn_str);
+    table.load_constants("/geometry/dc/dc");
     size_t nsectors = table.elem<size_t>("nsectors"); // n
     size_t nregions = table.elem<size_t>("nregions"); // n
 
@@ -120,7 +112,7 @@ void DriftChamber::fetch_nominal_parameters( const string& host,
     #ifdef DEBUG
     clog << "region...\n";
     #endif
-    table.load_constants("/geometry/dc/region", conn_str);
+    table.load_constants("/geometry/dc/region");
     vector<size_t> nsuperlayers = table.col<size_t>("nsuperlayers"); // n
     vector<double> dist2tgt = table.col<double>("dist2tgt"); // cm
     vector<double> frontgap = table.col<double>("frontgap"); // cm
@@ -133,7 +125,7 @@ void DriftChamber::fetch_nominal_parameters( const string& host,
     #ifdef DEBUG
     clog << "superlayer...";
     #endif
-    table.load_constants("/geometry/dc/superlayer", conn_str);
+    table.load_constants("/geometry/dc/superlayer");
     vector<size_t> nsenselayers  = table.col<size_t>("nsenselayers"); // n
     vector<size_t> nguardlayers  = table.col<size_t>("nguardlayers"); // n
     vector<size_t> nfieldlayers  = table.col<size_t>("nfieldlayers"); // n
@@ -145,7 +137,7 @@ void DriftChamber::fetch_nominal_parameters( const string& host,
     #ifdef DEBUG
     clog << "layer...";
     #endif
-    table.load_constants("/geometry/dc/layer", conn_str);
+    table.load_constants("/geometry/dc/layer");
     size_t nsensewires = table.elem<size_t>("nsensewires"); // n
     size_t nguardwires = table.elem<size_t>("nguardwires"); // n
 
