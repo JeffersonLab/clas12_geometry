@@ -6,22 +6,189 @@ using std::clog;
 using std::endl;
 
 #include <algorithm>
+#include <ctime>
 #include <string>
 #include <sstream>
 #include <stdexcept>
 
-#include "CCDB/Providers/DataProvider.h"
+#include <boost/filesystem.hpp>
+
+#include "CCDB/CalibrationGenerator.h"
+#include "CCDB/Calibration.h"
 
 namespace clas12
 {
 namespace ccdb
 {
 
-using namespace ::ccdb;
+namespace fs = boost::filesystem;
 
 using std::string;
 using std::stringstream;
 using std::vector;
+using std::time_t;
+using std::time;
+
+typedef unsigned short int PortNumber;
+
+class ConnectionInfo
+{
+  public:
+    virtual string connection_string();
+}
+
+/** \brief combines the user, host and such into the MySQL connection
+ * string used by MySQLCalibration::Connect().
+ *
+ * forms the string:
+ *     "mysql://clas12reader@clasdb.jlab.org:3306/clas12"
+ * by default.
+ *
+ * \return the MySQL connection string
+ **/
+class ConnectionInfoMySQL : public ConnectionInfo
+{
+  public:
+    string user;
+    string password;
+    string host;
+    PortNumber port;
+    string database;
+
+    ConnectionInfoMySQL()
+    : user("clas12reader")
+    , password("")
+    , host("clasdb.jlab.org")
+    , port(3306)
+    , database("clas12")
+    {}
+
+    string connection_string()
+    {
+        stringstream ss;
+        ss << "mysql://";
+        ss << user;
+        if (password != "")
+        {
+            ss << ":" << password;
+        }
+        ss << "@" << host;
+        ss << ":" << port_number;
+        ss << "/" << database;
+        return ss.str();
+    }
+};
+
+/** \brief creates an SQLite connection string to be used by
+ * SQLiteCalibration::Connect().
+ *
+ * forms the string:
+ *     "sqlite:///clas12_ccdb.sqlite"
+ * by default.
+ *
+ * \return the SQLite connection string
+ **/
+class ConnectionInfoSQLite : public ConnectionInfo
+{
+  public:
+    string filepath;
+
+    ConnectionInfoMySQL()
+    : filepath("clas12_ccdb.sqlite")
+    {}
+
+    string connection_string()
+    {
+        if (fs::exists(filepath))
+        {
+            if (fs::is_regular_file(filepath))
+            {
+                string ret = "sqlite:///" + filepath;
+            }
+            else
+            {
+                throw range_error("ERROR: file '"+filepath+"' is not a regular file.");
+            }
+        }
+        else
+        {
+            throw range_error("ERROR: file '"+filepath+"' could not be found.");
+        }
+        return ret;
+    }
+};
+
+struct ConstantSetInfo
+{
+    string table_path;
+    int run;
+    string variation;
+    time_t timestamp;
+
+    ConstantSetInfo()
+    : table_path("")
+    , run(INT_MAX)
+    , variation("default")
+    , timestamp(0)
+    {}
+
+    string constant_set_string()
+    {
+        stringstream ss;
+
+        ss << table_path;
+
+        if (run != INT_MAX)
+        {
+            ss << ":" << run;
+        }
+        else if (variation != "default" || timestamp != 0)
+        {
+            ss << ":";
+        }
+
+        if (variation != "default")
+        {
+            ss << ":" << timestamp;
+        }
+        else if (timestamp != 0)
+        {
+            ss << ":";
+        }
+
+        if (timestamp != 0)
+        {
+            ss << ":" << timestamp;
+        }
+
+        return ss.str();
+    }
+};
+
+typedef vector<vector<string>> TableData;
+typedef vector<string> ColumnNames;
+typedef vector<string> ColumnTypes;
+
+ConstantsTable generate_constants_table(
+    const ConnectionInfo* const conn,
+    const ConstantSetInfo& constset)
+{
+    string connstr = conn->connection_string();
+    string constsetstr = constset.constant_set_string();
+
+    Calibration* calib = CalibrationGenerator::MakeCalibration(
+        connstr, INT_MAX, "default", time() );
+    calib->Connect();
+
+    Assignment* assignment = calib->GetAssignment(constsetstr, true);
+    TableData values = assignment->GetData();
+    ColumnNames columns = assignment->GetTypeTable()->GetColumnNames();
+    ColumnTypes column_types = assignment->GetTypeTable()->GetColumnTypeStrings();
+
+    calib->Disconnect();
+
+    return ConstantsTable table(values, columns, column_types);
+}
 
 /** \brief ConstantsTable is a conatiner class for any constants
  *  set. It will connect to the database when load_constants()
@@ -32,18 +199,6 @@ using std::vector;
 class ConstantsTable
 {
   private:
-    /// the table as filled by MySQLCalibration::GetCalib()
-    vector<vector<string> > values;
-
-    /// the names of the columns
-    vector<string> columns;
-
-    /// the types of the columns in string form
-    vector<string> column_types;
-
-    /// data provider object connecting to the database
-    DataProvider* dataprovider;
-
     /** \brief find the index of the column associated with the name
      *  colname.
      *
@@ -73,89 +228,17 @@ class ConstantsTable
     }
 
   public:
+    /// the table as filled by MySQLCalibration::GetCalib()
+    TableData values;
 
-    ConstantsTable(ccdb::DataProvider* dp)
-    {
-        dataprovider = dp;
-    }
+    /// the names of the columns
+    ColumnNames columns;
 
-    /** \brief combines the user, host and such into the MySQL connection
-     * string used by MySQLCalibration::Connect().
-     *
-     * forms the string: "mysql://clas12reader@clasdb.jlab.org:3306/clas12"
-     * by default.
-     *
-     * \return the MySQL connection string
-     **/
-    string mysql_connection_string(
-        const string& user = "clas12reader",
-        const string& passwd = "",
-        const string& host = "clasdb.jlab.org",
-        const string& port = "3306",
-        const string& db   = "clas12" )
-    {
-        // forms the string: "mysql://clas12reader@clasdb.jlab.org:3306/clas12"
-        stringstream conn_ss;
-        conn_ss << "mysql://" << user;
-        if (passwd != "")
-        {
-            conn_ss << ":" << passwd;
-        }
-        conn_ss << "@" << host << ":" << port
-                << "/" << db;
-        return conn_ss.str();
-    }
+    /// the types of the columns in string form
+    ColumnTypes column_types;
 
-    /** \brief creates an SQLite connection string
-     *
-     * \return the SQLite connection string
-     **/
-    string sqlite_connection_string(const string& filepath = "clas12_ccdb.sqlite")
-    {
-        // forms the string: "sqlite:///path/to/clas12_ccdb.sqlite"
-        stringstream conn_ss;
-        conn_ss << "sqlite://" << filepath;
-        return conn_ss.str();
-    }
-
-    /** \brief builds the string to identify the constant set in CCDB
-     *
-     **/
-    string constant_set_string(
-        const string& path,
-        int run = INT_MAX,
-        const string& variation = "default",
-        const string& timestamp = "" )
-    {
-        stringstream ss;
-
-        ss << path;
-
-        if (run != INT_MAX)
-        {
-            ss << ":" << run;
-        }
-        else if (variation != "default" || timestamp != "")
-        {
-            ss << ":";
-        }
-
-        if (variation != "default")
-        {
-            ss << ":" << timestamp;
-        }
-        else if (timestamp != "")
-        {
-            ss << ":";
-        }
-
-        if (timestamp != "")
-        {
-            ss << ":" << timestamp;
-        }
-
-        return ss.str();
-    }
+    ConstantsTable()
+    {}
 
     /** \brief clears all data in this set.
      *
@@ -165,65 +248,6 @@ class ConstantsTable
         values.clear();
         columns.clear();
         column_types.clear();
-    }
-
-    /** \brief connects to the database and obtains the
-     * data, the column names, and their types.
-     **/
-    void load_constants(
-        const string& path,
-        int run = INT_MAX,
-        const string& variation = "default",
-        const string& timestamp = "" )
-    {
-        this->clear();
-
-        bool disconnect = false;
-        if (!dataprovider->IsConnected())
-        {
-            dataprovider->Connect();
-            disconnect = true;
-        }
-
-        string constsetid_str = this->constant_set_string(path,run,variation,timestamp);
-        Assignment* assignment = calib.GetAssignmentFull(100,constsetid_str);
-        if (!assignment) { return; }
-
-        values = assignment->GetData();
-        columns = assignment->GetTypeTable()->GetColumnNames();
-        column_types = assignment->GetTypeTable()->GetColumnTypeStrings();
-
-        if (disconnect)
-        {
-            dataprovider->Disconnect();
-        }
-    }
-
-    /** \brief connects to the database and obtains the
-     * data, the column names, and their types.
-     **/
-    void load_constants(int assignment_id)
-    {
-        this->clear();
-
-        bool disconnect = false;
-        if (!dataprovider->IsConnected())
-        {
-            dataprovider->Connect();
-            disconnect = true;
-        }
-
-        Assignment* assignment = calib.GetAssignmentFull(assignment_id);
-        if (!assignment) { return; }
-
-        values = assignment->GetData();
-        columns = assignment->GetTypeTable()->GetColumnNames();
-        column_types = assignment->GetTypeTable()->GetColumnTypeStrings();
-
-        if (disconnect)
-        {
-            dataprovider->Disconnect();
-        }
     }
 
     /** \return number of rows in this data set.
