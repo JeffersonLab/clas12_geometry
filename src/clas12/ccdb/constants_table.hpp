@@ -29,13 +29,16 @@ using std::vector;
 using std::time_t;
 using std::time;
 
-typedef unsigned short int PortNumber;
+using ::ccdb::Calibration;
+using ::ccdb::CalibrationGenerator;
+using ::ccdb::Assignment;
 
-class ConnectionInfo
-{
-  public:
-    virtual string connection_string();
-}
+typedef unsigned short int PortNumber;
+typedef int RunNumber;
+typedef int AssignmentID;
+typedef vector<vector<string>> TableData;
+typedef vector<string> ColumnNames;
+typedef vector<string> ColumnTypes;
 
 /** \brief combines the user, host and such into the MySQL connection
  * string used by MySQLCalibration::Connect().
@@ -46,7 +49,7 @@ class ConnectionInfo
  *
  * \return the MySQL connection string
  **/
-class ConnectionInfoMySQL : public ConnectionInfo
+class ConnectionInfoMySQL
 {
   public:
     string user;
@@ -63,7 +66,7 @@ class ConnectionInfoMySQL : public ConnectionInfo
     , database("clas12")
     {}
 
-    string connection_string()
+    string connection_string() const
     {
         stringstream ss;
         ss << "mysql://";
@@ -73,7 +76,7 @@ class ConnectionInfoMySQL : public ConnectionInfo
             ss << ":" << password;
         }
         ss << "@" << host;
-        ss << ":" << port_number;
+        ss << ":" << port;
         ss << "/" << database;
         return ss.str();
     }
@@ -88,22 +91,23 @@ class ConnectionInfoMySQL : public ConnectionInfo
  *
  * \return the SQLite connection string
  **/
-class ConnectionInfoSQLite : public ConnectionInfo
+class ConnectionInfoSQLite
 {
   public:
     string filepath;
 
-    ConnectionInfoMySQL()
-    : filepath("clas12_ccdb.sqlite")
+    ConnectionInfoSQLite(string fp = "clas12_ccdb.sqlite")
+    : filepath(fp)
     {}
 
-    string connection_string()
+    string connection_string() const
     {
+        string ret;
         if (fs::exists(filepath))
         {
             if (fs::is_regular_file(filepath))
             {
-                string ret = "sqlite:///" + filepath;
+                ret = "sqlite:///" + filepath;
             }
             else
             {
@@ -118,21 +122,22 @@ class ConnectionInfoSQLite : public ConnectionInfo
     }
 };
 
+
 struct ConstantSetInfo
 {
     string table_path;
-    int run;
+    RunNumber run;
     string variation;
     time_t timestamp;
 
-    ConstantSetInfo()
-    : table_path("")
-    , run(INT_MAX)
-    , variation("default")
-    , timestamp(0)
+    ConstantSetInfo(string tp="", int r=INT_MAX, string v="default", time_t ts=0)
+    : table_path(tp)
+    , run(r)
+    , variation(v)
+    , timestamp(ts)
     {}
 
-    string constant_set_string()
+    string constant_set_string() const
     {
         stringstream ss;
 
@@ -165,29 +170,39 @@ struct ConstantSetInfo
     }
 };
 
-typedef vector<vector<string>> TableData;
-typedef vector<string> ColumnNames;
-typedef vector<string> ColumnTypes;
+template <class ConnectionInfoType>
+unique_ptr<Calibration> get_calibration(const ConnectionInfoType& conn)
+{
+    string connstr = conn.connection_string();
+    CalibrationGenerator calibgen;
+    return unique_ptr<Calibration>(calibgen.MakeCalibration(
+        connstr, INT_MAX, "default", time(nullptr) ) );
+}
 
-ConstantsTable generate_constants_table(
-    const ConnectionInfo* const conn,
+
+template<class ConnectionInfoType>
+AssignmentID get_assignment_id(
+    Calibration* const calib,
     const ConstantSetInfo& constset)
 {
-    string connstr = conn->connection_string();
     string constsetstr = constset.constant_set_string();
 
-    Calibration* calib = CalibrationGenerator::MakeCalibration(
-        connstr, INT_MAX, "default", time() );
-    calib->Connect();
+    bool disconnect = false;
+    if (!calib->IsConnected())
+    {
+        disconnect = true;
+        calib->Connect(calib->GetConnectionString());
+    }
 
-    Assignment* assignment = calib->GetAssignment(constsetstr, true);
-    TableData values = assignment->GetData();
-    ColumnNames columns = assignment->GetTypeTable()->GetColumnNames();
-    ColumnTypes column_types = assignment->GetTypeTable()->GetColumnTypeStrings();
+    unique_ptr<Assignment> assignment(calib->GetAssignment(constsetstr, true));
+    AssignmentID id = assignment->GetId();
 
-    calib->Disconnect();
+    if (disconnect)
+    {
+        calib->Disconnect();
+    }
 
-    return ConstantsTable table(values, columns, column_types);
+    return id;
 }
 
 /** \brief ConstantsTable is a conatiner class for any constants
@@ -199,6 +214,15 @@ ConstantsTable generate_constants_table(
 class ConstantsTable
 {
   private:
+    /// the table as filled by MySQLCalibration::GetCalib()
+    TableData values;
+
+    /// the names of the columns
+    ColumnNames columns;
+
+    /// the types of the columns in string form
+    ColumnTypes column_types;
+
     /** \brief find the index of the column associated with the name
      *  colname.
      *
@@ -228,27 +252,34 @@ class ConstantsTable
     }
 
   public:
-    /// the table as filled by MySQLCalibration::GetCalib()
-    TableData values;
-
-    /// the names of the columns
-    ColumnNames columns;
-
-    /// the types of the columns in string form
-    ColumnTypes column_types;
-
-    ConstantsTable()
-    {}
-
-    /** \brief clears all data in this set.
-     *
-     **/
-    void clear()
+    ConstantsTable(
+        Calibration* const calib,
+        const ConstantSetInfo& constset)
     {
-        values.clear();
-        columns.clear();
-        column_types.clear();
+        bool disconnect = false;
+        if (!calib->IsConnected())
+        {
+            disconnect = true;
+            calib->Connect(calib->GetConnectionString());
+        }
+
+        string constsetstr = constset.constant_set_string();
+        unique_ptr<Assignment> assignment(calib->GetAssignment(constsetstr, true));
+        values = assignment->GetData();
+        columns = assignment->GetTypeTable()->GetColumnNames();
+        column_types = assignment->GetTypeTable()->GetColumnTypeStrings();
+
+        if (disconnect)
+        {
+            calib->Disconnect();
+        }
     }
+
+    ConstantsTable(const TableData& v, const ColumnNames& c, const ColumnTypes& ct)
+    : values(v)
+    , columns(c)
+    , column_types(ct)
+    {}
 
     /** \return number of rows in this data set.
      *
@@ -387,6 +418,8 @@ class ConstantsTable
     }
 
 };
+
+
 
 } // namespace clas12::ccdb
 } // namespace clas12

@@ -3,7 +3,7 @@
 
 top     = '.'
 out     = 'build'
-VERSION = '0.5.0'
+VERSION = '0.6.0'
 APPNAME = 'clas12_geometry'
 
 def options(ctx):
@@ -21,7 +21,7 @@ def options(ctx):
 
     cfg_opts.add_option('--includes', dest='includes',
         default = None,
-        help = 'list of include paths applied to all targets. default: %default')
+        help = 'list of include paths applied to all targets, separated by colons (:) or commas (,). default: %default')
 
     if 'win32' in sys.platform:
         ldlibpathenv = 'PATH'
@@ -33,7 +33,7 @@ def options(ctx):
     default_libpath = os.environ.get(ldlibpathenv,None)
     cfg_opts.add_option('--libpath', dest='libpath',
         default = default_libpath,
-        help = 'list of include paths applied to all targets. default: %default')
+        help = 'list of include paths applied to all targets, separated by colons (:) or commas (,). default: %default')
 
     ### BUILD options
     bld_opts = ctx.exec_dict['opt'].get_option_group('build and install options')

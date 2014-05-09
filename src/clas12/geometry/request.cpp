@@ -5,6 +5,7 @@ using std::endl;
 #include "request.hpp"
 
 #include <iostream>
+#include <ctime>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -12,12 +13,15 @@ using std::endl;
 
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/regex.hpp>
 
 #include "pugixml.hpp"
 
 #include "clas12/geometry.hpp"
 #include "clas12/geometry/coordsys.hpp"
 #include "clas12/geometry/output.hpp"
+
+#include "clas12/ccdb/timestamp_parse.hpp"
 
 namespace clas12
 {
@@ -30,15 +34,24 @@ using std::clog;
 using std::endl;
 
 using std::stringstream;
+using std::ctime;
 
 using std::runtime_error;
 
+using boost::regex;
 using boost::split;
 using boost::is_any_of;
 using boost::lexical_cast;
 using boost::to_lower_copy;
 
 using pugi::xml_document;
+
+using ccdb::RunNumber;
+using ccdb::AssignmentID;
+using ccdb::PortNumber;
+using ccdb::ConnectionInfoMySQL;
+using ccdb::ConnectionInfoSQLite;
+using ccdb::ConstantSetInfo;
 
 const string Request::desc =
 R"(Returns the expanded geometry parameters as an XML string.
@@ -48,6 +61,16 @@ listed below.
 Note that volumes are always in CLAS coordinates and in cm, and
 therefore the units and coordsys arguments are ignored for
 requests like dc/volumes
+
+The run number, variation and timestamp default to the standard
+CCDB defaults: i.e. the last run number, "default" variation,
+and current time.
+
+The sqlite and mysql options are mutually exclusive and not
+all the mysql options need to be used - only those you wish
+to change. The sqlite option is not set by default (mysql is
+used) and the mysql-password is blank as the default user,
+clas12reader, does not have an associated password.
 
 Input options:
     units:    (m|cm|mm)         [default: cm]
@@ -59,6 +82,19 @@ Input options:
               ftof/panels_parms
               ftof/volumes
 
+    run:      <int>             [default: <blank>]
+    variation <string>          [default: default]
+    timestamp <string>          [default: <blank>]
+
+    sqlite:
+              /path/to/file     [default: <not set>]
+
+    mysql-host: hostname        [default: clasdb.jlab.org]
+    mysql-user: username        [default: clas12reader]
+    mysql-password: password    [default: <blank>]
+    mysql-database: database    [default: clas12]
+    mysql-port: portnumber      [default: 3306]
+
 Output type:
     XML string
 )";
@@ -68,6 +104,12 @@ Request::Request(const map<string,string>& req)
     // defaults
     units = "cm";
     coords = "clas";
+
+    bool mysql_info = false;
+    bool sqlite_info = false;
+
+    ConnectionInfoMySQL conninfo_mysql;
+    ConnectionInfoSQLite conninfo_sqlite;
 
     map<string,string> reqs = this->to_lower(req);
 
@@ -94,6 +136,56 @@ Request::Request(const map<string,string>& req)
                 request[item[0]].push_back(item[1]);
             }
         }
+        else if (r.first == "run")
+        {
+            csinfo.run = lexical_cast<RunNumber>(r.second);
+        }
+        else if (r.first == "variation")
+        {
+            csinfo.variation = r.second;
+        }
+        else if (r.first == "timestamp")
+        {
+            csinfo.timestamp = timestamp_parse(r.second);
+        }
+        else if (r.first == "sqlite")
+        {
+            sqlite_info = true;
+            conninfo_sqlite.filepath = r.second;
+        }
+        else if (r.first == "mysql-user")
+        {
+            mysql_info = true;
+            conninfo_mysql.user = r.second;
+        }
+        else if (r.first == "mysql-password")
+        {
+            mysql_info = true;
+            conninfo_mysql.password = r.second;
+        }
+        else if (r.first == "mysql-host")
+        {
+            mysql_info = true;
+            conninfo_mysql.host = r.second;
+        }
+        else if (r.first == "mysql-port")
+        {
+            mysql_info = true;
+            conninfo_mysql.port = lexical_cast<PortNumber>(r.second);
+        }
+    }
+
+    if (sqlite_info && mysql_info)
+    {
+        throw logic_error("mysql and sqlite options are mutually exclusive.");
+    }
+    else if (sqlite_info)
+    {
+        this->calib = get_calibration(conninfo_sqlite);
+    }
+    else // MySQL
+    {
+        this->calib = get_calibration(conninfo_mysql);
     }
 }
 
@@ -119,10 +211,6 @@ string Request::generate_xml()
             throw runtime_error("request is empty.");
         }
 
-        static const string ccdb_host = "clasdb.jlab.org";
-        static const string ccdb_user = "clas12reader";
-        static const string ccdb_db = "clas12";
-
         xml_document doc;
 
         for (const auto& req : request)
@@ -131,7 +219,7 @@ string Request::generate_xml()
 
             if (sys == "dc")
             {
-                DriftChamber dc(ccdb_host, ccdb_user, ccdb_db);
+                DriftChamber dc(calib, csinfo);
 
                 for (const auto& item : req.second)
                 {
@@ -159,7 +247,7 @@ string Request::generate_xml()
             }
             else if (sys == "ftof")
             {
-                ForwardTOF ftof(ccdb_host, ccdb_user, ccdb_db);
+                ForwardTOF ftof(calib, csinfo);
 
                 for (const auto& item : req.second)
                 {
@@ -220,10 +308,6 @@ volmap_t Request::generate_volmap()
             throw runtime_error("request is empty.");
         }
 
-        static const string ccdb_host = "clasdb.jlab.org";
-        static const string ccdb_user = "clas12reader";
-        static const string ccdb_db = "clas12";
-
         volmap_t vmap;
 
         for (const auto& req : request)
@@ -232,7 +316,7 @@ volmap_t Request::generate_volmap()
 
             if (sys == "dc")
             {
-                DriftChamber dc(ccdb_host, ccdb_user, ccdb_db);
+                DriftChamber dc(calib, csinfo);
 
                 for (const auto& item : req.second)
                 {
@@ -252,7 +336,7 @@ volmap_t Request::generate_volmap()
             else if (sys == "ftof")
             {
                 cout << "fetching FTOF geometry...\n";
-                ForwardTOF ftof(ccdb_host, ccdb_user, ccdb_db);
+                ForwardTOF ftof(calib, csinfo);
                 cout << "done.\n";
 
                 for (const auto& item : req.second)
@@ -296,24 +380,37 @@ volmap_t Request::generate_volmap()
     }
 }
 
+
 string Request::info()
 {
-    string msg = "Request:\n";
+    stringstream ss;
+    ss << "Request:\n";
 
-    msg += "  coords: " + coords + "\n";
-    msg += "  units:  " + units + "\n";
+    ss << "  coords: " << coords << "\n";
+    ss << "  units:  " << units << "\n";
 
     for (auto i : request)
     {
-        msg += "  system: " + i.first + "\n";
+        ss << "  system: " << i.first << "\n";
         for (auto j : i.second)
         {
-            msg += "    " + j + "\n";
+            ss << "    " << j << "\n";
         }
     }
 
-    return msg;
+    ss << "  run: " << csinfo.run << "\n";
+    ss << "  variation: " << csinfo.variation << "\n";
+    ss << "  timestamp: " << ctime(csinfo.timestamp) << "\n";
+
+    return ss.str();
 }
+
+
+AssignmentID Request::ccdb_assigment_id()
+{
+    return ccdb::get_assignment_id(calib, csinfo);
+}
+
 
 } // namespace clas12::geometry
 } // namespace clas12

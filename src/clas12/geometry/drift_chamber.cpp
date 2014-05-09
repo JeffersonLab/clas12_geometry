@@ -65,11 +65,12 @@ DriftChamber& DriftChamber::operator=(const DriftChamber& that)
  *
  * This calls DriftChamber::fetch_nominal_parameters(dataprovider)
  **/
-DriftChamber::DriftChamber( ccdb::DataProvider* dataprovider,
+DriftChamber::DriftChamber( Calibration* calib,
+                            const ConstantSetInfo& csinfo,
                             const bool& quiet /*= false*/,
                             const bool& verbose /*= false*/ )
 {
-    fetch_nominal_parameters(dataprovider);
+    fetch_nominal_parameters(calib, csinfo);
 }
 
 /**
@@ -83,7 +84,9 @@ DriftChamber::DriftChamber( ccdb::DataProvider* dataprovider,
  *
  * \param [in] dataprovider the ccdb::DataProvider object
  **/
-void DriftChamber::fetch_nominal_parameters(ccdb::DataProvider* dataprovider)
+void DriftChamber::fetch_nominal_parameters(
+        Calibration* calib,
+        const ConstantSetInfo& csinfo )
 {
     #ifdef DEBUG
     clog << "DriftChamber::fetch_nominal_parameters()...\n";
@@ -95,7 +98,7 @@ void DriftChamber::fetch_nominal_parameters(ccdb::DataProvider* dataprovider)
     // the nominal geometry parameters for the Drift Chamber.
     // These numbers come from four tables: dc, region, superlayer,
     // and layer.
-    clas12::ccdb::ConstantsTable table(dataprovider);
+    clas12::ccdb::ConstantsTable table(calib, csinfo);
 
     #ifdef DEBUG
     clog << "dc...\n";
