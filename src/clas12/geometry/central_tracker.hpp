@@ -1,9 +1,11 @@
-#ifndef __CLAS12_GEOMETRY_CENTRAL_TRACKER_HPP__
-#define __CLAS12_GEOMETRY_CENTRAL_TRACKER_HPP__
+#ifndef CLAS12_GEOMETRY_CENTRAL_TRACKER_HPP
+#define CLAS12_GEOMETRY_CENTRAL_TRACKER_HPP
 
 #include <cstddef>
 #include <string>
 #include <vector>
+
+#include "CCDB/Calibration.h"
 
 #include "central_tracker/barrel_svt.hpp"
 //#include "central_tracker/foward_svt.hpp"
@@ -19,6 +21,8 @@ using std::vector;
 using central_tracker::BarrelSVT;
 //using central_tracker::ForwardSVT;
 
+using ::ccdb::Calibration;
+
 /**
  * \brief The silicone vertex tracker geometry class for CLAS12
  *
@@ -30,9 +34,7 @@ class CentralTracker
   public:
     CentralTracker();
     CentralTracker(const CentralTracker& that);
-    CentralTracker( const string& host,
-                     const string& user,
-                     const string& db );
+    CentralTracker(Calibration* calib);
     CentralTracker& operator=(const CentralTracker& that);
 
     // inline members
@@ -40,9 +42,7 @@ class CentralTracker
     //const ForwardSVT& fst() const;
 
     // members in cpp file
-    void fetch_nominal_parameters( const string& host,
-                                   const string& user,
-                                   const string& db );
+    void fetch_nominal_parameters(Calibration* calib);
 
   private:
     /// \brief the barrel SVT (BST)
@@ -72,7 +72,7 @@ const BarrelSVT& CentralTracker::bst() const
     //return _fst;
 //}
 
-} /* namespace clas12::geometry */
-} /* namespace clas12 */
+} // namespace clas12::geometry
+} // namespace clas12
 
-#endif /* __CLAS12_GEOMETRY_CENTRAL_TRACKER_HPP__ */
+#endif // CLAS12_GEOMETRY_CENTRAL_TRACKER_HPP

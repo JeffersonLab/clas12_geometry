@@ -82,9 +82,11 @@ def configure(ctx):
     ctx.load('boost')
     ctx.check_boost()
 
-    libpath,lib_po = ctx.boost_get_libs('program_options')
+    libpath,lib_po = ctx.boost_get_libs('program_options filesystem system')
     ctx.env.append_value('LIBPATH_BOOST',libpath)
-    ctx.env.append_value('LIB_boost_program_options', lib_po)
+    ctx.env.append_value('LIB_boost_program_options', lib_po[0])
+    ctx.env.append_value('LIB_boost_filesystem', lib_po[1])
+    ctx.env.append_value('LIB_boost_system', lib_po[2])
 
     ctx.check_cfg(
         uselib_store = 'MYSQL',
@@ -115,11 +117,7 @@ def configure(ctx):
 
     ### OPTIONAL DEPENDENCIES
 
-    boost_libs = '''\
-        filesystem
-        system
-        unit_test_framework
-    '''.split()
+    boost_libs = ['unit_test_framework']
     for l in boost_libs:
         try:
             libpath,lib = ctx.boost_get_libs(l)

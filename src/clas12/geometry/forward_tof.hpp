@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "CCDB/Providers/DataProvider.h"
+#include "CCDB/Calibration.h"
 
 #include "forward_tof/sector.hpp"
 
@@ -19,6 +19,7 @@ using std::string;
 using std::unique_ptr;
 using std::vector;
 
+using ::ccdb::Calibration;
 
 typedef forward_tof::Sector FTOFSector;
 
@@ -35,7 +36,7 @@ class ForwardTOF
   public:
     ForwardTOF();
     ForwardTOF(const ForwardTOF& that);
-    ForwardTOF( ccdb::DataProvider* dataprovider,
+    ForwardTOF( Calibration* calib,
                 const bool& quiet = false,
                 const bool& verbose = false );
     ForwardTOF& operator=(const ForwardTOF& that);
@@ -45,7 +46,7 @@ class ForwardTOF
     const FTOFSector& sector(const size_t& sec) const;
 
     // members in cpp file
-    void fetch_nominal_parameters(ccdb::DataProvider* dataprovider);
+    void fetch_nominal_parameters(Calibration* calib);
 
   private:
     /// \brief the sectors of the FTOF

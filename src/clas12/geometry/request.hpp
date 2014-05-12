@@ -17,8 +17,8 @@ using std::map;
 using std::string;
 using std::vector;
 
-using clas12::ccdb::AssignmentID;
 using ccdb::Calibration;
+using clas12::ccdb::ConstantSetInfo;
 
 typedef map<string, map<string,string> > volmap_t;
 
@@ -33,8 +33,6 @@ class Request
     volmap_t generate_volmap();
 
     string info();
-
-    AssignmentID ccdb_assigment_id();
 
   private:
     map<string,vector<string>> request;

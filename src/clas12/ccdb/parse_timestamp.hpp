@@ -1,5 +1,5 @@
-#ifndef CLAS12_CCDB_TIMESTAMP_PARSE_HPP
-#define CLAS12_CCDB_TIMESTAMP_PARSE_HPP
+#ifndef CLAS12_CCDB_PARSE_TIMESTAMP_HPP
+#define CLAS12_CCDB_PARSE_TIMESTAMP_HPP
 
 #include <algorithm>
 #include <cctype>
@@ -29,7 +29,7 @@ using boost::xpressive::smatch;
 using boost::xpressive::regex_match;
 using boost::lexical_cast;
 
-time_t timestamp_parse(const string& input)
+time_t parse_timestamp(const string& input)
 {
     string str = R"(
     (\d{4})
@@ -106,4 +106,4 @@ time_t timestamp_parse(const string& input)
 } // namespace clas12::ccdb
 } // namespace clas12
 
-#endif // CLAS12_CCDB_TIMESTAMP_PARSE_HPP
+#endif // CLAS12_CCDB_PARSE_TIMESTAMP_HPP

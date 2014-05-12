@@ -21,7 +21,7 @@ using std::endl;
 #include "clas12/geometry/coordsys.hpp"
 #include "clas12/geometry/output.hpp"
 
-#include "clas12/ccdb/timestamp_parse.hpp"
+#include "clas12/ccdb/parse_timestamp.hpp"
 
 namespace clas12
 {
@@ -46,12 +46,11 @@ using boost::to_lower_copy;
 
 using pugi::xml_document;
 
-using ccdb::RunNumber;
-using ccdb::AssignmentID;
-using ccdb::PortNumber;
 using ccdb::ConnectionInfoMySQL;
 using ccdb::ConnectionInfoSQLite;
 using ccdb::ConstantSetInfo;
+
+using clas12::ccdb::parse_timestamp;
 
 const string Request::desc =
 R"(Returns the expanded geometry parameters as an XML string.
@@ -110,6 +109,7 @@ Request::Request(const map<string,string>& req)
 
     ConnectionInfoMySQL conninfo_mysql;
     ConnectionInfoSQLite conninfo_sqlite;
+    ConstantSetInfo csinfo;
 
     map<string,string> reqs = this->to_lower(req);
 
@@ -138,7 +138,7 @@ Request::Request(const map<string,string>& req)
         }
         else if (r.first == "run")
         {
-            csinfo.run = lexical_cast<RunNumber>(r.second);
+            csinfo.run = lexical_cast<int>(r.second);
         }
         else if (r.first == "variation")
         {
@@ -146,7 +146,7 @@ Request::Request(const map<string,string>& req)
         }
         else if (r.first == "timestamp")
         {
-            csinfo.timestamp = timestamp_parse(r.second);
+            csinfo.timestamp = parse_timestamp(r.second);
         }
         else if (r.first == "sqlite")
         {
@@ -171,7 +171,7 @@ Request::Request(const map<string,string>& req)
         else if (r.first == "mysql-port")
         {
             mysql_info = true;
-            conninfo_mysql.port = lexical_cast<PortNumber>(r.second);
+            conninfo_mysql.port = lexical_cast<int>(r.second);
         }
     }
 
@@ -181,11 +181,11 @@ Request::Request(const map<string,string>& req)
     }
     else if (sqlite_info)
     {
-        this->calib = get_calibration(conninfo_sqlite);
+        this->calib = get_calibration(conninfo_sqlite, csinfo);
     }
     else // MySQL
     {
-        this->calib = get_calibration(conninfo_mysql);
+        this->calib = get_calibration(conninfo_mysql, csinfo);
     }
 }
 
@@ -219,7 +219,7 @@ string Request::generate_xml()
 
             if (sys == "dc")
             {
-                DriftChamber dc(calib, csinfo);
+                DriftChamber dc(calib.get());
 
                 for (const auto& item : req.second)
                 {
@@ -247,7 +247,7 @@ string Request::generate_xml()
             }
             else if (sys == "ftof")
             {
-                ForwardTOF ftof(calib, csinfo);
+                ForwardTOF ftof(calib.get());
 
                 for (const auto& item : req.second)
                 {
@@ -316,7 +316,7 @@ volmap_t Request::generate_volmap()
 
             if (sys == "dc")
             {
-                DriftChamber dc(calib, csinfo);
+                DriftChamber dc(calib.get());
 
                 for (const auto& item : req.second)
                 {
@@ -336,7 +336,7 @@ volmap_t Request::generate_volmap()
             else if (sys == "ftof")
             {
                 cout << "fetching FTOF geometry...\n";
-                ForwardTOF ftof(calib, csinfo);
+                ForwardTOF ftof(calib.get());
                 cout << "done.\n";
 
                 for (const auto& item : req.second)
@@ -400,15 +400,9 @@ string Request::info()
 
     ss << "  run: " << csinfo.run << "\n";
     ss << "  variation: " << csinfo.variation << "\n";
-    ss << "  timestamp: " << ctime(csinfo.timestamp) << "\n";
+    ss << "  timestamp: " << ctime(&csinfo.timestamp) << "\n";
 
     return ss.str();
-}
-
-
-AssignmentID Request::ccdb_assigment_id()
-{
-    return ccdb::get_assignment_id(calib, csinfo);
 }
 
 

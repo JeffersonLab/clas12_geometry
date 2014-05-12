@@ -38,7 +38,6 @@ using boost::to_lower_copy;
 using pugi::xml_document;
 
 
-
 const string GeometryService::name =
     "CLAS12GeometryService";
 const string GeometryService::desc =

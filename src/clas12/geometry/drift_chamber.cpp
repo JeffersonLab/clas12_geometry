@@ -1,4 +1,3 @@
-
 #ifdef DEBUG
 #include <iostream>
 using std::clog;
@@ -21,6 +20,8 @@ namespace geometry
 
 using std::string;
 using std::vector;
+
+using clas12::ccdb::ConstantsTable;
 
 /**
  * \brief default constructor
@@ -66,11 +67,10 @@ DriftChamber& DriftChamber::operator=(const DriftChamber& that)
  * This calls DriftChamber::fetch_nominal_parameters(dataprovider)
  **/
 DriftChamber::DriftChamber( Calibration* calib,
-                            const ConstantSetInfo& csinfo,
                             const bool& quiet /*= false*/,
                             const bool& verbose /*= false*/ )
 {
-    fetch_nominal_parameters(calib, csinfo);
+    fetch_nominal_parameters(calib);
 }
 
 /**
@@ -84,9 +84,7 @@ DriftChamber::DriftChamber( Calibration* calib,
  *
  * \param [in] dataprovider the ccdb::DataProvider object
  **/
-void DriftChamber::fetch_nominal_parameters(
-        Calibration* calib,
-        const ConstantSetInfo& csinfo )
+void DriftChamber::fetch_nominal_parameters(Calibration* calib)
 {
     #ifdef DEBUG
     clog << "DriftChamber::fetch_nominal_parameters()...\n";
@@ -98,14 +96,13 @@ void DriftChamber::fetch_nominal_parameters(
     // the nominal geometry parameters for the Drift Chamber.
     // These numbers come from four tables: dc, region, superlayer,
     // and layer.
-    clas12::ccdb::ConstantsTable table(calib, csinfo);
 
     #ifdef DEBUG
     clog << "dc...\n";
     #endif
-    table.load_constants("/geometry/dc/dc");
-    size_t nsectors = table.elem<size_t>("nsectors"); // n
-    size_t nregions = table.elem<size_t>("nregions"); // n
+    ConstantsTable table_dc(calib,"/geometry/dc/dc");
+    size_t nsectors = table_dc.elem<size_t>("nsectors"); // n
+    size_t nregions = table_dc.elem<size_t>("nregions"); // n
 
     #ifdef DEBUG
     clog << "nsectors: " << nsectors << endl;
@@ -115,34 +112,34 @@ void DriftChamber::fetch_nominal_parameters(
     #ifdef DEBUG
     clog << "region...\n";
     #endif
-    table.load_constants("/geometry/dc/region");
-    vector<size_t> nsuperlayers = table.col<size_t>("nsuperlayers"); // n
-    vector<double> dist2tgt = table.col<double>("dist2tgt"); // cm
-    vector<double> frontgap = table.col<double>("frontgap"); // cm
-    vector<double> midgap   = table.col<double>("midgap"); // cm
-    vector<double> backgap  = table.col<double>("backgap"); // cm
-    vector<double> thopen   = table.col<double>("thopen"); // deg
-    vector<double> thtilt   = table.col<double>("thtilt"); // deg
-    vector<double> xdist    = table.col<double>("xdist"); // cm
+    ConstantsTable table_r(calib,"/geometry/dc/region");
+    vector<size_t> nsuperlayers = table_r.col<size_t>("nsuperlayers"); // n
+    vector<double> dist2tgt = table_r.col<double>("dist2tgt"); // cm
+    vector<double> frontgap = table_r.col<double>("frontgap"); // cm
+    vector<double> midgap   = table_r.col<double>("midgap"); // cm
+    vector<double> backgap  = table_r.col<double>("backgap"); // cm
+    vector<double> thopen   = table_r.col<double>("thopen"); // deg
+    vector<double> thtilt   = table_r.col<double>("thtilt"); // deg
+    vector<double> xdist    = table_r.col<double>("xdist"); // cm
 
     #ifdef DEBUG
     clog << "superlayer...";
     #endif
-    table.load_constants("/geometry/dc/superlayer");
-    vector<size_t> nsenselayers  = table.col<size_t>("nsenselayers"); // n
-    vector<size_t> nguardlayers  = table.col<size_t>("nguardlayers"); // n
-    vector<size_t> nfieldlayers  = table.col<size_t>("nfieldlayers"); // n
-    vector<double> thster        = table.col<double>("thster"); // deg
-    vector<double> thmin         = table.col<double>("thmin"); // deg
-    vector<double> wpdist        = table.col<double>("wpdist"); // cm
-    vector<double> cellthickness = table.col<double>("cellthickness"); // n(wpdist)
+    ConstantsTable table_sl(calib,"/geometry/dc/superlayer");
+    vector<size_t> nsenselayers  = table_sl.col<size_t>("nsenselayers"); // n
+    vector<size_t> nguardlayers  = table_sl.col<size_t>("nguardlayers"); // n
+    vector<size_t> nfieldlayers  = table_sl.col<size_t>("nfieldlayers"); // n
+    vector<double> thster        = table_sl.col<double>("thster"); // deg
+    vector<double> thmin         = table_sl.col<double>("thmin"); // deg
+    vector<double> wpdist        = table_sl.col<double>("wpdist"); // cm
+    vector<double> cellthickness = table_sl.col<double>("cellthickness"); // n(wpdist)
 
     #ifdef DEBUG
     clog << "layer...";
     #endif
-    table.load_constants("/geometry/dc/layer");
-    size_t nsensewires = table.elem<size_t>("nsensewires"); // n
-    size_t nguardwires = table.elem<size_t>("nguardwires"); // n
+    ConstantsTable table_l(calib,"/geometry/dc/layer");
+    size_t nsensewires = table_l.elem<size_t>("nsensewires"); // n
+    size_t nguardwires = table_l.elem<size_t>("nguardwires"); // n
 
 
     // Now we fill the sectors object which holds all these

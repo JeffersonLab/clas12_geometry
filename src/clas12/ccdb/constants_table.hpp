@@ -6,6 +6,7 @@ using std::clog;
 using std::endl;
 
 #include <algorithm>
+#include <climits>
 #include <ctime>
 #include <string>
 #include <sstream>
@@ -33,9 +34,6 @@ using ::ccdb::Calibration;
 using ::ccdb::CalibrationGenerator;
 using ::ccdb::Assignment;
 
-typedef unsigned short int PortNumber;
-typedef int RunNumber;
-typedef int AssignmentID;
 typedef vector<vector<string>> TableData;
 typedef vector<string> ColumnNames;
 typedef vector<string> ColumnTypes;
@@ -55,7 +53,7 @@ class ConnectionInfoMySQL
     string user;
     string password;
     string host;
-    PortNumber port;
+    int port;
     string database;
 
     ConnectionInfoMySQL()
@@ -125,19 +123,17 @@ class ConnectionInfoSQLite
 
 struct ConstantSetInfo
 {
-    string table_path;
-    RunNumber run;
+    int run;
     string variation;
     time_t timestamp;
 
-    ConstantSetInfo(string tp="", int r=INT_MAX, string v="default", time_t ts=0)
-    : table_path(tp)
-    , run(r)
+    ConstantSetInfo(int r=INT_MAX, string v="default", time_t ts=0)
+    : run(r)
     , variation(v)
     , timestamp(ts)
     {}
 
-    string constant_set_string() const
+    string constant_set_string(const string& table_path) const
     {
         stringstream ss;
 
@@ -171,38 +167,14 @@ struct ConstantSetInfo
 };
 
 template <class ConnectionInfoType>
-unique_ptr<Calibration> get_calibration(const ConnectionInfoType& conn)
+unique_ptr<Calibration> get_calibration(
+    const ConnectionInfoType& conn,
+    const ConstantSetInfo& csinfo)
 {
     string connstr = conn.connection_string();
     CalibrationGenerator calibgen;
     return unique_ptr<Calibration>(calibgen.MakeCalibration(
-        connstr, INT_MAX, "default", time(nullptr) ) );
-}
-
-
-template<class ConnectionInfoType>
-AssignmentID get_assignment_id(
-    Calibration* const calib,
-    const ConstantSetInfo& constset)
-{
-    string constsetstr = constset.constant_set_string();
-
-    bool disconnect = false;
-    if (!calib->IsConnected())
-    {
-        disconnect = true;
-        calib->Connect(calib->GetConnectionString());
-    }
-
-    unique_ptr<Assignment> assignment(calib->GetAssignment(constsetstr, true));
-    AssignmentID id = assignment->GetId();
-
-    if (disconnect)
-    {
-        calib->Disconnect();
-    }
-
-    return id;
+        connstr, csinfo.run, csinfo.variation, csinfo.timestamp ) );
 }
 
 /** \brief ConstantsTable is a conatiner class for any constants
@@ -214,7 +186,7 @@ AssignmentID get_assignment_id(
 class ConstantsTable
 {
   private:
-    /// the table as filled by MySQLCalibration::GetCalib()
+    /// the table as filled by Calibration*
     TableData values;
 
     /// the names of the columns
@@ -254,7 +226,7 @@ class ConstantsTable
   public:
     ConstantsTable(
         Calibration* const calib,
-        const ConstantSetInfo& constset)
+        const string& table_path)
     {
         bool disconnect = false;
         if (!calib->IsConnected())
@@ -263,8 +235,7 @@ class ConstantsTable
             calib->Connect(calib->GetConnectionString());
         }
 
-        string constsetstr = constset.constant_set_string();
-        unique_ptr<Assignment> assignment(calib->GetAssignment(constsetstr, true));
+        unique_ptr<Assignment> assignment(calib->GetAssignment(table_path, true));
         values = assignment->GetData();
         columns = assignment->GetTypeTable()->GetColumnNames();
         column_types = assignment->GetTypeTable()->GetColumnTypeStrings();

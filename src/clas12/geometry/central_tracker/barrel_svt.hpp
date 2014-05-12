@@ -1,5 +1,5 @@
-#ifndef __CLAS12_GEOMETRY_CENTRAL_TRACKER_BARREL_SVT_HPP__
-#define __CLAS12_GEOMETRY_CENTRAL_TRACKER_BARREL_SVT_HPP__
+#ifndef CLAS12_GEOMETRY_CENTRAL_TRACKER_BARREL_SVT_HPP
+#define CLAS12_GEOMETRY_CENTRAL_TRACKER_BARREL_SVT_HPP
 
 #include <iostream>
 using std::clog;
@@ -9,6 +9,8 @@ using std::endl;
 #include <memory>
 #include <string>
 #include <vector>
+
+#include "CCDB/Calibration.h"
 
 #include "barrel_svt/region.hpp"
 
@@ -26,6 +28,8 @@ using std::unique_ptr;
 using std::string;
 using std::vector;
 
+using ::ccdb::Calibration;
+
 using ::clas12::geometry::CentralTracker;
 using barrel_svt::Region;
 
@@ -42,9 +46,7 @@ class BarrelSVT
     const Region& region(const size_t& reg) const;
 
     // members in cpp file
-    void fetch_nominal_parameters( const string& host,
-                                   const string& user,
-                                   const string& db );
+    void fetch_nominal_parameters(Calibration* calib);
 
   private:
     BarrelSVT(const CentralTracker* svt);
@@ -93,9 +95,9 @@ inline const Region& BarrelSVT::region(const size_t& reg) const
     return *_regions[reg];
 }
 
-} /* namespace clas12::geometry::central_tracker */
-} /* namespace clas12::geometry */
-} /* namespace clas12 */
+} // namespace clas12::geometry::central_tracker
+} // namespace clas12::geometry
+} // namespace clas12
 
-#endif /* __CLAS12_GEOMETRY_CENTRAL_TRACKER_BARREL_SVT_HPP__ */
+#endif // CLAS12_GEOMETRY_CENTRAL_TRACKER_BARREL_SVT_HPP
 
