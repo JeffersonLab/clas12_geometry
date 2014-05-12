@@ -14,9 +14,16 @@ using namespace std;
 int main(int argc, char** argv)
 {
     map<string,string> args;
+
+    args["request"] = "";
+
     args["units"] = "cm";
     args["coordsys"] = "sector";
-    args["request"] = "";
+
+    args["run"] = "0";
+    args["variation"] = "default";
+    args["timestamp"] = "";
+
     args["sqlite"] = "";
     args["mysql-host"] = "clasdb.jlab.org";
     args["mysql-user"] = "clas12reader";
@@ -27,16 +34,27 @@ int main(int argc, char** argv)
     po::options_description options("Options");
     options.add_options()
         ("help,h",
-            "produce help message.")
+            "produce help message")
         ("units,u",
             po::value<string>(&args["units"])->default_value(args["units"]),
-            "units of length for all returned values.")
+            "units of length for all returned values")
         ("coordsys,c",
             po::value<string>(&args["coordsys"])->default_value(args["coordsys"]),
-            "coordinate system.")
-        ("request,r",
+            "coordinate system")
+        ("request,q",
             po::value<string>(&args["request"]),
             "system/values request string, comma separated. Example: dc/wire_endpoints,ftof/panels_parms")
+
+        ("run,r",
+            po::value<string>(&args["run"])->default_value(args["run"]),
+            "run number")
+        ("variation,v",
+            po::value<string>(&args["variation"])->default_value(args["variation"]),
+            "variation")
+        ("timestamp,t",
+            po::value<string>(&args["timestamp"]),
+            "timestamp in the form YY-MM-DD hh:mm:ss")
+
         ("sqlite,f",
             po::value<string>(&args["sqlite"]),
             "SQLite file (may be relative path). Mutually exclusive with the MySQL options. If used, all MySQL options will be ignored.")
@@ -68,6 +86,7 @@ int main(int argc, char** argv)
         exit(0);
     }
 
+    // sqlite take precedence over mysql
     if (args["sqlite"] != "")
     {
         for (auto i : vector<string>{"host", "user", "password", "database", "port"})
@@ -78,6 +97,20 @@ int main(int argc, char** argv)
     else
     {
         args.erase("sqlite");
+    }
+
+    // remove all blank options
+    vector<string> remove;
+    for (auto i : args)
+    {
+        if (i.second == "")
+        {
+            remove.push_back(i.first);
+        }
+    }
+    for (auto k : remove)
+    {
+        args.erase(k);
     }
 
     clas12::geometry::Request req(args);
