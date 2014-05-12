@@ -6,22 +6,176 @@ using std::clog;
 using std::endl;
 
 #include <algorithm>
+#include <climits>
+#include <ctime>
 #include <string>
 #include <sstream>
 #include <stdexcept>
 
-#include "CCDB/Providers/MySQLDataProvider.h"
+#include <boost/filesystem.hpp>
+
+#include "CCDB/CalibrationGenerator.h"
+#include "CCDB/Calibration.h"
 
 namespace clas12
 {
 namespace ccdb
 {
 
-using namespace ::ccdb;
+namespace fs = boost::filesystem;
 
 using std::string;
 using std::stringstream;
 using std::vector;
+using std::time_t;
+using std::time;
+
+using ::ccdb::Calibration;
+using ::ccdb::CalibrationGenerator;
+using ::ccdb::Assignment;
+
+typedef vector<vector<string>> TableData;
+typedef vector<string> ColumnNames;
+typedef vector<string> ColumnTypes;
+
+/** \brief combines the user, host and such into the MySQL connection
+ * string used by MySQLCalibration::Connect().
+ *
+ * forms the string:
+ *     "mysql://clas12reader@clasdb.jlab.org:3306/clas12"
+ * by default.
+ *
+ * \return the MySQL connection string
+ **/
+class ConnectionInfoMySQL
+{
+  public:
+    string user;
+    string password;
+    string host;
+    int port;
+    string database;
+
+    ConnectionInfoMySQL()
+    : user("clas12reader")
+    , password("")
+    , host("clasdb.jlab.org")
+    , port(3306)
+    , database("clas12")
+    {}
+
+    string connection_string() const
+    {
+        stringstream ss;
+        ss << "mysql://";
+        ss << user;
+        if (password != "")
+        {
+            ss << ":" << password;
+        }
+        ss << "@" << host;
+        ss << ":" << port;
+        ss << "/" << database;
+        return ss.str();
+    }
+};
+
+/** \brief creates an SQLite connection string to be used by
+ * SQLiteCalibration::Connect().
+ *
+ * forms the string:
+ *     "sqlite:///clas12_ccdb.sqlite"
+ * by default.
+ *
+ * \return the SQLite connection string
+ **/
+class ConnectionInfoSQLite
+{
+  public:
+    string filepath;
+
+    ConnectionInfoSQLite(string fp = "clas12_ccdb.sqlite")
+    : filepath(fp)
+    {}
+
+    string connection_string() const
+    {
+        string ret;
+        if (fs::exists(filepath))
+        {
+            if (fs::is_regular_file(filepath))
+            {
+                ret = "sqlite:///" + filepath;
+            }
+            else
+            {
+                throw range_error("ERROR: file '"+filepath+"' is not a regular file.");
+            }
+        }
+        else
+        {
+            throw range_error("ERROR: file '"+filepath+"' could not be found.");
+        }
+        return ret;
+    }
+};
+
+
+struct ConstantSetInfo
+{
+    int run;
+    string variation;
+    time_t timestamp;
+
+    ConstantSetInfo(int r=INT_MAX, string v="default", time_t ts=0)
+    : run(r)
+    , variation(v)
+    , timestamp(ts)
+    {}
+
+    string constant_set_string(const string& table_path) const
+    {
+        stringstream ss;
+
+        ss << table_path;
+
+        if (run != INT_MAX)
+        {
+            ss << ":" << run;
+        }
+        else if (variation != "default" || timestamp != 0)
+        {
+            ss << ":";
+        }
+
+        if (variation != "default")
+        {
+            ss << ":" << timestamp;
+        }
+        else if (timestamp != 0)
+        {
+            ss << ":";
+        }
+
+        if (timestamp != 0)
+        {
+            ss << ":" << timestamp;
+        }
+
+        return ss.str();
+    }
+};
+
+template <class ConnectionInfoType>
+unique_ptr<Calibration> get_calibration(
+    const ConnectionInfoType& conn,
+    const ConstantSetInfo& csinfo)
+{
+    string connstr = conn.connection_string();
+    CalibrationGenerator calibgen;
+    return unique_ptr<Calibration>(calibgen.MakeCalibration(
+        connstr, csinfo.run, csinfo.variation, csinfo.timestamp ) );
+}
 
 /** \brief ConstantsTable is a conatiner class for any constants
  *  set. It will connect to the database when load_constants()
@@ -32,14 +186,14 @@ using std::vector;
 class ConstantsTable
 {
   private:
-    /// the table as filled by MySQLCalibration::GetCalib()
-    vector<vector<string> > values;
+    /// the table as filled by Calibration*
+    TableData values;
 
     /// the names of the columns
-    vector<string> columns;
+    ColumnNames columns;
 
     /// the types of the columns in string form
-    vector<string> column_types;
+    ColumnTypes column_types;
 
     /** \brief find the index of the column associated with the name
      *  colname.
@@ -70,86 +224,33 @@ class ConstantsTable
     }
 
   public:
-
-    ConstantsTable() {}
-
-    /** \brief combines the user, host and such into the MySQL connection
-     * string used by MySQLCalibration::Connect().
-     *
-     * forms the string: "mysql://clas12reader@clasdb.jlab.org:3306/clas12"
-     * by default.
-     *
-     * \return the MySQL connection string
-     **/
-    string connection_string(
-        const string& user = "clas12reader",
-        const string& host = "clasdb.jlab.org",
-        const string& port = "3306",
-        const string& db   = "clas12",
-        const string& passwd = "" )
+    ConstantsTable(
+        Calibration* const calib,
+        const string& table_path)
     {
-        /// forms the string: "mysql://clas12reader@clasdb.jlab.org:3306/clas12"
-        stringstream conn_ss;
-        conn_ss << "mysql://" << user;
-        if (passwd != "")
+        bool disconnect = false;
+        if (!calib->IsConnected())
         {
-            conn_ss << ":" << passwd;
-        }
-        conn_ss << "@" << host << ":" << port
-                << "/" << db;
-        return conn_ss.str();
-    }
-
-    string constant_set_string(
-        const string& variation
-        )
-    {
-        stringstream constset_ss;
-        constset_ss << "default";
-        return constset_ss.str();
-    }
-
-    /** \brief clears all data in this set.
-     *
-     **/
-    void clear()
-    {
-        values.clear();
-        columns.clear();
-        column_types.clear();
-    }
-
-    /** \brief connects to the MySQL (CCDB) database and obtains the
-     * data, the column names, and their types.
-     **/
-    void load_constants(
-        const string& constsetid_str,
-        const string& conn_str = "" )
-    {
-        this->clear();
-
-        string conn;
-        if (conn_str == "")
-        {
-            /// get default connection string
-            conn = this->connection_string();
-        }
-        else
-        {
-            /// use this one if specified
-            conn = conn_str;
+            disconnect = true;
+            calib->Connect(calib->GetConnectionString());
         }
 
-        MySQLDataProvider calib;
-        calib.Connect(conn);
-
-        Assignment* assignment = calib.GetAssignmentFull(100,constsetid_str);
-        if (!assignment) return;
-
+        unique_ptr<Assignment> assignment(calib->GetAssignment(table_path, true));
         values = assignment->GetData();
         columns = assignment->GetTypeTable()->GetColumnNames();
         column_types = assignment->GetTypeTable()->GetColumnTypeStrings();
+
+        if (disconnect)
+        {
+            calib->Disconnect();
+        }
     }
+
+    ConstantsTable(const TableData& v, const ColumnNames& c, const ColumnTypes& ct)
+    : values(v)
+    , columns(c)
+    , column_types(ct)
+    {}
 
     /** \return number of rows in this data set.
      *
@@ -288,6 +389,8 @@ class ConstantsTable
     }
 
 };
+
+
 
 } // namespace clas12::ccdb
 } // namespace clas12

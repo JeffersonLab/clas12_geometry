@@ -16,6 +16,8 @@ namespace central_tracker
 using ::clas12::geometry::CentralTracker;
 using namespace barrel_svt;
 
+using clas12::ccdb::ConstantsTable;
+
 /**
  * \brief constructor.
  *
@@ -76,55 +78,47 @@ BarrelSVT& BarrelSVT::operator=(const BarrelSVT& that)
  * \param [in] user the database user name. typically: clasuser
  * \param [in] db the database name. typically: clas12
  **/
-void BarrelSVT::fetch_nominal_parameters( const string& host,
-                                          const string& user,
-                                          const string& db )
+void BarrelSVT::fetch_nominal_parameters(Calibration* calib)
 {
     static const double deg2rad = 3.14159265358979 / 180.;
-
-    // here we connect to the CCDB (MySQL) databse and request
-    // the nominal geometry parameters for the Barrel Vertex Tracker.
-    // These numbers come from two tables: region and sector
-    clas12::ccdb::ConstantsTable table;
-    string conn_str = table.connection_string(user,host,"3306",db);
 
     #ifdef DEBUG
     clog << "bst...";
     #endif
-    table.load_constants("/geometry/bst/bst", conn_str);
-    size_t nregions      = table.elem<size_t>("nregions"); // n
-    double readoutPitch  = table.elem<double>("readoutPitch"); // mm(?)
-    double siliconWidth  = table.elem<double>("siliconWidth"); // mm(?)
+    ConstantsTable table_bst(calib,"/geometry/bst/bst");
+    size_t nregions      = table_bst.elem<size_t>("nregions"); // n
+    double readoutPitch  = table_bst.elem<double>("readoutPitch"); // mm(?)
+    double siliconWidth  = table_bst.elem<double>("siliconWidth"); // mm(?)
 
     #ifdef DEBUG
     clog << "region...";
     #endif
-    table.load_constants("/geometry/bst/region", conn_str);
-    vector<bool>   status    = table.col<bool  >("status");     // bool
-    vector<size_t> nsectors  = table.col<size_t>("nsectors");   // n
-    vector<size_t> nlayers   = table.col<size_t>("nlayers");    // n
-    vector<double> radius    = table.col<double>("radius");     // mm
-    vector<double> zstart    = table.col<double>("zstart");     // mm
-    vector<double> phi       = table.col<double>("theta");        // deg
-    vector<double> layergap  = table.col<double>("layergap");   // mm
+    ConstantsTable table_r(calib,"/geometry/bst/region");
+    vector<bool>   status    = table_r.col<bool  >("status");     // bool
+    vector<size_t> nsectors  = table_r.col<size_t>("nsectors");   // n
+    vector<size_t> nlayers   = table_r.col<size_t>("nlayers");    // n
+    vector<double> radius    = table_r.col<double>("radius");     // mm
+    vector<double> zstart    = table_r.col<double>("zstart");     // mm
+    vector<double> phi       = table_r.col<double>("theta");        // deg
+    vector<double> layergap  = table_r.col<double>("layergap");   // mm
 
 
     #ifdef DEBUG
     clog << "sector...";
     #endif
-    table.load_constants("/geometry/bst/sector", conn_str);
-    size_t nstrips        = table.elem<size_t>("nstrips");       // n
-    double physSenLen     = table.elem<double>("physSenLen");    // mm
-    double physSenWid     = table.elem<double>("physSenWid");    // mm
-    double activeSenLen   = table.elem<double>("activeSenLen");  // mm
-    double activeSenWid   = table.elem<double>("activeSenWid");  // mm
-    double deadZnSenLen1  = table.elem<double>("deadZnSenLen1"); // mm
-    double deadZnSenLen2  = table.elem<double>("deadZnSenLen2"); // mm
-    double deadZnSenLen3  = table.elem<double>("deadZnSenLen3"); // mm
-    double deadZnSenWid   = table.elem<double>("deadZnSenWid");  // mm
-    double fillerthick    = table.elem<double>("fillerthick");   // mm
-    double startAngle     = table.elem<double>("startAngle");    // deg
-    double endAngle       = table.elem<double>("endAngle");      // deg
+    ConstantsTable table_s(calib,"/geometry/bst/sector");
+    size_t nstrips        = table_s.elem<size_t>("nstrips");       // n
+    double physSenLen     = table_s.elem<double>("physSenLen");    // mm
+    double physSenWid     = table_s.elem<double>("physSenWid");    // mm
+    double activeSenLen   = table_s.elem<double>("activeSenLen");  // mm
+    double activeSenWid   = table_s.elem<double>("activeSenWid");  // mm
+    double deadZnSenLen1  = table_s.elem<double>("deadZnSenLen1"); // mm
+    double deadZnSenLen2  = table_s.elem<double>("deadZnSenLen2"); // mm
+    double deadZnSenLen3  = table_s.elem<double>("deadZnSenLen3"); // mm
+    double deadZnSenWid   = table_s.elem<double>("deadZnSenWid");  // mm
+    double fillerthick    = table_s.elem<double>("fillerthick");   // mm
+    double startAngle     = table_s.elem<double>("startAngle");    // deg
+    double endAngle       = table_s.elem<double>("endAngle");      // deg
 
     // Now we fill the "bst" object which holds all these
     // core parameters. Here, many numbers will be redundant.

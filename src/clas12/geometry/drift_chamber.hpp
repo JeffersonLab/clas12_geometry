@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "CCDB/Calibration.h"
+
 #include "drift_chamber/sector.hpp"
 
 namespace clas12
@@ -16,6 +18,8 @@ namespace geometry
 using std::string;
 using std::unique_ptr;
 using std::vector;
+
+using ::ccdb::Calibration;
 
 typedef drift_chamber::Sector DCSector;
 
@@ -33,9 +37,7 @@ class DriftChamber
   public:
     DriftChamber();
     DriftChamber(const DriftChamber& that);
-    DriftChamber( const string& host,
-                  const string& user,
-                  const string& db,
+    DriftChamber( ccdb::Calibration* calib,
                   const bool& quiet = false,
                   const bool& verbose = false );
     DriftChamber& operator=(const DriftChamber& that);
@@ -45,9 +47,7 @@ class DriftChamber
     const DCSector& sector(const size_t& sec) const;
 
     // members in cpp file
-    void fetch_nominal_parameters( const string& host,
-                                   const string& user,
-                                   const string& db );
+    void fetch_nominal_parameters(ccdb::Calibration* calib);
 
   private:
     /// \brief the sectors of the DC

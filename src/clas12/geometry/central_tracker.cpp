@@ -59,14 +59,11 @@ CentralTracker& CentralTracker::operator=(const CentralTracker& that)
  *
  * This calls CentralTracker::fetch_nominal_parameters(host,user,db)
  **/
-CentralTracker::CentralTracker(
-    const string& host,
-    const string& user,
-    const string& db )
+CentralTracker::CentralTracker(Calibration* calib)
 : _bst(this)
 //, _fst(this)
 {
-    fetch_nominal_parameters(host,user,db);
+    fetch_nominal_parameters(calib);
 }
 
 /**
@@ -77,11 +74,9 @@ CentralTracker::CentralTracker(
  * \param [in] user the database user name. typically: clasuser
  * \param [in] db the database name. typically: clas12
  **/
-void CentralTracker::fetch_nominal_parameters( const string& host,
-                                                const string& user,
-                                                const string& db )
+void CentralTracker::fetch_nominal_parameters(Calibration* calib)
 {
-    _bst.fetch_nominal_parameters(host,user,db);
+    _bst.fetch_nominal_parameters(calib);
 }
 
 } /* namespace clas12::geometry */

@@ -12,6 +12,8 @@ def build(ctx):
             C++11
             BOOST
                 boost_program_options
+                boost_filesystem
+                boost_system
             CCDB
                 MYSQL
             GEOMETRY

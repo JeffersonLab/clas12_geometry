@@ -20,6 +20,8 @@ namespace geometry
 using std::string;
 using std::vector;
 
+using clas12::ccdb::ConstantsTable;
+
 /**
  * \brief default constructor
  **/
@@ -62,13 +64,11 @@ ForwardTOF& ForwardTOF::operator=(const ForwardTOF& that)
  *
  * This calls ForwardTOF::fetch_nominal_parameters(host,user,db)
  **/
-ForwardTOF::ForwardTOF( const string& host,
-                        const string& user,
-                        const string& db,
+ForwardTOF::ForwardTOF( Calibration* calib,
                         const bool& quiet /*= false*/,
                         const bool& verbose /*= false*/ )
 {
-    fetch_nominal_parameters(host,user,db);
+    fetch_nominal_parameters(calib);
 }
 
 /**
@@ -85,9 +85,7 @@ ForwardTOF::ForwardTOF( const string& host,
  * \param [in] user the database user name. typically: clasuser
  * \param [in] db the database name. typically: clas12
  **/
-void ForwardTOF::fetch_nominal_parameters( const string& host,
-                                           const string& user,
-                                           const string& db )
+void ForwardTOF::fetch_nominal_parameters(Calibration* calib)
 {
     #ifdef DEBUG
     clog << "ForwardTOF::fetch_nominal_parameters()...\n";
@@ -96,25 +94,21 @@ void ForwardTOF::fetch_nominal_parameters( const string& host,
 
     using namespace forward_tof;
 
-    // here we connect to the CCDB (MySQL) databse and request
     // the nominal geometry parameters for the FTOF.
     // These numbers come from six tables:
-    //panel1a/panel
-    //panel1a/paddles
-    //panel1b/panel
-    //panel1b/paddles
-    //panel2/panel
-    //panel2/paddles
-    clas12::ccdb::ConstantsTable table;
-    clas12::ccdb::ConstantsTable panel1a, panel1b, panel2;
-    string conn_str = panel1a.connection_string(user,host,"3306",db);
+    ConstantsTable table_ftof(calib,"/geometry/ftof/ftof");
+    ConstantsTable table_p1a(calib,"/geometry/ftof/panel1a/panel");
+    ConstantsTable table_p1b(calib,"/geometry/ftof/panel1b/panel");
+    ConstantsTable table_p2(calib,"/geometry/ftof/panel2/panel");
+    ConstantsTable table_p1a_pad(calib,"/geometry/ftof/panel1a/paddles");
+    ConstantsTable table_p1b_pad(calib,"/geometry/ftof/panel1b/paddles");
+    ConstantsTable table_p2_pad(calib,"/geometry/ftof/panel2/paddles");
 
     #ifdef DEBUG
     clog << "ftof...\n";
     #endif
-    table.load_constants("/geometry/ftof/ftof", conn_str);
-    size_t nsectors = table.elem<size_t>("nsectors"); // n
-    size_t npanels  = table.elem<size_t>("npanels"); // n
+    size_t nsectors = table_ftof.elem<size_t>("nsectors"); // n
+    size_t npanels  = table_ftof.elem<size_t>("npanels"); // n
 
     #ifdef DEBUG
     clog << "nsectors: " << nsectors << endl;
@@ -124,71 +118,61 @@ void ForwardTOF::fetch_nominal_parameters( const string& host,
     #ifdef DEBUG
     clog << "panels...\n";
     #endif
-    panel1a.load_constants("/geometry/ftof/panel1a/panel", conn_str);
-    panel1b.load_constants("/geometry/ftof/panel1b/panel", conn_str);
-    panel2.load_constants("/geometry/ftof/panel2/panel", conn_str);
-
 
     vector<double> paddle_width = {
-            panel1a.elem<double>("paddlewidth"), // cm
-            panel1b.elem<double>("paddlewidth"), // cm
-            panel2.elem<double>("paddlewidth") };// cm
+            table_p1a.elem<double>("paddlewidth"), // cm
+            table_p1b.elem<double>("paddlewidth"), // cm
+            table_p2.elem<double>("paddlewidth") };// cm
 
     vector<double> paddle_thick = {
-            panel1a.elem<double>("paddlethickness"), // cm
-            panel1b.elem<double>("paddlethickness"), // cm
-            panel2.elem<double>("paddlethickness") };// cm
+            table_p1a.elem<double>("paddlethickness"), // cm
+            table_p1b.elem<double>("paddlethickness"), // cm
+            table_p2.elem<double>("paddlethickness") };// cm
 
     vector<double> panel_thtilt = {
-            panel1a.elem<double>("thtilt"), // deg
-            panel1b.elem<double>("thtilt"), // deg
-            panel2.elem<double>("thtilt") };// deg
+            table_p1a.elem<double>("thtilt"), // deg
+            table_p1b.elem<double>("thtilt"), // deg
+            table_p2.elem<double>("thtilt") };// deg
 
     vector<double> panel_thmin = {
-            panel1a.elem<double>("thmin"), // deg
-            panel1b.elem<double>("thmin"), // deg
-            panel2.elem<double>("thmin") };// deg
+            table_p1a.elem<double>("thmin"), // deg
+            table_p1b.elem<double>("thmin"), // deg
+            table_p2.elem<double>("thmin") };// deg
 
     vector<double> panel_dist2edge = {
-            panel1a.elem<double>("dist2edge"), // cm
-            panel1b.elem<double>("dist2edge"), // cm
-            panel2.elem<double>("dist2edge") };// cm
+            table_p1a.elem<double>("dist2edge"), // cm
+            table_p1b.elem<double>("dist2edge"), // cm
+            table_p2.elem<double>("dist2edge") };// cm
 
     vector<double> paddle_gap = {
-            panel1a.elem<double>("gap"), // cm
-            panel1b.elem<double>("gap"), // cm
-            panel2.elem<double>("gap") };// cm
+            table_p1a.elem<double>("gap"), // cm
+            table_p1b.elem<double>("gap"), // cm
+            table_p2.elem<double>("gap") };// cm
 
-    double panel1b_pairgap = panel1b.elem<double>("pairgap"); // cm
+    double panel1b_pairgap = table_p1b.elem<double>("pairgap"); // cm
 
     vector<double> wrapper_thick = {
-            panel1a.elem<double>("wrapperthickness"), // cm
-            panel1b.elem<double>("wrapperthickness"), // cm
-            panel2.elem<double>("wrapperthickness") };// cm
+            table_p1a.elem<double>("wrapperthickness"), // cm
+            table_p1b.elem<double>("wrapperthickness"), // cm
+            table_p2.elem<double>("wrapperthickness") };// cm
 
     #ifdef DEBUG
     clog << "paddles...\n";
     #endif
-    panel1a.load_constants("/geometry/ftof/panel1a/paddles", conn_str);
-    panel1b.load_constants("/geometry/ftof/panel1b/paddles", conn_str);
-    panel2.load_constants("/geometry/ftof/panel2/paddles", conn_str);
-
-
     vector<vector<double>> paddle_meas_lengths = {
-            panel1a.col<double>("Length"), // cm
-            panel1b.col<double>("Length"), // cm
-            panel2.col<double>("Length") };// cm
+            table_p1a_pad.col<double>("Length"), // cm
+            table_p1b_pad.col<double>("Length"), // cm
+            table_p2_pad.col<double>("Length") };// cm
 
    vector<vector<double>> paddle_slopes = {
-            panel1a.col<double>("Slope"),
-            panel1b.col<double>("Slope"),
-            panel2.col<double>("Slope") };
+            table_p1a_pad.col<double>("Slope"),
+            table_p1b_pad.col<double>("Slope"),
+            table_p2_pad.col<double>("Slope") };
 
    vector<vector<double>> paddle_interXs = {
-            panel1a.col<double>("Intercept"),
-            panel1b.col<double>("Intercept"),
-            panel2.col<double>("Intercept") };
-
+            table_p1a_pad.col<double>("Intercept"),
+            table_p1b_pad.col<double>("Intercept"),
+            table_p2_pad.col<double>("Intercept") };
 
     // Now we fill the sectors object which holds all these
     // core parameters. Here, many numbers will be redundant.

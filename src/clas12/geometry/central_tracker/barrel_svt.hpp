@@ -10,6 +10,8 @@ using std::endl;
 #include <string>
 #include <vector>
 
+#include "CCDB/Calibration.h"
+
 #include "barrel_svt/region.hpp"
 
 namespace clas12
@@ -25,6 +27,8 @@ namespace central_tracker
 using std::unique_ptr;
 using std::string;
 using std::vector;
+
+using ::ccdb::Calibration;
 
 using ::clas12::geometry::CentralTracker;
 using barrel_svt::Region;
@@ -42,9 +46,7 @@ class BarrelSVT
     const Region& region(const size_t& reg) const;
 
     // members in cpp file
-    void fetch_nominal_parameters( const string& host,
-                                   const string& user,
-                                   const string& db );
+    void fetch_nominal_parameters(Calibration* calib);
 
   private:
     BarrelSVT(const CentralTracker* svt);

@@ -19,7 +19,7 @@ using std::endl;
 
 #include "clas12/geometry/forward_tof.hpp"
 #include "clas12/geometry/output/ftof_panels_parms.hpp"
-#include "clas12/geometry/output/ftof_sector_volumes.hpp"
+#include "clas12/geometry/output/ftof_volumes.hpp"
 
 BOOST_AUTO_TEST_SUITE(clas12_geometry_ftof)
 
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(ftof_paddle_centers)
 
     //ftof_paddle_parms_xml(doc,ftof,"clas","cm");
     //ftof_plane_parms_xml(doc,ftof,"clas","cm");
-    ftof_volumes_xml(doc,ftof,"clas");
+    ftof_volumes_xml(doc,ftof);
     doc.save(doc_ss);
     //string paddles_xml = doc_ss.str();
     //string panels_xml = doc_ss.str();
