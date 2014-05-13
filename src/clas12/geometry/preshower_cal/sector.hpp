@@ -1,5 +1,5 @@
-#ifndef CLAS12_GEOMETRY_FORWARD_TOF_SECTOR_HPP
-#define CLAS12_GEOMETRY_FORWARD_TOF_SECTOR_HPP
+#ifndef CLAS12_GEOMETRY_PRESHOWER_CAL_SECTOR_HPP
+#define CLAS12_GEOMETRY_PRESHOWER_CAL_SECTOR_HPP
 
 #include <iostream>
 using std::clog;
@@ -11,16 +11,16 @@ using std::endl;
 #include <string>
 #include <map>
 
-#include "panel.hpp"
+#include "view.hpp"
 
 namespace clas12
 {
 namespace geometry
 {
 
-class ForwardTOF;
+class PreshowerCal;
 
-namespace forward_tof
+namespace preshower_cal
 {
 
 using std::size_t;
@@ -35,26 +35,26 @@ using ::geometry::line;
 using ::geometry::line_segment;
 using ::geometry::plane;
 
-using ::clas12::geometry::ForwardTOF;
+using ::clas12::geometry::PreshowerCal;
 
 /**
- * \brief a sector of the FTOF which consists of several panels
+ * \brief a sector of the PCal which consists of several views
  *
- * There are six sectors of FTOF in CLAS12 which hold
- * three panels
+ * There are six sectors of PCal in CLAS12 which hold
+ * three views
  **/
 class Sector
 {
   public:
     // inline methods
-    const ForwardTOF& ftof() const;
+    const PreshowerCal& pcal() const;
 
-    const vector<unique_ptr<Panel>>& panels() const;
-    const Panel& panel(const int& pan) const;
-    const Panel& panel(const string& pan) const;
+    const vector<unique_ptr<View>>& views() const;
+    const View& view(int v) const;
+    const View& view(const string& v) const;
 
     const size_t& index() const;
-    string panel_name(size_t id) const;
+    string view_name(size_t id) const;
 
     euclid_vector<double,3>    sector_to_clas(const euclid_vector<double,3>& v   ) const;
     direction_vector<double,3> sector_to_clas(const direction_vector<double,3>& v) const;
@@ -64,22 +64,22 @@ class Sector
 
 
   private:
-    Sector(const ForwardTOF* ftof, const size_t& idx);
-    Sector(const Sector& that, const ForwardTOF* ftof, const size_t& idx);
+    Sector(const PreshowerCal* pcal, size_t idx);
+    Sector(const Sector& that, const PreshowerCal* pcal, size_t idx);
 
     /// \brief a pointer to the parent sector
-    const ForwardTOF* _ftof;
+    const PreshowerCal* _pcal;
 
     /// \brief the index of the sector in the vector<Sector>
-    /// object held by the ForwardTOF parent class
+    /// object held by the PreshowerCal parent class
     size_t _idx;
 
-    /// \brief a sector consists of several panels
-    vector<unique_ptr<Panel>> _panels;
+    /// \brief a sector consists of several views
+    vector<unique_ptr<View>> _views;
 
     // private inline methods
-    size_t panel_index(const int& idx) const;
-    size_t panel_index(const string& id) const;
+    size_t view_index(int idx) const;
+    size_t view_index(const string& id) const;
 
 
     /// \brief deleted copy constructor
@@ -88,47 +88,47 @@ class Sector
     /// \brief deleted assignment operator
     Sector& operator=(const Sector&) = delete;
 
-    /// \brief the top-level FTOF class has control of all
+    /// \brief the top-level PCal class has control of all
     /// private members of this class.
-    friend class ::clas12::geometry::ForwardTOF;
+    friend class ::clas12::geometry::PreshowerCal;
 };
 
 /**
- * \brief get the parent ftof object
- * \return constant reference to Sector::_ftof
+ * \brief get the parent pcal object
+ * \return constant reference to Sector::_pcal
  **/
-inline const ForwardTOF& Sector::ftof() const
+inline const PreshowerCal& Sector::pcal() const
 {
-    return *_ftof;
+    return *_pcal;
 }
 
-/** \fn Sector::panels()
- * \brief Get a vector of the panels in this sector
- * \return const reference to Sector::_panels
+/** \fn Sector::views()
+ * \brief Get a vector of the views in this sector
+ * \return const reference to Sector::_views
  **/
-inline const vector<unique_ptr<Panel>>& Sector::panels() const
+inline const vector<unique_ptr<View>>& Sector::views() const
 {
-    return _panels;
-}
-
-/**
- * \brief Get a panel in this sector
- * \param [in] pan The panel index within this sector (counting from zero)
- * \return const reference to Sector::_panels[pan]
- **/
-inline const Panel& Sector::panel(const int& pan) const
-{
-    return *_panels[this->panel_index(pan)];
+    return _views;
 }
 
 /**
- * \brief Get a panel in this sector
- * \param [in] pan The panel name within this sector (1a, 1b or 2)
- * \return const reference to Sector::_panels[pan]
+ * \brief Get a view in this sector
+ * \param [in] v The view index within this sector (counting from zero)
+ * \return const reference to Sector::_views[v]
  **/
-inline const Panel& Sector::panel(const string& pan) const
+inline const View& Sector::view(int v) const
 {
-    return *_panels[this->panel_index(pan)];
+    return *_views[this->view_index(v)];
+}
+
+/**
+ * \brief Get a view in this sector
+ * \param [in] v The view name within this sector (u, v or w)
+ * \return const reference to Sector::_views[v]
+ **/
+inline const View& Sector::view(const string& v) const
+{
+    return *_views[this->view_index(v)];
 }
 
 /**
@@ -147,54 +147,54 @@ const size_t& Sector::index() const
  * \return unsigned int index of the region in this sector
  **/
 inline
-size_t Sector::panel_index(const int& idx) const
+size_t Sector::view_index(int idx) const
 {
-    return idx<0 ? (_panels.size()+idx) : idx;
+    return idx<0 ? (_views.size()+idx) : idx;
 }
 
 /**
  * \brief convert negative indexes to positive counting from end
  * \param [in] idx index either from zero or from -1 (counting from end)
- * \return unsigned int index of the panel in this sector
+ * \return unsigned int index of the view in this sector
  **/
 inline
-size_t Sector::panel_index(const string& id) const
+size_t Sector::view_index(const string& id) const
 {
-    static const map<string,size_t> panel_index_map {
-        {"1a", 0},
-        {"1b", 1},
-        {"2",  2} };
+    static const map<string,size_t> view_index_map {
+        {"u", 0},
+        {"v", 1},
+        {"w",  2} };
 
-    size_t pos = id.find("panel");
+    size_t pos = id.find("view");
     if (pos == string::npos)
     {
-        return panel_index_map.at(id);
+        return view_index_map.at(id);
     }
     else
     {
-        return panel_index_map.at(id.substr(string("panel").size(), string::npos));
+        return view_index_map.at(id.substr(string("view").size(), string::npos));
     }
 }
 
 /**
  * \brief convert negative indexes to positive counting from end
  * \param [in] idx index either from zero or from -1 (counting from end)
- * \return name of the panel
+ * \return name of the view
  **/
 inline
-string Sector::panel_name(size_t id) const
+string Sector::view_name(size_t id) const
 {
-    static const map<size_t,string> panel_index_map {
+    static const map<size_t,string> view_index_map {
         {size_t(0), "1a"},
         {1, "1b"},
         {2, "2" } };
 
-    return panel_index_map.at(id);
+    return view_index_map.at(id);
 }
 
 
-} // namespace clas12::geometry::forward_tof
+} // namespace clas12::geometry::preshower_cal
 } // namespace clas12::geometry
 } // namespace clas12
 
-#endif // CLAS12_GEOMETRY_FORWARD_TOF_SECTOR_HPP
+#endif // CLAS12_GEOMETRY_PRESHOWER_CAL_SECTOR_HPP

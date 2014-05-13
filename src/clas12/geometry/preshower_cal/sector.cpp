@@ -1,50 +1,50 @@
 #include <cstddef>
 
-#include "clas12/geometry/forward_tof.hpp"
+#include "clas12/geometry/preshower_cal.hpp"
 
 namespace clas12
 {
 namespace geometry
 {
-namespace forward_tof
+namespace preshower_cal
 {
 
-using ::clas12::geometry::ForwardTOF;
+using ::clas12::geometry::PreshowerCal;
 
 /**
  * \brief constructor.
  *
- * This forces the sector to have a parent FTOF
+ * This forces the sector to have a parent PCal
  * object pointer.
  *
- * \param [in] ftof a pointer to the parent ForwardTOF class
+ * \param [in] pcal a pointer to the parent PreshowerCal class
  * \param [in] idx the index of this sector in vector<Sector>
- *             held by parent ForwardTOF.
+ *             held by parent PreshowerCal.
  **/
-Sector::Sector(const ForwardTOF* ftof, const size_t& idx)
-: _ftof(ftof)
+Sector::Sector(const PreshowerCal* pcal, const size_t& idx)
+: _pcal(pcal)
 , _idx(idx)
 {}
 
 /**
  * \brief copy constructor.
  *
- * This forces the sector to have a parent FTOF
+ * This forces the sector to have a parent PCal
  * object pointer.
  *
  * \param [in] that the Sector being copied
- * \param [in] ftof a pointer to the parent ForwardTOF class
+ * \param [in] pcal a pointer to the parent PreshowerCal class
  * \param [in] idx the index of this sector in vector<Sector>
- *             held by parent ForwardTOF.
+ *             held by parent PreshowerCal.
  **/
-Sector::Sector(const Sector& that, const ForwardTOF* ftof, const size_t& idx)
-: _ftof(ftof)
+Sector::Sector(const Sector& that, const PreshowerCal* pcal, const size_t& idx)
+: _pcal(pcal)
 , _idx(idx)
 {
-    for (size_t i=0; i<that._panels.size(); i++)
+    for (size_t i=0; i<that._views.size(); i++)
     {
-        const Panel& panel = *that._panels[i];
-        _panels.emplace_back(new Panel(panel,this,i));
+        const View& view = *that._views[i];
+        _views.emplace_back(new View(view,this,i));
     }
 }
 
@@ -88,6 +88,6 @@ plane<double> Sector::sector_to_clas(const plane<double>& p) const
 }
 
 
-} // namespace clas12::geometry::forward_tof
+} // namespace clas12::geometry::preshower_cal
 } // namespace clas12::geometry
 } // namespace clas12
