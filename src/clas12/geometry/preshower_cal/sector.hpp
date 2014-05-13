@@ -53,7 +53,7 @@ class Sector
     const View& view(int v) const;
     const View& view(const string& v) const;
 
-    const size_t& index() const;
+    size_t index() const;
     string view_name(size_t id) const;
 
     euclid_vector<double,3>    sector_to_clas(const euclid_vector<double,3>& v   ) const;
@@ -185,9 +185,9 @@ inline
 string Sector::view_name(size_t id) const
 {
     static const map<size_t,string> view_index_map {
-        {size_t(0), "1a"},
-        {1, "1b"},
-        {2, "2" } };
+        {size_t(0), "u"},
+        {1, "v"},
+        {2, "w" } };
 
     return view_index_map.at(id);
 }

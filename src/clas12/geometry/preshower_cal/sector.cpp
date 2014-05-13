@@ -21,7 +21,7 @@ using ::clas12::geometry::PreshowerCal;
  * \param [in] idx the index of this sector in vector<Sector>
  *             held by parent PreshowerCal.
  **/
-Sector::Sector(const PreshowerCal* pcal, const size_t& idx)
+Sector::Sector(const PreshowerCal* pcal, size_t idx)
 : _pcal(pcal)
 , _idx(idx)
 {}
@@ -37,7 +37,7 @@ Sector::Sector(const PreshowerCal* pcal, const size_t& idx)
  * \param [in] idx the index of this sector in vector<Sector>
  *             held by parent PreshowerCal.
  **/
-Sector::Sector(const Sector& that, const PreshowerCal* pcal, const size_t& idx)
+Sector::Sector(const Sector& that, const PreshowerCal* pcal, size_t idx)
 : _pcal(pcal)
 , _idx(idx)
 {
