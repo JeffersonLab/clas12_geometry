@@ -267,6 +267,34 @@ string Request::generate_xml()
                     }
                 }
             }
+            else if (sys == "pcal")
+            {
+                PreshowerCal pcal(calib.get());
+
+                for (const auto& item : req.second)
+                {
+                    if (item == "strip_endpoints")
+                    {
+                        //strip_wire_endpoints_xml(doc, pcal, coords, units);
+                    }
+                    else if (item == "core_params")
+                    {
+                        //pcal_core_params_xml(doc, pcal, units);
+                    }
+                    else if (item == "volumes")
+                    {
+                        //pcal_volumes_xml(doc, pcal);
+                    }
+                    else
+                    {
+                        string err = "Error: Bad request for PCAL geometry:"
+                            " pcal/" + item +
+                            ", " + coords + " coordinates"
+                            ", " + units + "\n";
+                        return err;
+                    }
+                }
+            }
             else if (sys == "ftof")
             {
                 ForwardTOF ftof(calib.get());

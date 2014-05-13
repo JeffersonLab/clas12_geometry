@@ -58,8 +58,13 @@ View::View(const Sector* sector, size_t idx)
 View::View(const View& that, const Sector* sector, size_t idx)
 : _sector(sector)
 , _idx(idx)
-, _layers(that._layers)
-{}
+{
+    for (size_t i=0; i<that._layers.size(); i++)
+    {
+        const Layer& lyr = *that._layers[i];
+        _layers.emplace_back(new Layer(lyr,this,i));
+    }
+}
 
 /**
  * \brief get the name of this view (u, v or w)

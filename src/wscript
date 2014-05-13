@@ -6,23 +6,27 @@ def build(ctx):
     ctx.shlib(
         target = 'clas12_geometry',
         source = '''\
-            clas12/geometry/forward_tof.cpp
-            clas12/geometry/forward_tof/panel.cpp
-            clas12/geometry/forward_tof/sector.cpp
-            clas12/geometry/drift_chamber.cpp
-            clas12/geometry/drift_chamber/superlayer.cpp
-            clas12/geometry/drift_chamber/guardlayer.cpp
-            clas12/geometry/drift_chamber/region.cpp
-            clas12/geometry/drift_chamber/sector.cpp
-            clas12/geometry/drift_chamber/senselayer.cpp
-            clas12/geometry/coordsys.cpp
-            clas12/geometry/central_tracker.cpp
-            clas12/geometry/request.cpp
             clas12/geometry/central_tracker/barrel_svt.cpp
             clas12/geometry/central_tracker/barrel_svt/layer.cpp
             clas12/geometry/central_tracker/barrel_svt/region.cpp
             clas12/geometry/central_tracker/barrel_svt/sector.cpp
+            clas12/geometry/central_tracker.cpp
             clas12/geometry/central_tracker/forward_svt.cpp
+            clas12/geometry/coordsys.cpp
+            clas12/geometry/drift_chamber.cpp
+            clas12/geometry/drift_chamber/guardlayer.cpp
+            clas12/geometry/drift_chamber/region.cpp
+            clas12/geometry/drift_chamber/sector.cpp
+            clas12/geometry/drift_chamber/senselayer.cpp
+            clas12/geometry/drift_chamber/superlayer.cpp
+            clas12/geometry/forward_tof.cpp
+            clas12/geometry/forward_tof/panel.cpp
+            clas12/geometry/forward_tof/sector.cpp
+            clas12/geometry/preshower_cal.cpp
+            clas12/geometry/preshower_cal/layer.cpp
+            clas12/geometry/preshower_cal/sector.cpp
+            clas12/geometry/preshower_cal/view.cpp
+            clas12/geometry/request.cpp
         '''.split(),
 
         includes = ['.'],

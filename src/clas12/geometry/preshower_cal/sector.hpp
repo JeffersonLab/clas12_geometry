@@ -136,7 +136,7 @@ inline const View& Sector::view(const string& v) const
  * \return const reference to Sector::_idx
  **/
 inline
-const size_t& Sector::index() const
+size_t Sector::index() const
 {
     return _idx;
 }

@@ -17,6 +17,8 @@ using std::endl;
 
 #include "clas12/geometry/coordsys.hpp"
 
+#include "layer.hpp"
+
 namespace clas12
 {
 namespace geometry
@@ -72,6 +74,9 @@ class View
     /// \brief collection of Layers in this View
     vector<unique_ptr<Layer>> _layers;
 
+    /// \brief convert negative index to run from the end of the vector
+    size_t layer_index(int idx) const;
+
     /// \brief deleted copy constructor
     View(const View&) = delete;
 
@@ -113,9 +118,9 @@ inline const vector<unique_ptr<Layer>>& View::layers() const
  * \return copy of View::_layer[p]
  **/
 inline
-bool View::layer(const int& p) const
+const Layer& View::layer(int l) const
 {
-    return _layers[layer_index(p)];
+    return *_layers[layer_index(l)];
 }
 
 /**
@@ -134,7 +139,7 @@ size_t View::nlayers() const
  * \return unsigned int index of the layer in this view
  **/
 inline
-size_t View::layer_index(const int& p) const
+size_t View::layer_index(int p) const
 {
     return p<0 ? (_layers.size()+p) : p;
 }

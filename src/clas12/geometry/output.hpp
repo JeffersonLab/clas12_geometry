@@ -7,4 +7,6 @@
 #include "output/ftof_panels_parms.hpp"
 #include "output/ftof_volumes.hpp"
 
+#include "preshower_cal.hpp"
+
 #endif // CLAS12_GEOMETRY_OUTPUT_HPP
