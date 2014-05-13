@@ -40,12 +40,13 @@ BOOST_AUTO_TEST_CASE(constructor)
 
     size_t npanels = 3;
     vector<size_t> npaddles{23,62,5};
-    vector<double> paddle_width{15.0,6.0,22.0};
-    vector<double> paddle_thickness{5.0,6.0,5.0};
-    vector<double> panel_thtilt{25.0,25.0,57.8};
-    vector<double> panel_thmin{4.336,3.669,34.585};
-    vector<double> panel_dist2edge{731.896,717.235,661.784};
-    vector<double> panel_gap{0.132,0.191,0.111};
+    vector<double> paddle_width{15.01,6.0,22.0};
+    vector<double> paddle_thickness{5.08,6.0,5.08};
+    vector<double> panel_thtilt{25.0,25.0,58.11};
+    vector<double> panel_thmin{5.453,3.667,34.698};
+    vector<double> panel_dist2edge{726.689,717.236,659.71};
+    vector<double> panel_gap{0.1384,0.04,0.302};
+    vector<double> panel_pairgap{0.0,0.20,0.0};
     vector<double> panel_wrapperthick{0.0290,0.0122,0.0290};
 
 
@@ -71,6 +72,7 @@ BOOST_AUTO_TEST_CASE(constructor)
             BOOST_CHECK_CLOSE(panel.thmin(),panel_thmin[pan]*deg2rad, 0.0001 );
             BOOST_CHECK_CLOSE(panel.dist2edge(),panel_dist2edge[pan], 0.0001 );
             BOOST_CHECK_CLOSE(panel.paddle_gap(),panel_gap[pan], 0.0001 );
+            //BOOST_CHECK_CLOSE(panel.paddle_pairgap(),panel_pairgap[pan], 0.0001 );
             BOOST_CHECK_CLOSE(panel.wrapper_thickness(),panel_wrapperthick[pan], 0.0001 );
             //clog<<panel.paddle_center_x(0)<<"  "<<panel.paddle_center_x(11)<<"  "<<
               //  panel.paddle_center_z(0)<<"  "<<panel.paddle_center_z(11)<<
@@ -114,7 +116,7 @@ BOOST_AUTO_TEST_CASE(ftof_paddle_centers)
 
             for (size_t pad=0; pad<panel.npaddles(); pad++)
             {
-                clog << sec << " " << pan << " " << pad << " " << panel.paddle_center(pad) << endl;
+                //clog << sec << " " << pan << " " << pad << " " << panel.paddle_center(pad) << endl;
             }
         }
     }
