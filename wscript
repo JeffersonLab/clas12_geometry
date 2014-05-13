@@ -109,7 +109,7 @@ def configure(ctx):
     ctx.check_cxx(
         uselib_store = 'CCDB',
         lib          = ['ccdb'],
-        header_name  = ['CCDB/Providers/MySQLDataProvider.h'],
+        header_name  = ['CCDB/Calibration.h', 'CCDB/CalibrationGenerator.h'],
         use          = 'MYSQL',
         msg          = 'Checking for CCDB')
 

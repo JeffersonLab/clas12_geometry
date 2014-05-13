@@ -37,6 +37,7 @@ using std::stringstream;
 using std::ctime;
 
 using std::runtime_error;
+using std::invalid_argument;
 
 using boost::regex;
 using boost::split;
@@ -138,7 +139,14 @@ Request::Request(const map<string,string>& req)
         }
         else if (r.first == "run")
         {
-            csinfo.run = lexical_cast<int>(r.second);
+            try
+            {
+                csinfo.run = lexical_cast<int>(r.second);
+            }
+            catch (...)
+            {
+                throw invalid_argument("could not convert run number to integer.");
+            }
         }
         else if (r.first == "variation")
         {
@@ -146,7 +154,14 @@ Request::Request(const map<string,string>& req)
         }
         else if (r.first == "timestamp")
         {
-            csinfo.timestamp = parse_timestamp(r.second);
+            try
+            {
+                csinfo.timestamp = parse_timestamp(r.second);
+            }
+            catch (...)
+            {
+                throw invalid_argument("could not interpret timestamp.");
+            }
         }
         else if (r.first == "sqlite")
         {
@@ -171,13 +186,20 @@ Request::Request(const map<string,string>& req)
         else if (r.first == "mysql-port")
         {
             mysql_info = true;
-            conninfo_mysql.port = lexical_cast<int>(r.second);
+            try
+            {
+                conninfo_mysql.port = lexical_cast<int>(r.second);
+            }
+            catch (...)
+            {
+                throw invalid_argument("could not convert mysql port number to integer.");
+            }
         }
     }
 
     if (sqlite_info && mysql_info)
     {
-        throw logic_error("mysql and sqlite options are mutually exclusive.");
+        throw invalid_argument("mysql and sqlite options are mutually exclusive.");
     }
     else if (sqlite_info)
     {

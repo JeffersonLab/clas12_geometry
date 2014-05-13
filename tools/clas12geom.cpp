@@ -81,7 +81,7 @@ int main(int argc, char** argv)
 
     if (vm.count("help"))
     {
-        clog << options << endl << endl;;
+        clog << options << endl << endl;
         clog << clas12::geometry::Request::desc;
         exit(0);
     }
