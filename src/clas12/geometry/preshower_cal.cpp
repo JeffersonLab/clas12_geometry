@@ -94,7 +94,97 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
 
     using namespace preshower_cal;
 
+// the nominal geometry parameters for the PCAL.
+// These numbers come from three tables:
+    ConstantsTable table_pcal(calib,"/geometry/pcal/pcal");
+    ConstantsTable table_view_u(calib,"/geometry/pcal/view_u");
+    ConstantsTable table_view_vw(calib,"/geometry/pcal/view_vw");
+
+    #ifdef DEBUG
+    clog << "pcal...\n";
+    #endif
+    size_t nsectors      = table_pcal.elem<size_t>("nsectors"); // n
+    size_t nviews        = table_pcal.elem<size_t>("nviews"); // n
+    size_t nlayers       = table_pcal.elem<size_t>("nlayers"); // n
+    double view_angle    = table_pcal.elem<size_t>("view_angle")*deg2rad;//n
+    double wrapper_thick = table_pcal.elem<size_t>("wrapper_thick")*0.1;//cm
+
+    #ifdef DEBUG
+    clog << "nsectors: "      << nsectors << endl;
+    clog << "nviews: "        << nviews << endl;
+    clog << "nlayers: "       << nlayers<<endl;
+    clog << "view_angle: "    << view_angle<<endl;
+    clog << "wrapper_thick: " << wrapper_thick <<endl;
+
+    #endif
+
+    #ifdef DEBUG
+    clog << "views...\n";
+    #endif
+
+
+
+    vector<vector<double>> strip_width =
+    {
+        table_view_u.col<double>("strip_width"), // mm
+        table_view_vw.col<double>("strip_width") // mm
+    };
+
+ // Now we fill the sectors object which holds all these
+    // core parameters. Here, many numbers will be redundant.
+    // It is expected that this will change once efficiency
+    // alignment and other calibrations are taken into effect.
+    _sectors.clear();
+
+    for (size_t sec=0; sec<nsectors; sec++)
+    {
+        _sectors.emplace_back(new PCalSector(this,sec));
+        PCalSector& sector = *_sectors[sec];
+        sector._views.clear();
+
+        for (size_t iview=0; iview<nviews; iview++)
+        {
+            sector._views.emplace_back(new View(&sector,iview));
+            View& view = *sector._views[iview];
+
+
+            for (size_t lyr=0; lyr<nlayers; lyr++)
+            {
+                view._layers.emplace_back(new Layer(&view,lyr));
+                Layer& layer = *view._layers[lyr];
+
+                layer._strips.clear();
+
+
+                layer._strip_width.resize(strip_width[lyr].size());
+
+
+                for (int i=0; i<layer._strip_width.size(); i++)
+                {
+                    layer._strip_width[i] = layer._strip_width[i]*0.1; // convert to cm
+                }
+
+            layer._strips.assign(strip_width[lyr].size(),true);
+            }
+
+        }
+    }
+
+    #ifdef DEBUG
+    clog << "done fetching numbers from database for PCAL.\n";
+    #endif
 }
+
+
+
+
+
+
+
+
+
+
+
 
 } // namespace clas12::geometry
 } // namespace clas12
