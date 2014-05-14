@@ -8,5 +8,6 @@
 #include "output/ftof_volumes.hpp"
 
 #include "preshower_cal.hpp"
+#include "high_threshold_cerenkov.hpp"
 
 #endif // CLAS12_GEOMETRY_OUTPUT_HPP

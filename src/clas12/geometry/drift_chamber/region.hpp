@@ -46,15 +46,15 @@ class Region
     const Sector& sector() const;
 
     const vector<unique_ptr<Superlayer>>& superlayers() const;
-    const Superlayer& superlayer(const int& slyr) const;
+    const Superlayer& superlayer(int slyr) const;
 
-    const double& dist2tgt() const;
-    const double& frontgap() const;
-    const double& midgap() const;
-    const double& backgap() const;
-    const double& thopen() const;
-    const double& thtilt() const;
-    const double& xdist() const;
+    double dist2tgt() const;
+    double frontgap() const;
+    double midgap() const;
+    double backgap() const;
+    double thopen() const;
+    double thtilt() const;
+    double xdist() const;
 
     // methods in cpp file
     double thickness() const;
@@ -65,8 +65,8 @@ class Region
     euclid_vector<double,3> center(coordsys_t coordsys=COORDSYS::SECTOR) const;
 
   private:
-    Region(const Sector* sector, const size_t& idx);
-    Region(const Region& that, const Sector* sector, const size_t& idx);
+    Region(const Sector* sector, size_t idx);
+    Region(const Region& that, const Sector* sector, size_t idx);
 
     /// \brief a pointer to the parent sector
     const Sector* _sector;
@@ -104,7 +104,7 @@ class Region
     double _xdist;
 
     // private inline methods
-    size_t superlayer_index(const int& idx) const;
+    size_t superlayer_index(int idx) const;
 
     /// \brief deleted copy constructor
     Region(const Region&) = delete;
@@ -148,7 +148,7 @@ const vector<unique_ptr<Superlayer>>& Region::superlayers() const
  * \return const reference to Region::_superlayers[slyr]
  **/
 inline
-const Superlayer& Region::superlayer(const int& slyr) const
+const Superlayer& Region::superlayer(int slyr) const
 {
     return *_superlayers[this->superlayer_index(slyr)];
 }
@@ -162,7 +162,7 @@ const Superlayer& Region::superlayer(const int& slyr) const
  * \return const reference to Region::_dist2tgt
  **/
 inline
-const double& Region::dist2tgt() const
+double Region::dist2tgt() const
 {
     return _dist2tgt;
 }
@@ -172,7 +172,7 @@ const double& Region::dist2tgt() const
  * \return const reference to Region::_frontgap
  **/
 inline
-const double& Region::frontgap() const
+double Region::frontgap() const
 {
     return _frontgap;
 }
@@ -187,7 +187,7 @@ const double& Region::frontgap() const
  * \return const reference to Region::_midgap
  **/
 inline
-const double& Region::midgap() const
+double Region::midgap() const
 {
     return _midgap;
 }
@@ -197,7 +197,7 @@ const double& Region::midgap() const
  * \return const reference to Region::_backgap
  **/
 inline
-const double& Region::backgap() const
+double Region::backgap() const
 {
     return _backgap;
 }
@@ -207,7 +207,7 @@ const double& Region::backgap() const
  * \return const reference to Region::_thopen (radians)
  **/
 inline
-const double& Region::thopen() const
+double Region::thopen() const
 {
     return _thopen;
 }
@@ -221,7 +221,7 @@ const double& Region::thopen() const
  * \return const reference to Region::_thtilt (radians)
  **/
 inline
-const double& Region::thtilt() const
+double Region::thtilt() const
 {
     return _thtilt;
 }
@@ -235,7 +235,7 @@ const double& Region::thtilt() const
  * \return const reference to Region::_xdist
  **/
 inline
-const double& Region::xdist() const
+double Region::xdist() const
 {
     return _xdist;
 }
@@ -246,7 +246,7 @@ const double& Region::xdist() const
  * \return unsigned int index of the superlayer in this region
  **/
 inline
-size_t Region::superlayer_index(const int& idx) const
+size_t Region::superlayer_index(int idx) const
 {
     return idx<0 ? (_superlayers.size()+idx) : idx;
 }

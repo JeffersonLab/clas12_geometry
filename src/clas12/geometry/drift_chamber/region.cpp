@@ -32,7 +32,7 @@ using ::geometry::plane;
  * \param [in] idx the index of this region in vector<Region>
  *             held by parent Sector.
  **/
-Region::Region(const Sector* sector, const size_t& idx)
+Region::Region(const Sector* sector, size_t idx)
 : _sector(sector)
 , _idx(idx)
 {
@@ -49,7 +49,7 @@ Region::Region(const Sector* sector, const size_t& idx)
  * \param [in] idx the index of this region in vector<Region>
  *             held by parent Sector.
  **/
-Region::Region(const Region& that, const Sector* sector, const size_t& idx)
+Region::Region(const Region& that, const Sector* sector, size_t idx)
 : _sector(sector)
 , _idx(idx)
 , _dist2tgt(that._dist2tgt)

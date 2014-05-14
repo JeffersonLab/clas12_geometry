@@ -67,8 +67,8 @@ DriftChamber& DriftChamber::operator=(const DriftChamber& that)
  * This calls DriftChamber::fetch_nominal_parameters(dataprovider)
  **/
 DriftChamber::DriftChamber( Calibration* calib,
-                            const bool& quiet /*= false*/,
-                            const bool& verbose /*= false*/ )
+                            bool quiet,
+                            bool verbose )
 {
     fetch_nominal_parameters(calib);
 }
@@ -218,5 +218,5 @@ void DriftChamber::fetch_nominal_parameters(Calibration* calib)
     #endif
 }
 
-} /* namespace clas12::geometry */
-} /* namespace clas12 */
+} // namespace clas12::geometry
+} // namespace clas12

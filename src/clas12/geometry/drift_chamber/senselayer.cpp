@@ -360,6 +360,6 @@ plane<double> Senselayer::wire_plane(coordsys_t coordsys) const
     };
 }
 
-} /* namespace clas12::geometry::drift_chamber */
-} /* namespace clas12::geometry */
-} /* namespace clas12 */
+} // namespace clas12::geometry::drift_chamber
+} // namespace clas12::geometry
+} // namespace clas12

@@ -1,15 +1,15 @@
 #include <cstddef>
 
-#include "clas12/geometry/drift_chamber.hpp"
+#include "clas12/geometry/high_threshold_cerenkov.hpp"
 
 namespace clas12
 {
 namespace geometry
 {
-namespace drift_chamber
+namespace high_threshold_cerenkov
 {
 
-using ::clas12::geometry::DriftChamber;
+using ::clas12::geometry::HighThresholdCerenkov;
 
 /**
  * \brief constructor.
@@ -17,12 +17,12 @@ using ::clas12::geometry::DriftChamber;
  * This forces the sector to have a parent drift chamber
  * object pointer.
  *
- * \param [in] drift_chamber a pointer to the parent DriftChamber class
+ * \param [in] high_threshold_cerenkov a pointer to the parent HighThresholdCerenkov class
  * \param [in] idx the index of this sector in vector<Sector>
- *             held by parent DriftChamber.
+ *             held by parent HighThresholdCerenkov.
  **/
-Sector::Sector(const DriftChamber* dc, size_t idx)
-: _dc(dc)
+Sector::Sector(const HighThresholdCerenkov* htcc, size_t idx)
+: _htcc(htcc)
 , _idx(idx)
 {
 }
@@ -30,21 +30,25 @@ Sector::Sector(const DriftChamber* dc, size_t idx)
 /**
  * \brief copy constructor.
  *
- * This forces the sector to have a parent drift chamber
+ * This forces the sector to have a parent HTCC
  * object pointer.
  *
  * \param [in] that the Sector being copied
- * \param [in] drift_chamber a pointer to the parent DriftChamber class
+ * \param [in] high_threshold_cerenkov a pointer to the parent HighThresholdCerenkov class
  * \param [in] idx the index of this sector in vector<Sector>
- *             held by parent DriftChamber.
+ *             held by parent HighThresholdCerenkov.
  **/
-Sector::Sector(const Sector& that, const DriftChamber* dc, size_t idx)
-: _dc(dc)
+Sector::Sector(const Sector& that, const HighThresholdCerenkov* htcc, size_t idx)
+: _htcc(htcc)
 , _idx(idx)
 {
-    for(const unique_ptr<Region>& region : that._regions)
+    for (const unique_ptr<Mirror>& mirror : that._mirrors_left)
     {
-        _regions.emplace_back(new Region(*region,this,region->_idx));
+        _mirrors_left.emplace_back(new Mirror(*mirror,this,mirror->_idx));
+    }
+    for (const unique_ptr<Mirror>& mirror : that._mirrors_right)
+    {
+        _mirrors_right.emplace_back(new Mirror(*mirror,this,mirror->_idx));
     }
 }
 
@@ -85,7 +89,6 @@ plane<double> Sector::sector_to_clas(const plane<double>& p) const
         this->sector_to_clas(p.normal()) };
 }
 
-
-} // namespace clas12::geometry::drift_chamber
+} // namespace clas12::geometry::high_threshold_cerenkov
 } // namespace clas12::geometry
 } // namespace clas12

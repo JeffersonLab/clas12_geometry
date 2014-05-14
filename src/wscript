@@ -22,6 +22,9 @@ def build(ctx):
             clas12/geometry/forward_tof.cpp
             clas12/geometry/forward_tof/panel.cpp
             clas12/geometry/forward_tof/sector.cpp
+            clas12/geometry/high_threshold_cerenkov.cpp
+            clas12/geometry/high_threshold_cerenkov/mirror.cpp
+            clas12/geometry/high_threshold_cerenkov/sector.cpp
             clas12/geometry/preshower_cal.cpp
             clas12/geometry/preshower_cal/layer.cpp
             clas12/geometry/preshower_cal/sector.cpp

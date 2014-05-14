@@ -38,13 +38,13 @@ class DriftChamber
     DriftChamber();
     DriftChamber(const DriftChamber& that);
     DriftChamber( ccdb::Calibration* calib,
-                  const bool& quiet = false,
-                  const bool& verbose = false );
+                  bool quiet = false,
+                  bool verbose = false );
     DriftChamber& operator=(const DriftChamber& that);
 
     // inline members
     const vector<unique_ptr<DCSector>>& sectors() const;
-    const DCSector& sector(const size_t& sec) const;
+    const DCSector& sector(size_t sec) const;
 
     // members in cpp file
     void fetch_nominal_parameters(ccdb::Calibration* calib);
@@ -71,7 +71,7 @@ const vector<unique_ptr<DCSector>>& DriftChamber::sectors() const
  * \return const reference to DriftChamber::_sectors[sec]
  **/
 inline
-const DCSector& DriftChamber::sector(const size_t& sec) const
+const DCSector& DriftChamber::sector(size_t sec) const
 {
     return *_sectors[sec];
 }
