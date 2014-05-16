@@ -52,6 +52,7 @@ class Layer
     bool strip(int p) const;
 
     size_t nstrips() const;
+    double strip_width(int p) const;
 
     // methods in cpp file
 
@@ -68,6 +69,10 @@ class Layer
 
     /// \brief the strips in this view are either on or off
     vector<bool> _strips;
+
+    /// \brief strip width
+    vector<double> _strip_width;
+
 
     // private inline methods
     size_t strip_index(int idx) const;
@@ -118,6 +123,18 @@ bool Layer::strip(int p) const
 {
     return _strips[strip_index(p)];
 }
+
+/**
+ * \brief Get the width of strips in this view
+ * \param [in] p a strip in this view (counting from zero)
+ * \return copy of Layer::_strip[p]
+ **/
+inline
+double Layer::strip_width(int p) const
+{
+    return _strip_width[strip_index(p)];
+}
+
 
 /**
  * \brief Get the number of strips in this view
