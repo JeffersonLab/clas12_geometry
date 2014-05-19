@@ -1,7 +1,3 @@
-#include <iostream>
-using std::cout;
-using std::endl;
-
 #include "request.hpp"
 
 #include <iostream>
@@ -30,8 +26,6 @@ namespace geometry
 
 using std::boolalpha;
 using std::noboolalpha;
-using std::clog;
-using std::endl;
 
 using std::stringstream;
 using std::ctime;

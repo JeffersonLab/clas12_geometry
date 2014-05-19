@@ -3,7 +3,7 @@
 
 def configure(ctx):
     ctx.parse_flags('-fPIC', 'PIC')
-    ctx.env.INCLUDES_PUGIXML = ['#ext/pugixml/src']
+    ctx.env.append_unique('INCLUDES_PUGIXML', ['#ext/pugixml/src'])
 
 def build(ctx):
     pugixml_lib = ctx.stlib(

@@ -1,7 +1,3 @@
-#include <iostream>
-using std::clog;
-using std::endl;
-
 #include <cstddef>
 #include <numeric>
 #include <string>
@@ -9,6 +5,8 @@ using std::endl;
 
 #include "geometry/euclid_vector.hpp"
 #include "clas12/ccdb/constants_table.hpp"
+
+#include "clas12/log.hpp"
 
 #include "forward_tof.hpp"
 
@@ -87,9 +85,7 @@ ForwardTOF::ForwardTOF( Calibration* calib,
  **/
 void ForwardTOF::fetch_nominal_parameters(Calibration* calib)
 {
-    #ifdef DEBUG
-    clog << "ForwardTOF::fetch_nominal_parameters()...\n";
-    #endif
+    LOG(debug) << "ForwardTOF::fetch_nominal_parameters()...\n";
     static const double deg2rad = 3.14159265358979 / 180.;
 
     using namespace forward_tof;
@@ -104,20 +100,14 @@ void ForwardTOF::fetch_nominal_parameters(Calibration* calib)
     ConstantsTable table_p1b_pad(calib,"/geometry/ftof/panel1b/paddles");
     ConstantsTable table_p2_pad(calib,"/geometry/ftof/panel2/paddles");
 
-    #ifdef DEBUG
-    clog << "ftof...\n";
-    #endif
+    LOG(debug) << "ftof...\n";
     size_t nsectors = table_ftof.elem<size_t>("nsectors"); // n
     size_t npanels  = table_ftof.elem<size_t>("npanels"); // n
 
-    #ifdef DEBUG
-    clog << "nsectors: " << nsectors << endl;
-    clog << "npanels: " <<  npanels << endl;
-    #endif
+    LOG(debug) << "nsectors: " << nsectors << endl
+               << "npanels: " <<  npanels << endl;
 
-    #ifdef DEBUG
-    clog << "panels...\n";
-    #endif
+    LOG(debug) << "panels...\n";
 
     vector<double> paddle_width = {
             table_p1a.elem<double>("paddlewidth"), // cm
@@ -156,9 +146,7 @@ void ForwardTOF::fetch_nominal_parameters(Calibration* calib)
             table_p1b.elem<double>("wrapperthickness"), // cm
             table_p2.elem<double>("wrapperthickness") };// cm
 
-    #ifdef DEBUG
-    clog << "paddles...\n";
-    #endif
+    LOG(debug) << "paddles...\n";
     vector<vector<double>> paddle_meas_lengths = {
             table_p1a_pad.col<double>("Length"), // cm
             table_p1b_pad.col<double>("Length"), // cm
@@ -228,7 +216,7 @@ void ForwardTOF::fetch_nominal_parameters(Calibration* calib)
     }
 
     #ifdef DEBUG
-    clog << "done fetching numbers from database for FTOF.\n";
+    LOG(debug) << "done fetching numbers from database for FTOF.\n";
     #endif
 }
 

@@ -1,9 +1,3 @@
-#ifdef DEBUG
-#include <iostream>
-using std::clog;
-using std::endl;
-#endif
-
 #include <cstddef>
 #include <numeric>
 #include <string>
@@ -12,6 +6,8 @@ using std::endl;
 #include "clas12/ccdb/constants_table.hpp"
 
 #include "drift_chamber.hpp"
+
+#include "clas12/log.hpp"
 
 namespace clas12
 {
@@ -86,9 +82,9 @@ DriftChamber::DriftChamber( Calibration* calib,
  **/
 void DriftChamber::fetch_nominal_parameters(Calibration* calib)
 {
-    #ifdef DEBUG
-    clog << "DriftChamber::fetch_nominal_parameters()...\n";
-    #endif
+
+    LOG(debug) << "DriftChamber::fetch_nominal_parameters()...\n";
+
     static const double deg2rad = 3.14159265358979 / 180.;
     using namespace drift_chamber;
 
@@ -97,21 +93,21 @@ void DriftChamber::fetch_nominal_parameters(Calibration* calib)
     // These numbers come from four tables: dc, region, superlayer,
     // and layer.
 
-    #ifdef DEBUG
-    clog << "dc...\n";
-    #endif
+
+    LOG(debug) << "dc...\n";
+
     ConstantsTable table_dc(calib,"/geometry/dc/dc");
     size_t nsectors = table_dc.elem<size_t>("nsectors"); // n
     size_t nregions = table_dc.elem<size_t>("nregions"); // n
 
-    #ifdef DEBUG
-    clog << "nsectors: " << nsectors << endl;
-    clog << "nregions: " << nregions << endl;
-    #endif
 
-    #ifdef DEBUG
-    clog << "region...\n";
-    #endif
+    LOG(debug) << "nsectors: " << nsectors << endl;
+    LOG(debug) << "nregions: " << nregions << endl;
+
+
+
+    LOG(debug) << "region...\n";
+
     ConstantsTable table_r(calib,"/geometry/dc/region");
     vector<size_t> nsuperlayers = table_r.col<size_t>("nsuperlayers"); // n
     vector<double> dist2tgt = table_r.col<double>("dist2tgt"); // cm
@@ -122,9 +118,9 @@ void DriftChamber::fetch_nominal_parameters(Calibration* calib)
     vector<double> thtilt   = table_r.col<double>("thtilt"); // deg
     vector<double> xdist    = table_r.col<double>("xdist"); // cm
 
-    #ifdef DEBUG
-    clog << "superlayer...";
-    #endif
+
+    LOG(debug) << "superlayer...";
+
     ConstantsTable table_sl(calib,"/geometry/dc/superlayer");
     vector<size_t> nsenselayers  = table_sl.col<size_t>("nsenselayers"); // n
     vector<size_t> nguardlayers  = table_sl.col<size_t>("nguardlayers"); // n
@@ -134,9 +130,9 @@ void DriftChamber::fetch_nominal_parameters(Calibration* calib)
     vector<double> wpdist        = table_sl.col<double>("wpdist"); // cm
     vector<double> cellthickness = table_sl.col<double>("cellthickness"); // n(wpdist)
 
-    #ifdef DEBUG
-    clog << "layer...";
-    #endif
+
+    LOG(debug) << "layer...";
+
     ConstantsTable table_l(calib,"/geometry/dc/layer");
     size_t nsensewires = table_l.elem<size_t>("nsensewires"); // n
     size_t nguardwires = table_l.elem<size_t>("nguardwires"); // n
@@ -213,9 +209,9 @@ void DriftChamber::fetch_nominal_parameters(Calibration* calib)
         }
     }
 
-    #ifdef DEBUG
-    clog << "done fetching numbers from database for DC.\n";
-    #endif
+
+    LOG(debug) << "done fetching numbers from database for DC.\n";
+
 }
 
 } // namespace clas12::geometry

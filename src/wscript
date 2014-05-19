@@ -30,6 +30,7 @@ def build(ctx):
             clas12/geometry/preshower_cal/sector.cpp
             clas12/geometry/preshower_cal/view.cpp
             clas12/geometry/request.cpp
+            clas12/log.cpp
         '''.split(),
 
         includes = ['.'],

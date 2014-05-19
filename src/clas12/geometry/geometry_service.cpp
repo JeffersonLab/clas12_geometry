@@ -15,6 +15,8 @@
 
 #include "clas12/geometry/request.hpp"
 
+#include "clas12/log.hpp"
+
 namespace clas12
 {
 namespace geometry
@@ -22,7 +24,6 @@ namespace geometry
 
 using std::boolalpha;
 using std::noboolalpha;
-using std::clog;
 using std::endl;
 
 using std::string;
@@ -78,11 +79,11 @@ CioSerial::UniquePtr GeometryService::executeService(const PropertyList& plist)
     // initialize request
     Request request(req);
 
-    clog << request.info();
+    LOG(info) << request.info();
 
     string out_str = request.generate_xml();
 
-    clog << out_str << endl;
+    LOG(info) << out_str << endl;
 
     // prepare output
     CioSerial::UniquePtr out;
@@ -113,15 +114,15 @@ CioSerial::UniquePtr GeometryService::executeService(const CioSerial::SharedPtr&
         case MimeType::PROPERTY_LIST:
         {
             PropertyList pl = in->getPropertyList();
-            clog << "input property list: " << pl.getPackedString() << endl;
+            LOG(info) << "input property list: " << pl.getPackedString() << endl;
             out = this->executeService(pl);
             break;
         }
         default:
         {
             string expected_mime_type = mimeTypeToString(MimeType::PROPERTY_LIST);
-            clog << "    Bad input mime-type: "
-                 << mimeTypeToString(in->getMimeType()) << endl;
+            LOG(error) << "    Bad input mime-type: "
+                       << mimeTypeToString(in->getMimeType()) << endl;
             out = make_unique<CioSerial>();
             out->setData( string("rejected: ") + \
                 "input was not of mime-type: " + \

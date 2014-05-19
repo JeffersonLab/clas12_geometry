@@ -12,6 +12,8 @@ using std::endl;
 
 #include "preshower_cal.hpp"
 
+#include "clas12/log.hpp"
+
 namespace clas12
 {
 namespace geometry
@@ -87,9 +89,7 @@ PreshowerCal::PreshowerCal( Calibration* calib,
  **/
 void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
 {
-    #ifdef DEBUG
-    clog << "PreshowerCal::fetch_nominal_parameters()...\n";
-    #endif
+    LOG(debug) << "PreshowerCal::fetch_nominal_parameters()...\n";
     static const double deg2rad = 3.14159265358979 / 180.;
 
     using namespace preshower_cal;
@@ -100,27 +100,21 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
     ConstantsTable table_view_u(calib,"/geometry/pcal/view_u");
     ConstantsTable table_view_vw(calib,"/geometry/pcal/view_vw");
 
-    #ifdef DEBUG
-    clog << "pcal...\n";
-    #endif
+    LOG(debug) << "pcal...\n";
     size_t nsectors      = table_pcal.elem<size_t>("nsectors"); // n
     size_t nviews        = table_pcal.elem<size_t>("nviews"); // n
     size_t nlayers       = table_pcal.elem<size_t>("nlayers"); // n
     double view_angle    = table_pcal.elem<size_t>("view_angle")*deg2rad;//n
     double wrapper_thick = table_pcal.elem<size_t>("wrapper_thick")*0.1;//cm
 
-    #ifdef DEBUG
-    clog << "nsectors: "      << nsectors << endl;
-    clog << "nviews: "        << nviews << endl;
-    clog << "nlayers: "       << nlayers<<endl;
-    clog << "view_angle: "    << view_angle<<endl;
-    clog << "wrapper_thick: " << wrapper_thick <<endl;
+    LOG(debug) << "nsectors: "      << nsectors << endl
+               << "nviews: "        << nviews << endl
+               << "nlayers: "       << nlayers << endl
+               << "view_angle: "    << view_angle << endl
+               << "wrapper_thick: " << wrapper_thick << endl;
 
-    #endif
 
-    #ifdef DEBUG
-    clog << "views...\n";
-    #endif
+    LOG(debug) << "views...\n";
 
 
 
@@ -170,9 +164,7 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
         }
     }
 
-    #ifdef DEBUG
-    clog << "done fetching numbers from database for PCAL.\n";
-    #endif
+    LOG(debug) << "done fetching numbers from database for PCAL.\n";
 }
 
 

@@ -52,15 +52,38 @@ def options(ctx):
         help='Build unit tests. default: %default')
 
 
+
 def configure(ctx):
     import os,re
+    from subprocess import Popen, PIPE
 
     ctx.load('compiler_cxx')
 
+    def get_system_libpath(compiler):
+        pathlist = []
+        if compiler in ['g++', 'clang++']:
+            output = Popen(compiler + ' -print-search-dirs',
+                shell=True,
+                env=os.environ,
+                executable=os.environ.get('SHELL', '/bin/bash'),
+                stdout=PIPE,
+                stderr=PIPE).communicate()[0]
+            for line in output.split('\n'):
+                if line.startswith('libraries:'):
+                    pathlist_str = line.split('=')[-1]
+                    pathlist_unnorm = pathlist_str.split(':')
+                    for p in pathlist_unnorm:
+                        pathlist += [os.path.normpath(p)]
+        return set(pathlist)
+
+    system_libpath = get_system_libpath(os.environ.get('CXX','g++'))
+
     if ctx.options.libpath != None:
-        ctx.env.LIBPATH = re.split('[:,]+', ctx.options.libpath)
+        for libpath in  re.split('[:,]+', ctx.options.libpath):
+            if libpath not in system_libpath:
+                ctx.env.append_unique('LIBPATH',libpath)
     if ctx.options.includes != None:
-        ctx.env.INCLUDES = re.split('[:,]+', ctx.options.includes)
+        ctx.env.append_unique('INCLUDES', re.split('[:,]+', ctx.options.includes))
 
     ### MANDATORY DEPENDENCIES
     try:
@@ -81,11 +104,28 @@ def configure(ctx):
     ctx.load('boost')
     ctx.check_boost()
 
-    libpath,lib_po = ctx.boost_get_libs('program_options filesystem system')
-    ctx.env.append_value('LIBPATH_BOOST',libpath)
-    ctx.env.append_value('LIB_boost_program_options', lib_po[0])
-    ctx.env.append_value('LIB_boost_filesystem', lib_po[1])
-    ctx.env.append_value('LIB_boost_system', lib_po[2])
+    boost_required_libs = '''
+        program_options
+        filesystem
+        system
+        log_setup
+        log
+        thread
+    '''.split()
+
+    for libname in boost_required_libs:
+        libpath,lib = ctx.boost_get_libs(libname)
+        if libpath not in system_lib_search_dirs:
+            ctx.env.append_unique('LIBPATH_BOOST',libpath)
+        ctx.env.append_unique('LIB_boost_'+libname, lib)
+        ctx.to_log('boost library found: {}'.format(libname))
+
+    ctx.env.append_unique('DEFINES_BOOST', ['BOOST_LOG_DYN_LINK'])
+
+    ctx.check_cxx(
+        uselib_store = 'pthread',
+        lib          = ['pthread'],
+        msg          = 'Checking for pthread')
 
     ctx.check_cfg(
         uselib_store = 'MYSQL',
@@ -98,7 +138,6 @@ def configure(ctx):
         cenvlist = []
         for ft in flagtypes:
             cenvlist += [ctx.env[ft+'_'+package_name]]
-
         for f in list_of_flags:
             for cenv in cenvlist:
                 if f in cenv:
@@ -116,15 +155,16 @@ def configure(ctx):
 
     ### OPTIONAL DEPENDENCIES
 
-    boost_libs = ['unit_test_framework']
-    for l in boost_libs:
+    boost_optional_libs = ['unit_test_framework']
+    for libname in boost_optional_libs:
         try:
-            libpath,lib = ctx.boost_get_libs(l)
-            ctx.env.append_value('LIBPATH_BOOST',libpath)
-            ctx.env.append_value('LIB_boost_'+l, lib)
-            ctx.to_log('boost library found: {}'.format(l))
+            libpath,lib = ctx.boost_get_libs(libname)
+            if libpath not in system_lib_search_dirs:
+                ctx.env.append_unique('LIBPATH_BOOST',libpath)
+            ctx.env.append_unique('LIB_boost_'+libname, lib)
+            ctx.to_log('boost library found: {}'.format(libname))
         except ctx.errors.ConfigurationError:
-            ctx.to_log('boost library not found: {}'.format(l))
+            ctx.to_log('boost library not found: {}'.format(libname))
 
     try:
         ctx.check_cxx(
@@ -168,12 +208,15 @@ def configure(ctx):
 
     ### some configuration based on the options above
     if not ctx.options.debug:
-        ctx.env.DEFINES_BOOST = ['NDEBUG']
+        ctx.env.append_unique('DEFINES_BOOST', ['NDEBUG'])
 
 
     ### recurse into external dependencies that are included
     ### with this project's source tree
     ctx.recurse('ext')
+
+    print 'boost libpath:', ctx.env.LIBPATH_BOOST
+    print 'global libpath:', ctx.env.LIBPATH
 
 
 def build(ctx):

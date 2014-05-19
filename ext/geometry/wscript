@@ -2,4 +2,4 @@
 # encoding: utf-8
 
 def configure(ctx):
-    ctx.env.INCLUDES_GEOMETRY = ['#ext/geometry/src']
+    ctx.env.append_unique('INCLUDES_GEOMETRY', ['#ext/geometry/src'])

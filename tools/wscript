@@ -14,6 +14,10 @@ def build(ctx):
                 boost_program_options
                 boost_filesystem
                 boost_system
+                boost_log_setup
+                boost_log
+                boost_thread
+                pthread
             CCDB
                 MYSQL
             GEOMETRY

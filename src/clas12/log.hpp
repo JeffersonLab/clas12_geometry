@@ -1,22 +1,35 @@
 #ifndef CLAS12_LOG_HPP
 #define CLAS12_LOG_HPP
 
-#include <boost/log/sources/severity_logger.hpp>
-#include <boost/log/sources/global_logger_storage.hpp>
+#include <ostream>
+#include <string>
 
-enum severity_level
+#include <boost/log/trivial.hpp>
+
+#define LOG(x) BOOST_LOG_TRIVIAL(x)
+
+namespace clas12
 {
-    debug = 0,
-    info  = 1,
-    warn  = 2,
-    error = 3,
-    fatal = 4
+namespace logging
+{
+    /**
+     * levels:
+     *      0  trace
+     *      1  debug
+     *      2  info
+     *      3  warning
+     *      4  error
+     *      5  fatal
+     **/
+
+    namespace log = boost::log;
+    using namespace log::trivial;
+
+    void remove_all_sinks();
+    void add_file_log(const std::string& filename);
+    void add_console_log(std::ostream& os);
+    void minimum_severity(severity_level min);
 }
-
-typedef boost::log::sources::severity_logger_mt<severity_level> logger_type;
-
-BOOST_LOG_GLOBAL_LOGGER(global_log, logger_type)
-
-#define LOG(level) BOOST_LOG_SEV(global_log::get(), level)
+}
 
 #endif // CLAS12_LOG_HPP
