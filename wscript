@@ -3,7 +3,7 @@
 
 top     = '.'
 out     = 'build'
-VERSION = '0.6.0'
+VERSION = '0.6.1'
 APPNAME = 'clas12_geometry'
 
 

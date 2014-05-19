@@ -50,7 +50,7 @@ the geometry parameters as an XML string.
 const string GeometryService::author =
     "Johann Goetz, Yelena Prok";
 const string GeometryService::version =
-    "0.6.0";
+    "0.6.1";
 
 string GeometryService::usage() const
 {
