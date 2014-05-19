@@ -16,7 +16,7 @@ using ::clas12::geometry::CentralTracker;
 using forward_svt::Region;
 
 
-/**
+/ **
  * \brief constructor.
  *
  * This forces the FST to have a parent SVT object pointer.
@@ -28,7 +28,7 @@ ForwardSVT::ForwardSVT(const CentralTracker* svt)
 {
 }
 
-/**
+/ **
  * \brief copy constructor.
  *
  * This forces the FST to have a parent SVT object pointer.
@@ -46,6 +46,7 @@ ForwardSVT::ForwardSVT(const ForwardSVT& that, const CentralTracker* svt)
     }
 }
 
-} /* namespace clas12::geometry::central_tracker * /
-} /* namespace clas12::geometry * /
-} /* namespace clas12 */
+} // namespace clas12::geometry::central_tracker
+} // namespace clas12::geometry
+} // namespace clas12
+*/

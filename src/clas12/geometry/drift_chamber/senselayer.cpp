@@ -180,6 +180,7 @@ vector<double> Senselayer::wires_mid_x() const
     {
         ret[w] = this->wire_mid_x(w);
     }
+    return ret;
 }
 
 /**
@@ -210,6 +211,7 @@ vector<double> Senselayer::wires_mid_z() const
     {
         ret[w] = this->wire_mid_z(w);
     }
+    return ret;
 }
 
 /**
