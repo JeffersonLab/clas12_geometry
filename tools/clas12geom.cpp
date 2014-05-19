@@ -6,13 +6,18 @@
 #include "boost/program_options.hpp"
 
 #include "clas12/geometry/request.hpp"
+#include "clas12/log.hpp"
 
 namespace po = boost::program_options;
 
 using namespace std;
+using namespace clas12;
 
 int main(int argc, char** argv)
 {
+    logging::add_console_log(clog);
+    logging::minimum_severity(logging::info);
+
     map<string,string> args;
 
     args["request"] = "";
@@ -81,8 +86,8 @@ int main(int argc, char** argv)
 
     if (vm.count("help"))
     {
-        clog << options << endl << endl;
-        clog << clas12::geometry::Request::desc;
+        cout << options << endl << endl;
+        cout << geometry::Request::desc;
         exit(0);
     }
 
@@ -113,17 +118,17 @@ int main(int argc, char** argv)
         args.erase(k);
     }
 
-    clas12::geometry::Request req(args);
+    geometry::Request req(args);
     string xmlbuffer = req.generate_xml();
 
-    clog << req.info() << endl;
+    LOG(info) << endl << req.info();
     cout << xmlbuffer << endl;
 
     static const string err_str = "Error";
     if (equal(err_str.begin(), err_str.end(), xmlbuffer.begin()))
     {
-        clog << options << endl << endl;;
-        clog << clas12::geometry::Request::desc;
+        cout << options << endl << endl;
+        cout << geometry::Request::desc;
         exit(1);
     }
 }

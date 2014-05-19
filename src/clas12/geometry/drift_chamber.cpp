@@ -82,8 +82,7 @@ DriftChamber::DriftChamber( Calibration* calib,
  **/
 void DriftChamber::fetch_nominal_parameters(Calibration* calib)
 {
-
-    LOG(debug) << "DriftChamber::fetch_nominal_parameters()...\n";
+    LOG(debug) << "DriftChamber::fetch_nominal_parameters()...";
 
     static const double deg2rad = 3.14159265358979 / 180.;
     using namespace drift_chamber;
@@ -94,20 +93,17 @@ void DriftChamber::fetch_nominal_parameters(Calibration* calib)
     // and layer.
 
 
-    LOG(debug) << "dc...\n";
-
+    LOG(debug) << "dc...";
     ConstantsTable table_dc(calib,"/geometry/dc/dc");
     size_t nsectors = table_dc.elem<size_t>("nsectors"); // n
     size_t nregions = table_dc.elem<size_t>("nregions"); // n
 
 
-    LOG(debug) << "nsectors: " << nsectors << endl;
-    LOG(debug) << "nregions: " << nregions << endl;
+    LOG(debug) << endl
+               << "    nsectors: " << nsectors << endl
+               << "    nregions: " << nregions;
 
-
-
-    LOG(debug) << "region...\n";
-
+    LOG(debug) << "region...";
     ConstantsTable table_r(calib,"/geometry/dc/region");
     vector<size_t> nsuperlayers = table_r.col<size_t>("nsuperlayers"); // n
     vector<double> dist2tgt = table_r.col<double>("dist2tgt"); // cm
@@ -120,7 +116,6 @@ void DriftChamber::fetch_nominal_parameters(Calibration* calib)
 
 
     LOG(debug) << "superlayer...";
-
     ConstantsTable table_sl(calib,"/geometry/dc/superlayer");
     vector<size_t> nsenselayers  = table_sl.col<size_t>("nsenselayers"); // n
     vector<size_t> nguardlayers  = table_sl.col<size_t>("nguardlayers"); // n
@@ -132,7 +127,6 @@ void DriftChamber::fetch_nominal_parameters(Calibration* calib)
 
 
     LOG(debug) << "layer...";
-
     ConstantsTable table_l(calib,"/geometry/dc/layer");
     size_t nsensewires = table_l.elem<size_t>("nsensewires"); // n
     size_t nguardwires = table_l.elem<size_t>("nguardwires"); // n
@@ -210,7 +204,7 @@ void DriftChamber::fetch_nominal_parameters(Calibration* calib)
     }
 
 
-    LOG(debug) << "done fetching numbers from database for DC.\n";
+    LOG(debug) << "done fetching numbers from database for DC.";
 
 }
 

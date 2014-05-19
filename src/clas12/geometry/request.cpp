@@ -444,7 +444,7 @@ string Request::info()
 
     ss << "  run: " << csinfo.run << "\n";
     ss << "  variation: " << csinfo.variation << "\n";
-    ss << "  timestamp: " << ctime(&csinfo.timestamp) << "\n";
+    ss << "  timestamp: " << ctime(&csinfo.timestamp);
 
     return ss.str();
 }

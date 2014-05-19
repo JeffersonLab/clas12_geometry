@@ -1,8 +1,5 @@
 #include "log.hpp"
 
-#include <memory>
-#include <iomanip>
-
 #include <boost/log/core.hpp>
 #include <boost/log/expressions.hpp>
 
@@ -18,7 +15,6 @@ namespace clas12
 {
 namespace logging
 {
-
     namespace expr = log::expressions;
     using log::core;
 

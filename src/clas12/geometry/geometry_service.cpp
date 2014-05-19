@@ -122,7 +122,7 @@ CioSerial::UniquePtr GeometryService::executeService(const CioSerial::SharedPtr&
         {
             string expected_mime_type = mimeTypeToString(MimeType::PROPERTY_LIST);
             LOG(error) << "    Bad input mime-type: "
-                       << mimeTypeToString(in->getMimeType()) << endl;
+                       << mimeTypeToString(in->getMimeType());
             out = make_unique<CioSerial>();
             out->setData( string("rejected: ") + \
                 "input was not of mime-type: " + \

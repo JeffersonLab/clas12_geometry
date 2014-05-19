@@ -85,7 +85,8 @@ ForwardTOF::ForwardTOF( Calibration* calib,
  **/
 void ForwardTOF::fetch_nominal_parameters(Calibration* calib)
 {
-    LOG(debug) << "ForwardTOF::fetch_nominal_parameters()...\n";
+    LOG(debug) << "ForwardTOF::fetch_nominal_parameters()...";
+
     static const double deg2rad = 3.14159265358979 / 180.;
 
     using namespace forward_tof;
@@ -105,9 +106,9 @@ void ForwardTOF::fetch_nominal_parameters(Calibration* calib)
     size_t npanels  = table_ftof.elem<size_t>("npanels"); // n
 
     LOG(debug) << "nsectors: " << nsectors << endl
-               << "npanels: " <<  npanels << endl;
+               << "npanels: " <<  npanels;
 
-    LOG(debug) << "panels...\n";
+    LOG(debug) << "panels...";
 
     vector<double> paddle_width = {
             table_p1a.elem<double>("paddlewidth"), // cm
@@ -146,7 +147,7 @@ void ForwardTOF::fetch_nominal_parameters(Calibration* calib)
             table_p1b.elem<double>("wrapperthickness"), // cm
             table_p2.elem<double>("wrapperthickness") };// cm
 
-    LOG(debug) << "paddles...\n";
+    LOG(debug) << "paddles...";
     vector<vector<double>> paddle_meas_lengths = {
             table_p1a_pad.col<double>("Length"), // cm
             table_p1b_pad.col<double>("Length"), // cm
@@ -215,9 +216,7 @@ void ForwardTOF::fetch_nominal_parameters(Calibration* calib)
         }
     }
 
-    #ifdef DEBUG
-    LOG(debug) << "done fetching numbers from database for FTOF.\n";
-    #endif
+    LOG(debug) << "done fetching numbers from database for FTOF.";
 }
 
 } // namespace clas12::geometry

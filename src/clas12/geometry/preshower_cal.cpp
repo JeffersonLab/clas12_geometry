@@ -89,7 +89,7 @@ PreshowerCal::PreshowerCal( Calibration* calib,
  **/
 void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
 {
-    LOG(debug) << "PreshowerCal::fetch_nominal_parameters()...\n";
+    LOG(debug) << "PreshowerCal::fetch_nominal_parameters()...";
     static const double deg2rad = 3.14159265358979 / 180.;
 
     using namespace preshower_cal;
@@ -100,7 +100,7 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
     ConstantsTable table_view_u(calib,"/geometry/pcal/view_u");
     ConstantsTable table_view_vw(calib,"/geometry/pcal/view_vw");
 
-    LOG(debug) << "pcal...\n";
+    LOG(debug) << "pcal...";
     size_t nsectors      = table_pcal.elem<size_t>("nsectors"); // n
     size_t nviews        = table_pcal.elem<size_t>("nviews"); // n
     size_t nlayers       = table_pcal.elem<size_t>("nlayers"); // n
@@ -111,10 +111,10 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
                << "nviews: "        << nviews << endl
                << "nlayers: "       << nlayers << endl
                << "view_angle: "    << view_angle << endl
-               << "wrapper_thick: " << wrapper_thick << endl;
+               << "wrapper_thick: " << wrapper_thick;
 
 
-    LOG(debug) << "views...\n";
+    LOG(debug) << "views...";
 
 
 
@@ -164,7 +164,7 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
         }
     }
 
-    LOG(debug) << "done fetching numbers from database for PCAL.\n";
+    LOG(debug) << "done fetching numbers from database for PCAL.";
 }
 
 

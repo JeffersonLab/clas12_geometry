@@ -59,33 +59,75 @@ def configure(ctx):
 
     ctx.load('compiler_cxx')
 
-    def get_system_libpath(compiler):
+    def get_system_libpath():
         pathlist = []
-        if compiler in ['g++', 'clang++']:
+
+        compiler = os.environ.get('CXX','g++')
+        if compiler in ['gcc', 'g++', 'clang', 'clang++']:
+
             output = Popen(compiler + ' -print-search-dirs',
                 shell=True,
                 env=os.environ,
                 executable=os.environ.get('SHELL', '/bin/bash'),
                 stdout=PIPE,
                 stderr=PIPE).communicate()[0]
+
             for line in output.split('\n'):
                 if line.startswith('libraries:'):
-                    pathlist_str = line.split('=')[-1]
-                    pathlist_unnorm = pathlist_str.split(':')
-                    for p in pathlist_unnorm:
-                        pathlist += [os.path.normpath(p)]
-        return set(pathlist)
+                    for p in line.split('=')[-1].split(':'):
+                        pathlist.append(os.path.normpath(p))
 
-    system_libpath = get_system_libpath(os.environ.get('CXX','g++'))
+        return pathlist
+
+    def get_system_includes():
+        pathlist = []
+
+        compiler = os.environ.get('CXX','g++')
+        if compiler in ['gcc', 'g++', 'clang', 'clang++']:
+
+            preprocessor = Popen(compiler + ' -print-prog-name=cpp',
+                shell=True,
+                env=os.environ,
+                executable=os.environ.get('SHELL', '/bin/bash'),
+                stdout=PIPE,
+                stderr=PIPE).communicate()[0].split('\n')[0]
+
+            output = Popen(preprocessor + ' -v',
+                shell=True,
+                env=os.environ,
+                executable=os.environ.get('SHELL', '/bin/bash'),
+                stdout=PIPE,
+                stderr=PIPE,
+                stdin=PIPE).communicate(input='')[1].split('\n')
+
+            in_search_list = False
+            for line in output:
+                if line.startswith('#include') and line.endswith('search starts here:'):
+                    in_search_list = True
+                elif line.startswith('End of search list'):
+                    in_search_list = False
+                elif in_search_list:
+                    pathlist.append(os.path.normpath(line))
+
+        return pathlist
+
+
+    system_libpath = get_system_libpath()
+    system_includes = get_system_includes()
+
 
     if ctx.options.libpath != None:
-        for libpath in  re.split('[:,]+', ctx.options.libpath):
+        for libpath in re.split('[:,]+', ctx.options.libpath):
             if libpath not in system_libpath:
                 ctx.env.append_unique('LIBPATH',libpath)
     if ctx.options.includes != None:
-        ctx.env.append_unique('INCLUDES', re.split('[:,]+', ctx.options.includes))
+        for incpath in re.split('[:,]+', ctx.options.includes):
+            if incpath not in system_includes:
+                ctx.env.append_unique('INCLUDES', incpath)
+
 
     ### MANDATORY DEPENDENCIES
+
     try:
         cxx11_code = '#include <array>\nint main() {}\n'
 
@@ -115,7 +157,7 @@ def configure(ctx):
 
     for libname in boost_required_libs:
         libpath,lib = ctx.boost_get_libs(libname)
-        if libpath not in system_lib_search_dirs:
+        if libpath not in system_libpath:
             ctx.env.append_unique('LIBPATH_BOOST',libpath)
         ctx.env.append_unique('LIB_boost_'+libname, lib)
         ctx.to_log('boost library found: {}'.format(libname))
@@ -159,7 +201,7 @@ def configure(ctx):
     for libname in boost_optional_libs:
         try:
             libpath,lib = ctx.boost_get_libs(libname)
-            if libpath not in system_lib_search_dirs:
+            if libpath not in system_libpath:
                 ctx.env.append_unique('LIBPATH_BOOST',libpath)
             ctx.env.append_unique('LIB_boost_'+libname, lib)
             ctx.to_log('boost library found: {}'.format(libname))
@@ -214,9 +256,6 @@ def configure(ctx):
     ### recurse into external dependencies that are included
     ### with this project's source tree
     ctx.recurse('ext')
-
-    print 'boost libpath:', ctx.env.LIBPATH_BOOST
-    print 'global libpath:', ctx.env.LIBPATH
 
 
 def build(ctx):
