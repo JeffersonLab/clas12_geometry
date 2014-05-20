@@ -84,11 +84,23 @@ namespace logging
 {
     void print_warning()
     {
-        clog << "this library was not compiled with Boost.Log.\n"
-             << "probably because your version of Boost is out-\n"
-             << "of-date. To gain control of the logging\n"
-             << "mechanism, please upgrade your version of Boost\n"
-             << "to at least 1.54\n";
+        static bool already_printed = false;
+        if (!already_printed)
+        {
+            std::clog << R"(
+#### NOTICE ####
+
+    this library was not compiled with Boost.Log.
+    probably because your version of Boost is out-
+    of-date. To gain control of the logging
+    mechanism, please upgrade your version of Boost
+    to at least 1.54
+
+################
+
+            )";
+            already_printed = true;
+        }
     }
     void remove_all_sinks() {print_warning();}
     void add_file_log(const std::string& filename) {print_warning();}

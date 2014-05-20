@@ -1,7 +1,7 @@
 #ifndef CLAS12_LOG_HPP
 #define CLAS12_LOG_HPP
 
-#include <ostream>
+#include <iostream>
 #include <string>
 
 #ifdef HAVE_BOOST_LOG
@@ -42,7 +42,7 @@ namespace clas12
 {
 namespace logging
 {
-    enum security_level
+    enum severity_level
     {
         trace,
         debug,
