@@ -42,6 +42,16 @@ namespace clas12
 {
 namespace logging
 {
+    enum security_level
+    {
+        trace,
+        debug,
+        info,
+        warning,
+        error,
+        fatal
+    };
+
     void remove_all_sinks();
     void add_file_log(const std::string& filename);
     void add_console_log(std::ostream& os);

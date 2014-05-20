@@ -82,16 +82,6 @@ namespace clas12
 {
 namespace logging
 {
-    enum security_level
-    {
-        trace,
-        debug,
-        info,
-        warning,
-        error,
-        fatal
-    };
-
     void print_warning()
     {
         clog << "this library was not compiled with Boost.Log.\n"
