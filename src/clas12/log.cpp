@@ -1,5 +1,7 @@
 #include "log.hpp"
 
+#ifdef HAVE_BOOST_LOG
+
 #include <boost/log/core.hpp>
 #include <boost/log/expressions.hpp>
 
@@ -73,3 +75,38 @@ namespace logging
     }
 }
 }
+
+#else // if not HAVE_BOOST_LOG
+
+namespace clas12
+{
+namespace logging
+{
+    enum security_level
+    {
+        trace,
+        debug,
+        info,
+        warning,
+        error,
+        fatal
+    };
+
+    void print_warning()
+    {
+        clog << "this library was not compiled with Boost.Log.\n"
+             << "probably because your version of Boost is out-\n"
+             << "of-date. To gain control of the logging\n"
+             << "mechanism, please upgrade your version of Boost\n"
+             << "to at least 1.54\n";
+    }
+    void remove_all_sinks() {print_warning();}
+    void add_file_log(const std::string& filename) {print_warning();}
+    void add_console_log(std::ostream& os) {print_warning();}
+    void minimum_severity(severity_level min) {print_warning();}
+}
+}
+
+
+#endif
+

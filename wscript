@@ -60,10 +60,9 @@ def configure(ctx):
 
     ctx.load('compiler_cxx')
 
-    def get_system_libpath():
+    def get_system_libpath(compiler):
         pathlist = []
 
-        compiler = os.environ.get('CXX','g++')
         if compiler in ['gcc', 'g++', 'clang', 'clang++']:
 
             output = Popen(compiler + ' -print-search-dirs',
@@ -80,10 +79,9 @@ def configure(ctx):
 
         return pathlist
 
-    def get_system_includes():
+    def get_system_includes(compiler):
         pathlist = []
 
-        compiler = os.environ.get('CXX','g++')
         if compiler in ['gcc', 'g++', 'clang', 'clang++']:
 
             preprocessor = Popen(compiler + ' -print-prog-name=cpp',
@@ -113,8 +111,8 @@ def configure(ctx):
         return pathlist
 
 
-    system_libpath = get_system_libpath()
-    system_includes = get_system_includes()
+    system_libpath = get_system_libpath(ctx.env.CXX)
+    system_includes = get_system_includes(ctx.env.CXX)
 
 
     if ctx.options.libpath != None:
@@ -151,9 +149,6 @@ def configure(ctx):
         program_options
         filesystem
         system
-        log_setup
-        log
-        thread
     '''.split()
 
     for libname in boost_required_libs:
@@ -198,7 +193,12 @@ def configure(ctx):
 
     ### OPTIONAL DEPENDENCIES
 
-    boost_optional_libs = ['unit_test_framework']
+    boost_optional_libs = '''
+        log_setup
+        log
+        thread
+        unit_test_framework
+    '''.split()
     for libname in boost_optional_libs:
         try:
             libpath,lib = ctx.boost_get_libs(libname)
@@ -206,6 +206,8 @@ def configure(ctx):
                 ctx.env.append_unique('LIBPATH_BOOST',libpath)
             ctx.env.append_unique('LIB_boost_'+libname, lib)
             ctx.to_log('boost library found: {}'.format(libname))
+            if libname == 'log':
+                ctx.env.append_unique('DEFINES', 'HAVE_BOOST_LOG')
         except ctx.errors.ConfigurationError:
             ctx.to_log('boost library not found: {}'.format(libname))
 
