@@ -7,6 +7,7 @@ def build(ctx):
         unit_tests = [
             ('clas12-geometry-unit-test-dc',   'clas12/geometry/drift_chamber.cpp'),
             ('clas12-geometry-unit-test-ftof', 'clas12/geometry/forward_tof.cpp'),
+            ('clas12-geometry-unit-test-pcal', 'clas12/geometry/preshower_cal.cpp'),
         ]
 
         for tgt,src in unit_tests:
@@ -18,6 +19,8 @@ def build(ctx):
                     C++11
                     BOOST
                         boost_program_options
+                        boost_filesystem
+                        boost_system
                         boost_unit_test_framework
                     MYSQL
                     CCDB
