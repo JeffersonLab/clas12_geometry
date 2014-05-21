@@ -104,8 +104,8 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
     size_t nsectors      = table_pcal.elem<size_t>("nsectors"); // n
     size_t nviews        = table_pcal.elem<size_t>("nviews"); // n
     size_t nlayers       = table_pcal.elem<size_t>("nlayers"); // n
-    double view_angle    = table_pcal.elem<size_t>("view_angle");//n
-    double wrapper_thick = table_pcal.elem<size_t>("wrapper_thick");//cm
+    double view_angle    = table_pcal.elem<double>("view_angle");//n
+    double wrapper_thick = table_pcal.elem<double>("wrapper_thick");//cm
 
     LOG(debug) << "nsectors: "      << nsectors << endl
                << "nviews: "        << nviews << endl
@@ -121,13 +121,13 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
     vector<double> strip_width_u =  table_view_u.col<double>("width");
     vector<double> strip_width_vw = table_view_vw.col<double>("width");
 
-    vector<vector<double>> strip_width =
+    /*vector<vector<double>> strip_width =
     {
         table_view_u.col<double>("width"),
         table_view_vw.col<double>("width") //mm
     };
+    */
 
-    LOG(debug) << "got widths.";
 
  // Now we fill the sectors object which holds all these
     // core parameters. Here, many numbers will be redundant.
@@ -153,9 +153,6 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
                 Layer& layer = *view._layers[lyr];
 
                 layer._strips.clear();
-                LOG(debug) <<"view = "<<iview<<"  layer = "<<lyr<<"  "<<
-                strip_width[lyr].size()<<"  "<< layer._strip_width.size()<<endl;
-
 
 
                 //layer._strip_width.resize(strip_width[lyr].size());
@@ -166,21 +163,38 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
                       layer._strip_width[i] = layer._strip_width[i]*0.1; // convert to cm
                 }*/
 
-            //layer._strips.assign(strip_width[lyr].size(),true);
+                //layer._strips.assign(strip_width[lyr].size(),true);
 
 
                    if (iview == 0)
-                    {
+                   {
+                        layer._strip_width.resize(strip_width_u.size());
+
                         for (int i = 0; i<strip_width_u.size(); i++)
                         {
                            layer._strip_width[i] = strip_width_u[i]*0.1;
+
+                          // LOG(debug) <<"view = "<<iview<<"  layer = "<<lyr<<"  "<<
+                          // i<<"  "<< layer._strip_width[i]<<endl;
+
                         }
-                    else if (iview == 1 | iview == 2)
+                        layer._strips.assign(strip_width_u.size(),true);
+                    }
+                    else if (iview == 1 || iview == 2)
+                    {
+                        layer._strip_width.resize(strip_width_vw.size());
+
                         for (int i = 0; i<strip_width_vw.size(); i++)
                         {
                            layer._strip_width[i] = strip_width_vw[i]*0.1;
+
+                           //LOG(debug) <<"view = "<<iview<<"  layer = "<<lyr<<"  "<<
+                            //i<<"  "<< layer._strip_width[i]<<endl;
                         }
+                        layer._strips.assign(strip_width_vw.size(),true);
                     }
+
+
 
             }
 
