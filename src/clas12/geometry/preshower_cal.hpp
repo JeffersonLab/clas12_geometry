@@ -49,13 +49,13 @@ class PreshowerCal
     void fetch_nominal_parameters(Calibration* calib);
 
   private:
-    /// \brief the sectors of the FTOF
+    /// \brief the sectors of PCAL
     vector<unique_ptr<PCalSector>> _sectors;
 
 };
 
 /**
- * \brief Get a vector of the sectors in the FTOF
+ * \brief Get a vector of the sectors in PCAL
  * \return const reference to PreshowerCal::_sectors
  **/
 inline
@@ -65,8 +65,8 @@ const vector<unique_ptr<PCalSector>>& PreshowerCal::sectors() const
 }
 
 /**
- * \brief Get a sector in the FTOF
- * \param [in] sec The sector index within the FTOF (counting from zero)
+ * \brief Get a sector in PCAL
+ * \param [in] sec The sector index within the PCAL (counting from zero)
  * \return const reference to PreshowerCal::_sectors[sec]
  **/
 inline

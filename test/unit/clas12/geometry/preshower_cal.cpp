@@ -45,9 +45,11 @@ BOOST_AUTO_TEST_CASE(constructor)
     double wrapper_thick = 0.25;
 
     vector<size_t> nscint{68,62,62};
-    vector<double> scint_width{15.01,6.0,22.0};
+    vector<double> scint_width_u;
+    vector<double> scint_width_vw;
 
-
+    scint_width_u.assign(52,4.5);    for (int i=0; i<16; i++) scint_width_u.push_back(9.05);
+    scint_width_vw.assign(15,9.05);  for (int i=0; i<46; i++) scint_width_vw.push_back(4.5);
 
     /// constructor with arguments
     clog << "constructor...\n";
@@ -67,9 +69,9 @@ BOOST_AUTO_TEST_CASE(constructor)
 /*
         for (size_t iview=0; iview<sector.views().size(); iview++)
         {
-            const forward_tof::Panel& panel = sector.panel(pan);
+            const preshower_cal::View& view = sector.view(iview);
 
-            clog << "sector " << sec << ", panel " << pan << endl;
+            clog << "sector " << sec << ", view " << iview << endl;
             BOOST_CHECK_EQUAL(panel.paddles().size(), npaddles[pan]);
             BOOST_CHECK_CLOSE(panel.paddle_width(),paddle_width[pan], 0.0001 );
             BOOST_CHECK_CLOSE(panel.paddle_thickness(),paddle_thickness[pan], 0.0001 );
