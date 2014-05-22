@@ -71,6 +71,7 @@ BOOST_AUTO_TEST_CASE(constructor)
         {
             const preshower_cal::View& view = sector.view(iview);
 
+
             clog << "sector " << sec << ", view " << iview << endl;
             BOOST_CHECK_EQUAL(panel.paddles().size(), npaddles[pan]);
             BOOST_CHECK_CLOSE(panel.paddle_width(),paddle_width[pan], 0.0001 );

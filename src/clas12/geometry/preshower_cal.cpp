@@ -166,7 +166,7 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
                 //layer._strips.assign(strip_width[lyr].size(),true);
 
 
-                   if (iview == 0)
+                   if (view.name() == "u")
                    {
                         layer._strip_width.resize(strip_width_u.size());
 
@@ -180,7 +180,7 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
                         }
                         layer._strips.assign(strip_width_u.size(),true);
                     }
-                    else if (iview == 1 || iview == 2)
+                    else if (view.name() == "v" || view.name() == "w")
                     {
                         layer._strip_width.resize(strip_width_vw.size());
 
