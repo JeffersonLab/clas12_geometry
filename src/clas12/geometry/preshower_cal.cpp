@@ -139,59 +139,52 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
     {
         _sectors.emplace_back(new PCalSector(this,sec));
         PCalSector& sector = *_sectors[sec];
-        sector._views.clear();
+        sector._layers.clear();
 
-        for (size_t iview=0; iview<nviews; iview++)
+        for (size_t lyr=0; lyr<nlayers; lyr++)
         {
-            sector._views.emplace_back(new View(&sector,iview));
-            View& view = *sector._views[iview];
+            sector._layers.emplace_back(new Layer(&sector,lyr));
+            Layer& layer = *sector._layers[lyr];
 
+            layer._views.clear();
 
-            for (size_t lyr=0; lyr<nlayers; lyr++)
+            layer._view_angle      = view_angle*deg2rad ;
+            layer._wrapper_thick   = wrapper_thick*0.1;
+            layer._nviews          = nviews;
+
+            for (size_t iview=0; iview<nviews; iview++)
             {
-                view._layers.emplace_back(new Layer(&view,lyr));
-                Layer& layer = *view._layers[lyr];
+                layer._views.emplace_back(new View(&layer,iview));
+                View& view = *layer._views[iview];
 
-                layer._strips.clear();
-
-
-                //layer._strip_width.resize(strip_width[lyr].size());
-
-
-                /*for (int i=0; i<layer._strip_width.size(); i++)
-                {
-                      layer._strip_width[i] = layer._strip_width[i]*0.1; // convert to cm
-                }*/
-
-                //layer._strips.assign(strip_width[lyr].size(),true);
-
+                view._strips.clear();
 
                    if (view.name() == "u")
                    {
-                        layer._strip_width.resize(strip_width_u.size());
+                        view._strip_width.resize(strip_width_u.size());
 
                         for (int i = 0; i<strip_width_u.size(); i++)
                         {
-                           layer._strip_width[i] = strip_width_u[i]*0.1;
+                           view._strip_width[i] = strip_width_u[i]*0.1;
 
-                          // LOG(debug) <<"view = "<<iview<<"  layer = "<<lyr<<"  "<<
-                          // i<<"  "<< layer._strip_width[i]<<endl;
+                           LOG(debug) <<"layer = "<<lyr<<"  view = "<< iview <<"  "<<
+                           i<<"  "<< view._strip_width[i]<<endl;
 
                         }
-                        layer._strips.assign(strip_width_u.size(),true);
+                        view._strips.assign(strip_width_u.size(),true);
                     }
                     else if (view.name() == "v" || view.name() == "w")
                     {
-                        layer._strip_width.resize(strip_width_vw.size());
+                        view._strip_width.resize(strip_width_vw.size());
 
                         for (int i = 0; i<strip_width_vw.size(); i++)
                         {
-                           layer._strip_width[i] = strip_width_vw[i]*0.1;
+                           view._strip_width[i] = strip_width_vw[i]*0.1;
 
-                           //LOG(debug) <<"view = "<<iview<<"  layer = "<<lyr<<"  "<<
-                            //i<<"  "<< layer._strip_width[i]<<endl;
+                           LOG(debug) <<"layer = "<<lyr<<"  view = "<< iview<<"  "<<
+                            i<<"  "<< view._strip_width[i]<<endl;
                         }
-                        layer._strips.assign(strip_width_vw.size(),true);
+                        view._strips.assign(strip_width_vw.size(),true);
                     }
 
 

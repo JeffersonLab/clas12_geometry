@@ -16,6 +16,7 @@ using std::endl;
 #include "geometry/direction_vector.hpp"
 
 #include "clas12/geometry/coordsys.hpp"
+#include "view.hpp"
 
 namespace clas12
 {
@@ -37,22 +38,27 @@ using ::geometry::euclid_vector;
 using ::geometry::direction_vector;
 using ::geometry::plane;
 
-class View;
+class Sector;
 
 /** \class Layer
- * \brief A layer of strips in a view of the preshower calorimeter
+ * \brief A layer of views in the preshower calorimeter (PCAL)
+ *        There are 5 such layers in each sector of PCAL
  **/
 class Layer
 {
+
   public:
     // inline methods
-    const View& view() const;
+    const Sector& sector() const;
 
-    const vector<bool>& strips() const;
-    bool strip(int p) const;
+    const vector<unique_ptr<View>>& views() const;
+    const View& view(int v) const;
 
-    size_t nstrips() const;
-    double strip_width(int p) const;
+    size_t nviews() const;
+    const double& view_angle() const;
+    const double& wrapper_thick() const;
+
+    string view_name(size_t id) const;
 
     // methods in cpp file
 
@@ -63,19 +69,35 @@ class Layer
     /// \brief a pointer to the parent view
     const View* _view;
 
-    /// \brief the index of the view in the vector<View>
-    /// object held by the View parent class
+
+ // private inline methods
+
+    Layer(const Sector* sector, size_t idx);
+    Layer(const Layer& that, const Sector* sector, size_t idx);
+
+    /// \brief a pointer to the parent sector
+    const Sector* _sector;
+
+    /// \brief the index of the layer in the vector<Layer>
+    /// object held by the Sector parent class
     size_t _idx;
 
-    /// \brief the strips in this view are either on or off
-    vector<bool> _strips;
 
-    /// \brief strip width
-    vector<double> _strip_width;
+    ///\brief number of views in this layer
+    size_t _nviews;
 
+    /// \brief angle in degrees of the PCAL vertex closest to the beamline
+    double _view_angle;
 
-    // private inline methods
-    size_t strip_index(int idx) const;
+    /// \brief thickness of the TiO2 reflective wrapping around each strip (mm)
+    double _wrapper_thick;
+
+    /// \brief collection of Views in this Layer
+    vector<unique_ptr<View>> _views;
+
+    /// \brief convert negative index to run from the end of the vector
+    size_t view_index(int idx) const;
+    size_t view_index(const string& id) const;
 
     /// \brief deleted copy constructor
     Layer(const Layer&) = delete;
@@ -87,75 +109,148 @@ class Layer
     /// private members of this class.
     friend class ::clas12::geometry::PreshowerCal;
 
-    /// \brief the "parent" class View takes care of
+    /// \brief the "parent" class Sector takes care of
     /// copying this class when the top-level PCal class's
     /// copy constructor is called.
-    friend class View;
+    friend class Sector;
 };
 
-/**
- * \brief get the parent view object
- * \return constant reference to View::_view
- **/
-inline
-const View& Layer::view() const
-{
-    return *_view;
-}
 
 /**
- * \brief Get a vector of strips in this view
- * \return const reference to Layer::_strips
+ * \brief get the parent sector object
+ * \return constant reference to Layer::_sector
  **/
 inline
-const vector<bool>& Layer::strips() const
+const Sector& Layer::sector() const
 {
-    return _strips;
+    return *_sector;
 }
 
-/**
- * \brief Get the status of (on/off) of a strip in this view
- * \param [in] p a strip in this view (counting from zero)
- * \return copy of Layer::_strip[p]
+/** \fn Layer::views()
+ * \brief Get a vector of the views in this layer
+ * \return const reference to Layer::_views
  **/
-inline
-bool Layer::strip(int p) const
+inline const vector<unique_ptr<View>>& Layer::views() const
 {
-    return _strips[strip_index(p)];
-}
-
-/**
- * \brief Get the width of strips in this view
- * \param [in] p a strip in this view (counting from zero)
- * \return copy of Layer::_strip[p]
- **/
-inline
-double Layer::strip_width(int p) const
-{
-    return _strip_width[strip_index(p)];
+    return _views;
 }
 
 
 /**
- * \brief Get the number of strips in this view
- * \return copy of Layer::strips.size()
+ * \brief Get a view in this layer
+ * \param [in] v The view name within this layer (u, v or w)
+ * \return const reference to Layer::_views[v]
+ **/
+//inline const View& Layer::view(const string& v) const
+//{
+// //   return *_views[this->view_index(v)];
+//}
+
+
+/**
+ * \brief convert negative indexes to positive counting from end
+ * \param [in] idx index either from zero or from -1 (counting from end)
+ * \return unsigned int index of the region in this sector
  **/
 inline
-size_t Layer::nstrips() const
+size_t Layer::view_index(int idx) const
 {
-    return _strips.size();
+    return idx<0 ? (_views.size()+idx) : idx;
 }
 
 /**
  * \brief convert negative indexes to positive counting from end
- * \param [in] p is index either from zero or from -1 (counting from end)
- * \return unsigned int index of the strip in this view
+ * \param [in] idx index either from zero or from -1 (counting from end)
+ * \return unsigned int index of the view in this sector
  **/
 inline
-size_t Layer::strip_index(int p) const
+size_t Layer::view_index(const string& id) const
 {
-    return p<0 ? (_strips.size()+p) : p;
+    static const map<string,size_t> view_index_map {
+        {"u", 0},
+        {"v", 1},
+        {"w",  2} };
+
+    size_t pos = id.find("view");
+    if (pos == string::npos)
+    {
+        return view_index_map.at(id);
+    }
+    else
+    {
+        return view_index_map.at(id.substr(string("view").size(), string::npos));
+    }
 }
+
+/**
+ * \brief convert negative indexes to positive counting from end
+ * \param [in] idx index either from zero or from -1 (counting from end)
+ * \return name of the view
+ **/
+inline
+string Layer::view_name(size_t id) const
+{
+    static const map<size_t,string> view_index_map {
+        {size_t(0), "u"},
+        {1, "v"},
+        {2, "w" } };
+
+    return view_index_map.at(id);
+}
+
+
+
+
+
+/**
+ * \brief Get the status of (on/off) of a view in this layer
+ * \param [in] p a view in this layer (counting from zero)
+ * \return copy of Layer::_view[p]
+ **/
+inline
+const View& Layer::view(int v) const
+{
+    return *_views[view_index(v)];
+}
+
+/**
+ * \brief Get the number of views in this layer
+ * \return copy of Layer::views.size()
+ **/
+inline
+size_t Layer::nviews() const
+{
+    return _views.size();
+}
+
+
+
+
+/**
+ * \brief Get the view angle
+ * \return reference to Layer::_view_angle
+ **/
+inline
+const double& Layer::view_angle() const
+{
+    return _view_angle;
+}
+
+
+/**
+ * \brief Get the wrapper thickness
+ * \return reference to Layer::_wrapper_thick
+ **/
+inline
+const double& Layer::wrapper_thick() const
+{
+    return _wrapper_thick;
+}
+
+
+
+
+
 
 } // namespace clas12::geometry::preshower_cal
 } // namespace clas12::geometry

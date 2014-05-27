@@ -64,32 +64,100 @@ BOOST_AUTO_TEST_CASE(constructor)
     {
         const preshower_cal::Sector& sector = pcal.sector(sec);
 
-        BOOST_CHECK_EQUAL(sector.views().size(), nviews);
+        BOOST_CHECK_EQUAL(sector.layers().size(), nlayers);
 
-/*
-        for (size_t iview=0; iview<sector.views().size(); iview++)
+
+        for (size_t lyr=0; lyr<sector.layers().size(); lyr++)
         {
-            const preshower_cal::View& view = sector.view(iview);
+           const preshower_cal::Layer& layer = sector.layer(lyr);
 
 
-            clog << "sector " << sec << ", view " << iview << endl;
-            BOOST_CHECK_EQUAL(panel.paddles().size(), npaddles[pan]);
-            BOOST_CHECK_CLOSE(panel.paddle_width(),paddle_width[pan], 0.0001 );
-            BOOST_CHECK_CLOSE(panel.paddle_thickness(),paddle_thickness[pan], 0.0001 );
-            BOOST_CHECK_CLOSE(panel.thtilt(),panel_thtilt[pan]*deg2rad, 0.0001 );
-            BOOST_CHECK_CLOSE(panel.thmin(),panel_thmin[pan]*deg2rad, 0.0001 );
-            BOOST_CHECK_CLOSE(panel.dist2edge(),panel_dist2edge[pan], 0.0001 );
-            BOOST_CHECK_CLOSE(panel.paddle_gap(),panel_gap[pan], 0.0001 );
-            //BOOST_CHECK_CLOSE(panel.paddle_pairgap(),panel_pairgap[pan], 0.0001 );
-            BOOST_CHECK_CLOSE(panel.wrapper_thickness(),panel_wrapperthick[pan], 0.0001 );
-            //clog<<panel.paddle_center_x(0)<<"  "<<panel.paddle_center_x(11)<<"  "<<
-              //  panel.paddle_center_z(0)<<"  "<<panel.paddle_center_z(11)<<
-                //"  "<<panel.radial_extent()<<endl;
+            clog << "sector " << sec << ", layer " << lyr << endl;
+            BOOST_CHECK_EQUAL(layer.views().size(), nviews);
+            BOOST_CHECK_CLOSE(layer.view_angle(),view_angle*deg2rad, 0.0001 );
+            BOOST_CHECK_CLOSE(layer.wrapper_thick(),wrapper_thick*0.1, 0.0001 );
         }
-        */
+
     }
 
 }
+
+
+
+
+
+/*
+BOOST_AUTO_TEST_CASE(pcal_scint_width)
+{
+    using namespace std;
+    using namespace geometry;
+    using namespace clas12::geometry;
+    using namespace clas12::geometry::preshower_cal;
+
+    using namespace clas12::geometry::output;
+    using namespace pugi;
+
+    static const double double_tolerance = 1.e-8;
+
+    string ccdb_host = "clasdb.jlab.org";
+    string ccdb_user = "clas12reader";
+    string ccdb_db = "clas12";
+
+    PreshowerCal pcal(ccdb_host,ccdb_user,ccdb_db);
+    xml_document doc;
+    stringstream doc_ss;
+
+
+
+    for (size_t sec=0; sec<pcal.sectors().size(); sec++)
+    {
+        const preshower_cal::Sector& sector = pcal.sector(sec);
+
+        for (size_t lyr=0; lyr<sector.layers().size(); lyr++)
+        {
+            const preshower_cal::Layer& layer = sector.layer(lyr);
+
+            for (size_t iview=0; iview<layer.nviews(); iview++)
+            {
+                layer._views.emplace_back(new View(&layer,iview));
+                View& view = *layer._views[iview];
+
+                BOOST_CHECK_CLOSE(view._strips().size(),nscint[iview], 0.0001 );
+
+                 if (view.name() == "u")
+                 {
+                   BOOST_CHECK_CLOSE(view._strips_width(),scint_width_u, 0.0001 );
+                 }
+
+                 else if (view.name() == "v" || view.name() == "w")
+                 {
+                   BOOST_CHECK_CLOSE(view._strips_width(),scint_width_vw, 0.0001 );
+                 }
+            }
+        }
+    }
+
+
+
+    //ftof_scint_parms_xml(doc,pcal,"clas","cm");
+    //pcal_volumes_xml(doc,pcal);
+    //doc.save(doc_ss);
+    //string scints_xml = doc_ss.str();
+    //string volumes_xml = doc_ss.str();
+    //cout<<scint_xml<<endl;
+    //cout<<volumes_xml<<endl;
+    //BOOST_CHECK_EQUAL(scint_xml.size(), 1235243);
+
+    //pcal_volumes_map(pcal);
+}
+
+*/
+
+
+
+
+
+
 
 BOOST_AUTO_TEST_SUITE_END()
 

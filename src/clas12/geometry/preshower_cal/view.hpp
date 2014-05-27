@@ -17,7 +17,6 @@ using std::endl;
 
 #include "clas12/geometry/coordsys.hpp"
 
-#include "layer.hpp"
 
 namespace clas12
 {
@@ -39,43 +38,51 @@ using ::geometry::euclid_vector;
 using ::geometry::direction_vector;
 using ::geometry::plane;
 
-class Sector;
+class Layer;
 
 /** \class View
- * \brief A view of layers in a sector of the forward time of flight
+ * \brief A view of strips in a layer of the preshower calorimeter
  *
- * There are three such views in each sector of CLAS12
+ * There are three such views in each layer of PCAL
  **/
 class View
 {
   public:
     // inline methods
-    const Sector& sector() const;
+    const Layer& layer() const;
 
-    const vector<unique_ptr<Layer>>& layers() const;
-    const Layer& layer(int l) const;
+    const vector<bool>& strips() const;
+    bool strip(int p) const;
 
-    size_t nlayers() const;
+    size_t nstrips() const;
+    double strip_width(int p) const;
+
+
 
     // methods in cpp file
     string name() const;
 
   private:
-    View(const Sector* sector, size_t idx);
-    View(const View& that, const Sector* sector, size_t idx);
+    View(const Layer* layer, size_t idx);
+    View(const View& that, const Layer* layer, size_t idx);
 
-    /// \brief a pointer to the parent sector
-    const Sector* _sector;
+    /// \brief a pointer to the parent layer
+    const Layer* _layer;
 
     /// \brief the index of the view in the vector<View>
-    /// object held by the Sector parent class
+    /// object held by the Layer parent class
     size_t _idx;
 
-    /// \brief collection of Layers in this View
-    vector<unique_ptr<Layer>> _layers;
 
-    /// \brief convert negative index to run from the end of the vector
-    size_t layer_index(int idx) const;
+    /// \brief the strips in this view are either on or off
+    vector<bool> _strips;
+
+    /// \brief strip width
+    vector<double> _strip_width;
+
+    // private inline methods
+
+    size_t strip_index(int idx) const;
 
     /// \brief deleted copy constructor
     View(const View&) = delete;
@@ -87,62 +94,77 @@ class View
     /// private members of this class.
     friend class ::clas12::geometry::PreshowerCal;
 
-    /// \brief the "parent" class Sector takes care of
+    /// \brief the "parent" class Layer takes care of
     /// copying this class when the top-level PCal class's
     /// copy constructor is called.
-    friend class Sector;
+    friend class Layer;
 };
 
+
 /**
- * \brief get the parent sector object
- * \return constant reference to View::_sector
+ * \brief get the parent layer object
+ * \return constant reference to View::_layer
  **/
 inline
-const Sector& View::sector() const
+const Layer& View::layer() const
 {
-    return *_sector;
-}
-
-/** \fn View::layers()
- * \brief Get a vector of the layers in this view
- * \return const reference to View::_layers
- **/
-inline const vector<unique_ptr<Layer>>& View::layers() const
-{
-    return _layers;
+    return *_layer;
 }
 
 /**
- * \brief Get the status of (on/off) of a layer in this view
- * \param [in] p a layer in this view (counting from zero)
- * \return copy of View::_layer[p]
+ * \brief Get a vector of strips in this view
+ * \return const reference to View::_strips
  **/
 inline
-const Layer& View::layer(int l) const
+const vector<bool>& View::strips() const
 {
-    return *_layers[layer_index(l)];
+    return _strips;
 }
 
 /**
- * \brief Get the number of layers in this view
- * \return copy of View::layers.size()
+ * \brief Get the status of (on/off) of a strip in this view
+ * \param [in] p a strip in this view (counting from zero)
+ * \return copy of View::_strip[p]
  **/
 inline
-size_t View::nlayers() const
+bool View::strip(int p) const
 {
-    return _layers.size();
+    return _strips[strip_index(p)];
+}
+
+/**
+ * \brief Get the width of strips in this view
+ * \param [in] p a strip in this view (counting from zero)
+ * \return copy of View::_strip[p]
+ **/
+inline
+double View::strip_width(int p) const
+{
+    return _strip_width[strip_index(p)];
+}
+
+
+/**
+ * \brief Get the number of strips in this view
+ * \return copy of View::strips.size()
+ **/
+inline
+size_t View::nstrips() const
+{
+    return _strips.size();
 }
 
 /**
  * \brief convert negative indexes to positive counting from end
  * \param [in] p is index either from zero or from -1 (counting from end)
- * \return unsigned int index of the layer in this view
+ * \return unsigned int index of the strip in this view
  **/
 inline
-size_t View::layer_index(int p) const
+size_t View::strip_index(int p) const
 {
-    return p<0 ? (_layers.size()+p) : p;
+    return p<0 ? (_strips.size()+p) : p;
 }
+
 
 } // namespace clas12::geometry::preshower_cal
 } // namespace clas12::geometry

@@ -32,48 +32,48 @@ using ::geometry::plane;
 /**
  * \brief constructor.
  *
- * This forces the region to have a parent sector
+ * This forces the view to have a parent layer
  * object pointer.
  *
- * \param [in] sector a pointer to the parent Sector class
+ * \param [in] layer a pointer to the parent Layer class
  * \param [in] idx the index of this view in vector<View>
- *             held by parent Sector.
+ *             held by parent Layer.
  **/
-View::View(const Sector* sector, size_t idx)
-: _sector(sector)
+View::View(const Layer* layer, size_t idx)
+: _layer(layer)
 , _idx(idx)
 {}
+
+
 
 /**
  * \brief copy constructor.
  *
- * This forces the view to have a parent sector
+ * This forces the view to have a parent layer
  * object pointer.
  *
  * \param [in] that the View being copied
- * \param [in] sector a pointer to the parent Sector class
- * \param [in] idx the index of this region in vector<View>
- *             held by parent Sector.
+ * \param [in] layer a pointer to the parent Layer class
+ * \param [in] idx the index of this view in vector<View>
+ *             held by parent Layer.
  **/
-View::View(const View& that, const Sector* sector, size_t idx)
-: _sector(sector)
+View::View(const View& that, const Layer* layer, size_t idx)
+: _layer(layer)
 , _idx(idx)
-{
-    for (size_t i=0; i<that._layers.size(); i++)
-    {
-        const Layer& lyr = *that._layers[i];
-        _layers.emplace_back(new Layer(lyr,this,i));
-    }
-}
+{}
+
+
 
 /**
  * \brief get the name of this view (u, v or w)
  * \return the string "u", "v" or "w"
  **/
-string View::name() const
-{
-    return _sector->view_name(_idx);
-}
+//string View::name() const
+//{
+ //   return _layer->view_name(_idx);
+//}
+
+
 
 } // namespace clas12::geometry::preshower_cal
 } // namespace clas12::geometry

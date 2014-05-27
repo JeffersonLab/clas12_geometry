@@ -41,13 +41,12 @@ Sector::Sector(const Sector& that, const PreshowerCal* pcal, size_t idx)
 : _pcal(pcal)
 , _idx(idx)
 {
-    for (size_t i=0; i<that._views.size(); i++)
+    for (size_t i=0; i<that._layers.size(); i++)
     {
-        const View& view = *that._views[i];
-        _views.emplace_back(new View(view,this,i));
+        const Layer& layer = *that._layers[i];
+        _layers.emplace_back(new Layer(layer,this,i));
     }
 }
-
 
 euclid_vector<double,3> Sector::sector_to_clas(const euclid_vector<double,3>& v) const
 {

@@ -11,7 +11,7 @@ using std::endl;
 #include <string>
 #include <map>
 
-#include "view.hpp"
+#include "layer.hpp"
 
 namespace clas12
 {
@@ -38,10 +38,10 @@ using ::geometry::plane;
 using ::clas12::geometry::PreshowerCal;
 
 /**
- * \brief a sector of the PCal which consists of several views
+ * \brief a sector of the PCal which consists of 5 layers
  *
  * There are six sectors of PCal in CLAS12 which hold
- * three views
+ * 5 layers each
  **/
 class Sector
 {
@@ -49,12 +49,11 @@ class Sector
     // inline methods
     const PreshowerCal& pcal() const;
 
-    const vector<unique_ptr<View>>& views() const;
-    const View& view(int v) const;
-    const View& view(const string& v) const;
+    const vector<unique_ptr<Layer>>& layers() const;
+    const Layer& layer(int l) const;
+    const Layer& layer(const string& l) const;
 
     size_t index() const;
-    string view_name(size_t id) const;
 
     euclid_vector<double,3>    sector_to_clas(const euclid_vector<double,3>& v   ) const;
     direction_vector<double,3> sector_to_clas(const direction_vector<double,3>& v) const;
@@ -74,12 +73,16 @@ class Sector
     /// object held by the PreshowerCal parent class
     size_t _idx;
 
-    /// \brief a sector consists of several views
-    vector<unique_ptr<View>> _views;
+    /// \brief a sector consists of 5 layers
+    vector<unique_ptr<Layer>> _layers;
+
+    /// \brief convert negative index to run from the end of the vector
+    size_t layer_index(int idx) const;
 
     // private inline methods
-    size_t view_index(int idx) const;
-    size_t view_index(const string& id) const;
+
+    //size_t layer_index(int idx) const;
+    //size_t layer_index(const string& id) const;
 
 
     /// \brief deleted copy constructor
@@ -102,34 +105,44 @@ inline const PreshowerCal& Sector::pcal() const
     return *_pcal;
 }
 
-/** \fn Sector::views()
- * \brief Get a vector of the views in this sector
- * \return const reference to Sector::_views
+/** \fn Sector::layers()
+ * \brief Get a vector of the layers in this sector
+ * \return const reference to Sector::_layers
  **/
-inline const vector<unique_ptr<View>>& Sector::views() const
+inline const vector<unique_ptr<Layer>>& Sector::layers() const
 {
-    return _views;
+    return _layers;
 }
 
 /**
- * \brief Get a view in this sector
- * \param [in] v The view index within this sector (counting from zero)
- * \return const reference to Sector::_views[v]
+ * \brief Get a layer in this sector
+ * \param [in] l The layer index within this sector (counting from zero)
+ * \return const reference to Sector::_layers[l]
  **/
-inline const View& Sector::view(int v) const
+inline const Layer& Sector::layer(int l) const
 {
-    return *_views[this->view_index(v)];
+    return *_layers[this->layer_index(l)];
 }
 
+
+
+
+
+
 /**
- * \brief Get a view in this sector
- * \param [in] v The view name within this sector (u, v or w)
- * \return const reference to Sector::_views[v]
+ * \brief convert negative indexes to positive counting from end
+ * \param [in] p is index either from zero or from -1 (counting from end)
+ * \return unsigned int index of the layer in this view
  **/
-inline const View& Sector::view(const string& v) const
+inline
+size_t Sector::layer_index(int p) const
 {
-    return *_views[this->view_index(v)];
+    return p<0 ? (_layers.size()+p) : p;
 }
+
+
+
+
 
 /**
  * \brief Get a index of this sector in the parent region
@@ -141,56 +154,7 @@ size_t Sector::index() const
     return _idx;
 }
 
-/**
- * \brief convert negative indexes to positive counting from end
- * \param [in] idx index either from zero or from -1 (counting from end)
- * \return unsigned int index of the region in this sector
- **/
-inline
-size_t Sector::view_index(int idx) const
-{
-    return idx<0 ? (_views.size()+idx) : idx;
-}
 
-/**
- * \brief convert negative indexes to positive counting from end
- * \param [in] idx index either from zero or from -1 (counting from end)
- * \return unsigned int index of the view in this sector
- **/
-inline
-size_t Sector::view_index(const string& id) const
-{
-    static const map<string,size_t> view_index_map {
-        {"u", 0},
-        {"v", 1},
-        {"w",  2} };
-
-    size_t pos = id.find("view");
-    if (pos == string::npos)
-    {
-        return view_index_map.at(id);
-    }
-    else
-    {
-        return view_index_map.at(id.substr(string("view").size(), string::npos));
-    }
-}
-
-/**
- * \brief convert negative indexes to positive counting from end
- * \param [in] idx index either from zero or from -1 (counting from end)
- * \return name of the view
- **/
-inline
-string Sector::view_name(size_t id) const
-{
-    static const map<size_t,string> view_index_map {
-        {size_t(0), "u"},
-        {1, "v"},
-        {2, "w" } };
-
-    return view_index_map.at(id);
-}
 
 
 } // namespace clas12::geometry::preshower_cal
