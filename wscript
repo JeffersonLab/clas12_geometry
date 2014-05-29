@@ -149,6 +149,11 @@ def configure(ctx):
         program_options
         filesystem
         system
+        log
+        log_setup
+        date_time
+        chrono
+        thread
     '''.split()
 
     for libname in boost_required_libs:
@@ -157,6 +162,19 @@ def configure(ctx):
             ctx.env.append_unique('LIBPATH_BOOST',libpath)
         ctx.env.append_unique('LIB_boost_'+libname, lib)
         ctx.to_log('boost library found: {}'.format(libname))
+
+    ctx.env.append_unique('LIB_boost_log',
+        ['boost_'+l for l in '''\
+            log_setup
+            filesystem
+            system
+            date_time
+            chrono
+            thread
+        '''.split()])
+    ctx.env.append_unique('DEFINES', 'HAVE_BOOST_LOG')
+
+    ctx.env.append_unique('LIB_boost_filesystem',['boost_system'])
 
     ctx.env.append_unique('DEFINES_BOOST', ['BOOST_LOG_DYN_LINK'])
 
@@ -194,9 +212,6 @@ def configure(ctx):
     ### OPTIONAL DEPENDENCIES
 
     boost_optional_libs = '''
-        log_setup
-        log
-        thread
         unit_test_framework
     '''.split()
     for libname in boost_optional_libs:
@@ -206,8 +221,6 @@ def configure(ctx):
                 ctx.env.append_unique('LIBPATH_BOOST',libpath)
             ctx.env.append_unique('LIB_boost_'+libname, lib)
             ctx.to_log('boost library found: {}'.format(libname))
-            if libname == 'log':
-                ctx.env.append_unique('DEFINES', 'HAVE_BOOST_LOG')
         except ctx.errors.ConfigurationError:
             ctx.to_log('boost library not found: {}'.format(libname))
 
