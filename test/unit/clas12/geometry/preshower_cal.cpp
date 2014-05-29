@@ -45,11 +45,11 @@ BOOST_AUTO_TEST_CASE(constructor)
     double wrapper_thick = 0.25;
 
     vector<size_t> nscint{68,62,62};
-    vector<double> scint_width_u;
-    vector<double> scint_width_vw;
+    //vector<double> scint_width_u;
+    //vector<double> scint_width_vw;
 
-    scint_width_u.assign(52,4.5);    for (int i=0; i<16; i++) scint_width_u.push_back(9.05);
-    scint_width_vw.assign(15,9.05);  for (int i=0; i<46; i++) scint_width_vw.push_back(4.5);
+    //scint_width_u.assign(52,4.5);    for (int i=0; i<16; i++) scint_width_u.push_back(9.05);
+    //scint_width_vw.assign(15,9.05);  for (int i=0; i<46; i++) scint_width_vw.push_back(4.5);
 
     /// constructor with arguments
     clog << "constructor...\n";
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(constructor)
 
 
 
-/*
+
 BOOST_AUTO_TEST_CASE(pcal_scint_width)
 {
     using namespace std;
@@ -94,7 +94,11 @@ BOOST_AUTO_TEST_CASE(pcal_scint_width)
     using namespace clas12::geometry;
     using namespace clas12::geometry::preshower_cal;
 
-    using namespace clas12::geometry::output;
+
+    using namespace clas12::ccdb;
+    using ::ccdb::Calibration;
+
+    //using namespace clas12::geometry::output;
     using namespace pugi;
 
     static const double double_tolerance = 1.e-8;
@@ -103,10 +107,21 @@ BOOST_AUTO_TEST_CASE(pcal_scint_width)
     string ccdb_user = "clas12reader";
     string ccdb_db = "clas12";
 
-    PreshowerCal pcal(ccdb_host,ccdb_user,ccdb_db);
+
+    ConnectionInfoMySQL conninfo;
+    ConstantSetInfo csinfo;
+    unique_ptr<Calibration> calib = get_calibration(conninfo,csinfo);
+    PreshowerCal pcal(calib.get());
+
+    //PreshowerCal pcal(ccdb_host,ccdb_user,ccdb_db);
     xml_document doc;
     stringstream doc_ss;
+    vector<size_t> nscint{68,62,62};
+    vector<double> scint_width_u;
+    vector<double> scint_width_vw;
 
+    scint_width_u.assign(52,4.5);    for (int i=0; i<16; i++) scint_width_u.push_back(9.05);
+    scint_width_vw.assign(15,9.05);  for (int i=0; i<47; i++) scint_width_vw.push_back(4.5);
 
 
     for (size_t sec=0; sec<pcal.sectors().size(); sec++)
@@ -119,19 +134,26 @@ BOOST_AUTO_TEST_CASE(pcal_scint_width)
 
             for (size_t iview=0; iview<layer.nviews(); iview++)
             {
-                layer._views.emplace_back(new View(&layer,iview));
-                View& view = *layer._views[iview];
+                //layer._views.emplace_back(new View(&layer,iview));
+                //View& view = *layer._views[iview];
+                const preshower_cal::View& view = layer.view(iview);
 
-                BOOST_CHECK_CLOSE(view._strips().size(),nscint[iview], 0.0001 );
+                BOOST_CHECK_EQUAL(view.strips().size(),nscint[iview]);
 
                  if (view.name() == "u")
                  {
-                   BOOST_CHECK_CLOSE(view._strips_width(),scint_width_u, 0.0001 );
+                   for (size_t i=0; i<view.strips().size(); i++)
+                   {
+                     BOOST_CHECK_CLOSE(view.scint_width(i),scint_width_u[i], 0.0001 );
+                   }
                  }
 
                  else if (view.name() == "v" || view.name() == "w")
                  {
-                   BOOST_CHECK_CLOSE(view._strips_width(),scint_width_vw, 0.0001 );
+                   for (size_t i=0; i<view.strips().size(); i++)
+                   {
+                      BOOST_CHECK_CLOSE(view.scint_width(i),scint_width_vw[i], 0.0001 );
+                   }
                  }
             }
         }
@@ -151,7 +173,7 @@ BOOST_AUTO_TEST_CASE(pcal_scint_width)
     //pcal_volumes_map(pcal);
 }
 
-*/
+
 
 
 

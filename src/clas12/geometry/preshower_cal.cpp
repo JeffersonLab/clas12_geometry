@@ -118,10 +118,10 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
 
 
 
-    vector<double> strip_width_u =  table_view_u.col<double>("width");
-    vector<double> strip_width_vw = table_view_vw.col<double>("width");
+    vector<double> scint_width_u =  table_view_u.col<double>("width");
+    vector<double> scint_width_vw = table_view_vw.col<double>("width");
 
-    /*vector<vector<double>> strip_width =
+    /*vector<vector<double>> scint_width =
     {
         table_view_u.col<double>("width"),
         table_view_vw.col<double>("width") //mm
@@ -161,30 +161,30 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
 
                    if (view.name() == "u")
                    {
-                        view._strip_width.resize(strip_width_u.size());
+                        view._scint_width.resize(scint_width_u.size());
 
-                        for (int i = 0; i<strip_width_u.size(); i++)
+                        for (int i = 0; i<scint_width_u.size(); i++)
                         {
-                           view._strip_width[i] = strip_width_u[i]*0.1;
+                           view._scint_width[i] = scint_width_u[i]*0.1;
 
                            LOG(debug) <<"layer = "<<lyr<<"  view = "<< iview <<"  "<<
-                           i<<"  "<< view._strip_width[i]<<endl;
+                           i<<"  "<< view._scint_width[i]<<endl;
 
                         }
-                        view._strips.assign(strip_width_u.size(),true);
+                        view._strips.assign(scint_width_u.size(),true);
                     }
                     else if (view.name() == "v" || view.name() == "w")
                     {
-                        view._strip_width.resize(strip_width_vw.size());
+                        view._scint_width.resize(scint_width_vw.size());
 
-                        for (int i = 0; i<strip_width_vw.size(); i++)
+                        for (int i = 0; i<scint_width_vw.size(); i++)
                         {
-                           view._strip_width[i] = strip_width_vw[i]*0.1;
+                           view._scint_width[i] = scint_width_vw[i]*0.1;
 
                            LOG(debug) <<"layer = "<<lyr<<"  view = "<< iview<<"  "<<
-                            i<<"  "<< view._strip_width[i]<<endl;
+                            i<<"  "<< view._scint_width[i]<<endl;
                         }
-                        view._strips.assign(strip_width_vw.size(),true);
+                        view._strips.assign(scint_width_vw.size(),true);
                     }
 
 

@@ -55,7 +55,7 @@ class View
     bool strip(int p) const;
 
     size_t nstrips() const;
-    double strip_width(int p) const;
+    double scint_width(int p) const;
 
 
 
@@ -78,7 +78,7 @@ class View
     vector<bool> _strips;
 
     /// \brief strip width
-    vector<double> _strip_width;
+    vector<double> _scint_width;
 
     // private inline methods
 
@@ -138,9 +138,9 @@ bool View::strip(int p) const
  * \return copy of View::_strip[p]
  **/
 inline
-double View::strip_width(int p) const
+double View::scint_width(int p) const
 {
-    return _strip_width[strip_index(p)];
+    return _scint_width[strip_index(p)];
 }
 
 
