@@ -27,8 +27,8 @@ typedef preshower_cal::Sector PCalSector;
  * \brief The preshower calorimeter geometry class for CLAS12
  *
  * The PCAL consists of six sectors, each of
- * which with three views: u,v,w.
- * Each view consists of 5 layers, a different number of scintillators
+ * which with 5 layers.
+ * Each layer consists of 3 views: U, V, and W, with a different number of scintillators
  * schintillators: 68 for u, 62 for v and w
  **/
 class PreshowerCal

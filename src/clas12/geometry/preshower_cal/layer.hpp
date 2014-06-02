@@ -57,6 +57,8 @@ class Layer
     size_t nviews() const;
     const double& view_angle() const;
     const double& wrapper_thick() const;
+    const double& scint_thick() const;
+    const double& lead_thick() const;
 
     string view_name(size_t id) const;
 
@@ -91,6 +93,12 @@ class Layer
 
     /// \brief thickness of the TiO2 reflective wrapping around each strip (mm)
     double _wrapper_thick;
+
+     /// \brief thickness of each scintillator strip (mm)
+    double _scint_thick;
+
+    /// \brief thickness of each lead layer (mm)
+    double _lead_thick;
 
     /// \brief collection of Views in this Layer
     vector<unique_ptr<View>> _views;
@@ -247,6 +255,25 @@ const double& Layer::wrapper_thick() const
     return _wrapper_thick;
 }
 
+/**
+ * \brief Get the scintillator thickness
+ * \return reference to Layer::_scint_thick
+ **/
+inline
+const double& Layer::scint_thick() const
+{
+    return _scint_thick;
+}
+
+/**
+ * \brief Get the lead thickness
+ * \return reference to Layer::_lead_thick
+ **/
+inline
+const double& Layer::lead_thick() const
+{
+    return _lead_thick;
+}
 
 
 

@@ -53,6 +53,13 @@ class Sector
     const Layer& layer(int l) const;
     const Layer& layer(const string& l) const;
 
+    size_t nlayers() const;
+    size_t nfoam() const;
+    size_t nsteel() const;
+    const double& thtilt() const;
+    const double& foam_thick() const;
+    const double& steel_thick() const;
+
     size_t index() const;
 
     euclid_vector<double,3>    sector_to_clas(const euclid_vector<double,3>& v   ) const;
@@ -78,6 +85,25 @@ class Sector
 
     /// \brief convert negative index to run from the end of the vector
     size_t layer_index(int idx) const;
+
+
+    ///\brief number of layers in this sector
+    size_t _nlayers;
+
+    ///\brief number of foam layers in this sector
+    size_t _nfoam;
+
+    ///\brief number of steel layers in this sector
+    size_t _nsteel;
+
+    /// \brief angle in degrees of the sector tilt with respect to the z - axis
+    double _thtilt;
+
+    /// \brief thickness of a foam layer (mm)
+    double _foam_thick;
+
+    /// \brief thickness of a steel plate (mm)
+    double _steel_thick;
 
     // private inline methods
 
@@ -154,6 +180,68 @@ size_t Sector::index() const
     return _idx;
 }
 
+
+/**
+ * \brief Get the number of layers in this sector
+ * \return copy of Sector::_nlayers
+ **/
+inline
+size_t Sector::nlayers() const
+{
+    return _nlayers;
+}
+
+/**
+ * \brief Get the number of foam layers in this sector
+ * \return copy of Sector::_nfoam
+ **/
+inline
+size_t Sector::nfoam() const
+{
+    return _nfoam;
+}
+
+/**
+ * \brief Get the number of steel layers in this sector
+ * \return copy of Sector::_nsteel
+ **/
+inline
+size_t Sector::nsteel() const
+{
+    return _nsteel;
+}
+
+/**
+ * \brief Get the tilt angle
+ * \return reference to Sector::_thtilt
+ **/
+inline
+const double& Sector::thtilt() const
+{
+    return _thtilt;
+}
+
+
+/**
+ * \brief Get the foam thickness
+ * \return reference to Sector::_foam_thick
+ **/
+inline
+const double& Sector::foam_thick() const
+{
+    return _foam_thick;
+}
+
+
+/**
+ * \brief Get the steel thickness
+ * \return reference to Sector::_steel_thick
+ **/
+inline
+const double& Sector::steel_thick() const
+{
+    return _steel_thick;
+}
 
 
 

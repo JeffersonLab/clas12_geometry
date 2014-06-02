@@ -62,6 +62,9 @@ Layer::Layer(const Layer& that, const Sector* sector, size_t idx)
 , _nviews(that._nviews)
 , _view_angle(that._view_angle)
 , _wrapper_thick(that._wrapper_thick)
+, _scint_thick(that._scint_thick)
+, _lead_thick(that._lead_thick)
+
 {
     for (size_t i=0; i<that._views.size(); i++)
     {

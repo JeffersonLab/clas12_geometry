@@ -26,6 +26,7 @@ Sector::Sector(const PreshowerCal* pcal, size_t idx)
 , _idx(idx)
 {}
 
+
 /**
  * \brief copy constructor.
  *
@@ -40,6 +41,12 @@ Sector::Sector(const PreshowerCal* pcal, size_t idx)
 Sector::Sector(const Sector& that, const PreshowerCal* pcal, size_t idx)
 : _pcal(pcal)
 , _idx(idx)
+, _nlayers(that._nlayers)
+, _nfoam(that._nfoam)
+, _nsteel(that._nsteel)
+, _foam_thick(that._foam_thick)
+, _steel_thick(that._steel_thick)
+, _thtilt(that._thtilt)
 {
     for (size_t i=0; i<that._layers.size(); i++)
     {

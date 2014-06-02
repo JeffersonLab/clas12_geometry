@@ -41,10 +41,11 @@ BOOST_AUTO_TEST_CASE(constructor)
 
     size_t nviews = 3;
     size_t nlayers = 5;
+    size_t nfoam  = 2;
     double view_angle = 62.905;
     double wrapper_thick = 0.25;
 
-    vector<size_t> nscint{68,62,62};
+    //vector<size_t> nscint{68,62,62};
     //vector<double> scint_width_u;
     //vector<double> scint_width_vw;
 
@@ -64,8 +65,9 @@ BOOST_AUTO_TEST_CASE(constructor)
     {
         const preshower_cal::Sector& sector = pcal.sector(sec);
 
-        BOOST_CHECK_EQUAL(sector.layers().size(), nlayers);
+        BOOST_CHECK_EQUAL(sector.nlayers(), nlayers);
 
+        //BOOST_CHECK_EQUAL(sector.nfoam(), nfoam);
 
         for (size_t lyr=0; lyr<sector.layers().size(); lyr++)
         {
@@ -85,7 +87,7 @@ BOOST_AUTO_TEST_CASE(constructor)
 
 
 
-
+/*
 
 BOOST_AUTO_TEST_CASE(pcal_scint_width)
 {
@@ -161,7 +163,7 @@ BOOST_AUTO_TEST_CASE(pcal_scint_width)
 
 
 
-    //ftof_scint_parms_xml(doc,pcal,"clas","cm");
+    //pcal_scint_parms_xml(doc,pcal,"clas","cm");
     //pcal_volumes_xml(doc,pcal);
     //doc.save(doc_ss);
     //string scints_xml = doc_ss.str();
@@ -172,7 +174,7 @@ BOOST_AUTO_TEST_CASE(pcal_scint_width)
 
     //pcal_volumes_map(pcal);
 }
-
+*/
 
 
 

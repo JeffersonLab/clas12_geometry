@@ -56,7 +56,7 @@ class View
 
     size_t nstrips() const;
     double scint_width(int p) const;
-
+    double scint_max_length() const;
 
 
     // methods in cpp file
@@ -79,6 +79,10 @@ class View
 
     /// \brief strip width
     vector<double> _scint_width;
+
+    /// \brief maximum strip length
+    double _scint_max_length;
+
 
     // private inline methods
 
@@ -135,12 +139,22 @@ bool View::strip(int p) const
 /**
  * \brief Get the width of strips in this view
  * \param [in] p a strip in this view (counting from zero)
- * \return copy of View::_strip[p]
+ * \return copy of View::_strip_width[p]
  **/
 inline
 double View::scint_width(int p) const
 {
     return _scint_width[strip_index(p)];
+}
+
+/**
+ * \brief Get the maximum length of strips in this view
+ * \return copy of View::max_strip_width
+ **/
+inline
+double View::scint_max_length() const
+{
+    return _scint_max_length;
 }
 
 

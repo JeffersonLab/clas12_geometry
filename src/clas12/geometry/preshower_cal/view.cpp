@@ -60,6 +60,8 @@ View::View(const Layer* layer, size_t idx)
 View::View(const View& that, const Layer* layer, size_t idx)
 : _layer(layer)
 , _idx(idx)
+, _scint_width(that._scint_width)
+, _scint_max_length(that._scint_max_length)
 {}
 
 

@@ -36,7 +36,6 @@ using pugi::xml_node;
 using pugi::node_pcdata;
 
 typedef map<string, map<string,string> > volmap_t;
-
 /**
  * \brief generate the volumes of a PCAL Sector for input into gemc/geant4
  *
@@ -49,11 +48,11 @@ typedef map<string, map<string,string> > volmap_t;
  *
  * \return map of map of strings: ret[volume_name][param_name] = value
  **/
- // 4 mm gap between panel's mother volume and daughter volumes
-static const double mothergap = 0.4; //cm
 
 
-volmap_t ftof_volumes_map(const ForwardTOF& ftof)
+
+
+volmap_t pcal_volumes_map(const PreshowerCal& pcal)
 {
     using namespace std;
     using namespace ::geometry;
@@ -64,76 +63,72 @@ volmap_t ftof_volumes_map(const ForwardTOF& ftof)
     // seems to want degrees.
     static const double rad2deg = 180. / cons::pi<double>();
 
-
     double dx1;
     double dx2;
     double dy;
     double dz;
 
     volmap_t vols;
-
-    for (size_t sec=0; sec<ftof.sectors().size(); sec++)
+    // constructing the mother volume, 1 for each sector
+    for (size_t sec=0; sec<pcal.sectors().size(); sec++)
     {
-        const forward_tof::Sector& sector = ftof.sector(sec);
+        const preshower_cal::Sector& sector = pcal.sector(sec);
 
         stringstream sector_name_ss;
         sector_name_ss << "sec" << sector.index()+1;
         string sector_name = sector_name_ss.str();
 
         stringstream sector_desc;
-        sector_desc << "Forward Time Of Flight"
+        sector_desc << "Preshower Calorimeter"
                     << " Sector " << sector.index()+1;
 
-        for (size_t pan=0; pan<sector.panels().size(); pan++)
-        {
-            const forward_tof::Panel& panel = sector.panel(pan);
+        size_t total_layers =  layers.size()*layer.nviews();
+        pcal_heigth = this->view.strip_length_vw(-1) * sin(layer.view_angle());
+        pcal_thickness = total_layers     * view.scint_thick()
+                       + (total_layers-1) * lead_thick()
+                       + (total_layers*2 +1) * wrapper_thick()
+                       +  sector.nsteel()   * steel_thick()
+                       +  sector.nfoam()    * foam_thick();
 
-            stringstream panel_name_ss;
-            panel_name_ss << "sec" << sector.index()+1
-                          << "_pan" << sector.panel_name(pan);
-            string panel_name = panel_name_ss.str();
 
-            stringstream panel_desc;
-            panel_desc << "Forward Time Of Flight"
-                       << " Sector " << sector.index()+1
-                       << " Panel " << sector.panel_name(pan);
+        dx1 = 0.0000001;                // should be 0
+        dx2 = 0.5 * view.strip_length_u(-1); // the longest U strip
+        dy  = 0.5 * pcal_height;
+        dz  = 0.5 * pcal_thickness;
 
-            dx1 = 0.5 * panel.paddle_length(0) + mothergap;
-            dx2 = 0.5 * panel.paddle_length(-1) + mothergap
-                + 0.5 * (panel.paddle_length(-1) - panel.paddle_length(-2));
-            dy  = 0.5 * panel.paddle_thickness() + mothergap;
-            dz  = 0.5 * panel.radial_extent() + mothergap;
 
-            //panel's center point in CLAS coordinate system
-            euclid_vector<> panel_center = panel.center(COORDSYS::CLAS);
 
-            stringstream panel_pos;
-            panel_pos << panel_center.x() << "*cm "
-                      << panel_center.y() << "*cm "
-                      << panel_center.z() << "*cm";
 
-            stringstream panel_rot;
-            panel_rot << "ordered: zxy"
-                      << " " << -90. - 60.*sector.index() << "*deg"
-                      << " " << -90. - panel.thtilt()*rad2deg << "*deg"
-                      << " " << 0 << "*deg";
+        //PCAL's center point in CLAS coordinate system
+        euclid_vector<> pcal_center = pcal.center(COORDSYS::CLAS);
 
-            stringstream panel_dim;
-            panel_dim << dx1 << "*cm "
-                      << dx2 << "*cm "
-                      << dy << "*cm "
-                      << dy << "*cm "
-                      << dz << "*cm ";
+        stringstream pcal_pos;
+        pcal_pos << pcal_center.x() << "*cm "
+                 << pcal_center.y() << "*cm "
+                 << pcal_center.z() << "*cm";
 
-            // The Panel mother volume
-            vols[panel_name] = {
+        stringstream pcal_rot;
+        pcal_rot << "ordered: zxy"
+                  << " " << -90. - 60.*sector.index() << "*deg"
+                  << " " << -90. - pcal.thtilt()*rad2deg << "*deg"
+                  << " " << 0 << "*deg";
+
+        stringstream pcal_dim;
+        pcal_dim << dx1 << "*cm "
+                 << dx2 << "*cm "
+                 << dy << "*cm "
+                 << dy << "*cm "
+                 << dz << "*cm ";
+
+        // The PCAL mother volume
+            vols[pcal_name] = {
                 {"mother", "root"},
-                {"description", panel_desc.str()},
-                {"pos", panel_pos.str()},
-                {"rotation",  panel_rot.str()},
+                {"description", pcal_desc.str()},
+                {"pos", pcal_pos.str()},
+                {"rotation",  pcal_rot.str()},
                 {"color", "ff11aa5"},
                 {"type", "Trd"},
-                {"dimensions", panel_dim.str()},
+                {"dimensions", pcal_dim.str()},
                 {"material", "G4_AIR"},
                 {"mfield", "no"},
                 {"ncopy", "1"},
@@ -146,8 +141,8 @@ volmap_t ftof_volumes_map(const ForwardTOF& ftof)
                 {"identifiers", ""}
             };
 
-            for (int pad = 0; pad<panel.paddles().size(); pad++)
-            {
+
+
 
                 /*
                 generating parameters for the paddle volumes following
@@ -157,29 +152,29 @@ volmap_t ftof_volumes_map(const ForwardTOF& ftof)
                     pDz     Half-length along the z-axis
                 */
 
-                double dx = panel.paddle_length(pad)/2.0;
-                double dy = panel.paddle_thickness()/2.0;
-                double dz = panel.paddle_width()/2.0;
+                double dx = pcal.paddle_length(pad)/2.0;
+                double dy = pcal.paddle_thickness()/2.0;
+                double dz = pcal.paddle_width()/2.0;
 
                 // posz is the GEANT z position of each paddle
                 // (corresponding to x in sector coords)
                 double posz =
-                    (panel.paddle_center_x(pad) - panel_center.x())
-                    / cos(panel.thtilt());
+                    (pcal.paddle_center_x(pad) - pcal_center.x())
+                    / cos(pcal.thtilt());
 
                 stringstream paddle_name_ss;
                 paddle_name_ss << "sec" << sector.index()+1
-                               << "_pan" << sector.panel_name(pan)
+                               << "_pan" << sector.pcal_name(pan)
                                << "_pad" << pad+1;
                 string paddle_name = paddle_name_ss.str();
 
                 stringstream paddle_desc;
                 paddle_desc << "Forward Time Of Flight"
                             << " Sector " << sector.index()+1
-                            << " Panel " << sector.panel_name(pan)
+                            << " Panel " << sector.pcal_name(pan)
                             << " Paddle " << pad+1;
 
-                //paddle's position relative to the panel (mother volume)
+                //paddle's position relative to the pcal (mother volume)
                 euclid_vector<> paddle_position = {0,0,posz};
 
                 stringstream paddle_pos;
@@ -197,11 +192,11 @@ volmap_t ftof_volumes_map(const ForwardTOF& ftof)
                 stringstream paddle_sens;
 
                 paddle_ids    << "sector ncopy 0 paddle manual " << pad+1 ;
-                paddle_sens   << "FTOF_"<<sector.panel_name(pan);
+                paddle_sens   << "FTOF_"<<sector.pcal_name(pan);
 
                 // The paddle volume
                 vols[paddle_name] = {
-                    {"mother", panel_name},
+                    {"mother", pcal_name},
                     {"description", paddle_desc.str()},
                     {"pos", paddle_pos.str()},
                     {"rotation", paddle_rot.str()},
@@ -222,7 +217,7 @@ volmap_t ftof_volumes_map(const ForwardTOF& ftof)
 
             } // loop over paddles
 
-        }  // loop over panels
+        }  // loop over pcals
 
     } // loop over sectors
 
