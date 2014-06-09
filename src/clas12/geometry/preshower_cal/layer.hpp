@@ -57,12 +57,14 @@ class Layer
     size_t nviews() const;
     const double& view_angle() const;
     const double& wrapper_thick() const;
-    const double& scint_thick() const;
+    const double& strip_thick() const;
+    const double& strip_width() const;
     const double& lead_thick() const;
 
     string view_name(size_t id) const;
 
     // methods in cpp file
+
 
   private:
     Layer(const View* view, size_t idx);
@@ -94,8 +96,11 @@ class Layer
     /// \brief thickness of the TiO2 reflective wrapping around each strip (mm)
     double _wrapper_thick;
 
-     /// \brief thickness of each scintillator strip (mm)
-    double _scint_thick;
+    /// \brief thickness of each scintillator strip (mm)
+    double _strip_thick;
+
+    /// \brief width of each scintillator strip (mm)
+     double _strip_width;
 
     /// \brief thickness of each lead layer (mm)
     double _lead_thick;
@@ -257,13 +262,24 @@ const double& Layer::wrapper_thick() const
 
 /**
  * \brief Get the scintillator thickness
- * \return reference to Layer::_scint_thick
+ * \return reference to Layer::_strip_thick
  **/
 inline
-const double& Layer::scint_thick() const
+const double& Layer::strip_thick() const
 {
-    return _scint_thick;
+    return _strip_thick;
 }
+
+/**
+ * \brief Get the scintillator width
+ * \return reference to Layer::_strip_width
+ **/
+inline
+const double& Layer::strip_width() const
+{
+    return _strip_width;
+}
+
 
 /**
  * \brief Get the lead thickness

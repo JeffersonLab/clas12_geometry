@@ -97,8 +97,9 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
 // the nominal geometry parameters for the PCAL.
 // These numbers come from three tables:
     ConstantsTable table_pcal(calib,"/geometry/pcal/pcal");
-    ConstantsTable table_view_u(calib,"/geometry/pcal/view_u");
-    ConstantsTable table_view_vw(calib,"/geometry/pcal/view_vw");
+    ConstantsTable table_view_u(calib,"/geometry/pcal/Uview");
+    ConstantsTable table_view_v(calib,"/geometry/pcal/Vview");
+    ConstantsTable table_view_w(calib,"/geometry/pcal/Wview");
 
     LOG(debug) << "pcal...";
     size_t nsectors      = table_pcal.elem<size_t>("nsectors"); // n
@@ -109,12 +110,13 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
     double view_angle    = table_pcal.elem<double>("view_angle");//n
     double thtilt        = table_pcal.elem<double>("thtilt");//n
     double wrapper_thick = table_pcal.elem<double>("wrapper_thick");//cm
-    double scint_thick   = table_pcal.elem<double>("scint_thick");//cm
+    double strip_thick   = table_pcal.elem<double>("strip_thick");//cm
     double steel_thick   = table_pcal.elem<double>("steel_thick");//cm
     double foam_thick    = table_pcal.elem<double>("foam_thick");//cm
     double lead_thick    = table_pcal.elem<double>("lead_thick");//cm
-    double max_u_length  = table_pcal.elem<double>("max_u_length");//cm
-    double max_vw_length = table_pcal.elem<double>("max_vw_length");//cm
+    double strip_width   = table_pcal.elem<double>("strip_width");//cm
+    double dist2tgt      = table_pcal.elem<double>("dist2tgt");//cm
+    double yhigh         = table_pcal.elem<double>("yhigh");//cm
 
     LOG(debug) << "nsectors: "      << nsectors << endl
                << "nviews: "        << nviews << endl
@@ -123,30 +125,33 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
                << "nfoam: "         << nfoam << endl
                << "view_angle: "    << view_angle << endl
                << "thtilt: "        << thtilt << endl
-               << "wrapper_thick: " << wrapper_thick
-               << "scint_thick: "   << scint_thick
-               << "steel_thick: "   << steel_thick
-               << "foam_thick: "    << foam_thick
-               << "lead_thick: "    << lead_thick
-               << "max_u_length: "  << max_u_length
-               << "max_vw_length: " << max_vw_length;
+               << "wrapper_thick: " << wrapper_thick<< endl
+               << "strip_thick: "   << strip_thick<< endl
+               << "steel_thick: "   << steel_thick<< endl
+               << "foam_thick: "    << foam_thick<< endl
+               << "lead_thick: "    << lead_thick<< endl
+               << "strip_width: "   << strip_width << endl
+               << "dist2tgt: "      << dist2tgt<< endl
+               << "yhigh: "         << yhigh<< endl;
 
     LOG(debug) << "widths...";
 
 
 
-    vector<double> scint_width_u =  table_view_u.col<double>("width");
-    vector<double> scint_width_vw = table_view_vw.col<double>("width");
+    double u_nstrips    =  table_view_u.elem<double>("nstrips");
+    double u_max_length =  table_view_u.elem<double>("max_length");
 
-    /*vector<vector<double>> scint_width =
-    {
-        table_view_u.col<double>("width"),
-        table_view_vw.col<double>("width") //mm
-    };
-    */
+    double v_nstrips    =  table_view_v.elem<double>("nstrips");
+    double v_max_length =  table_view_v.elem<double>("max_length");
+
+    double w_nstrips    =  table_view_w.elem<double>("nstrips");
+    double w_max_length =  table_view_w.elem<double>("max_length");
 
 
- // Now we fill the sectors object which holds all these
+
+
+
+    // Now we fill the sectors object which holds all these
     // core parameters. Here, many numbers will be redundant.
     // It is expected that this will change once efficiency
     // alignment and other calibrations are taken into effect.
@@ -164,6 +169,8 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
         sector._foam_thick  = foam_thick*0.1;
         sector._steel_thick = steel_thick*0.1;
         sector._thtilt      = thtilt*deg2rad ;
+        sector._dist2tgt    = dist2tgt*0.1;
+        sector._yhigh       = yhigh*0.1;
 
         for (size_t lyr=0; lyr<nlayers; lyr++)
         {
@@ -174,9 +181,9 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
             layer._nviews          = nviews;
             layer._view_angle      = view_angle*deg2rad ;
             layer._wrapper_thick   = wrapper_thick*0.1;
-            layer._scint_thick     = scint_thick*0.1;
+            layer._strip_thick     = strip_thick*0.1;
             layer._lead_thick      = lead_thick*0.1;
-
+            layer._strip_width     = strip_width*0.1;
 
             for (size_t iview=0; iview<nviews; iview++)
             {
@@ -187,34 +194,25 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
 
                    if (view.name() == "u")
                    {
-                        view._scint_max_length = max_u_length*0.1;
-                        view._scint_width.resize(scint_width_u.size());
+                       view._nstrips    = u_nstrips;
+                       view._max_length = u_max_length*0.1;
 
-                        for (int i = 0; i<scint_width_u.size(); i++)
-                        {
-                           view._scint_width[i] = scint_width_u[i]*0.1;
-
-                           LOG(debug) <<"layer = "<<lyr<<"  view = "<< iview <<"  "<<
-                           i<<"  "<< view._scint_width[i]<<endl;
-
-                        }
-                        view._strips.assign(scint_width_u.size(),true);
+                       view._strips.assign(view.nstrips(),true);
                     }
-                    else if (view.name() == "v" || view.name() == "w")
+                    else if (view.name() == "v")
                     {
-                        view._scint_max_length = max_vw_length*0.1;
-                        view._scint_width.resize(scint_width_vw.size());
+                       view._nstrips    = v_nstrips;
+                       view._max_length = v_max_length*0.1;
 
-                        for (int i = 0; i<scint_width_vw.size(); i++)
-                        {
-                           view._scint_width[i] = scint_width_vw[i]*0.1;
-
-                           LOG(debug) <<"layer = "<<lyr<<"  view = "<< iview<<"  "<<
-                            i<<"  "<< view._scint_width[i]<<endl;
-                        }
-                        view._strips.assign(scint_width_vw.size(),true);
+                       view._strips.assign(view.nstrips(),true);
                     }
+                    else if (view.name() == "w")
+                    {
+                       view._nstrips    = w_nstrips;
+                       view._max_length = w_max_length*0.1;
 
+                       view._strips.assign(view.nstrips(),true);
+                    }
 
 
             }
@@ -224,14 +222,6 @@ void PreshowerCal::fetch_nominal_parameters(Calibration* calib)
 
     LOG(debug) << "done fetching numbers from database for PCAL.";
 }
-
-
-
-
-
-
-
-
 
 
 

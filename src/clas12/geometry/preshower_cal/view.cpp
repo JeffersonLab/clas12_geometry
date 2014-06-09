@@ -60,8 +60,8 @@ View::View(const Layer* layer, size_t idx)
 View::View(const View& that, const Layer* layer, size_t idx)
 : _layer(layer)
 , _idx(idx)
-, _scint_width(that._scint_width)
-, _scint_max_length(that._scint_max_length)
+, _nstrips(that._nstrips)
+, _max_length(that._max_length)
 {}
 
 
@@ -75,7 +75,19 @@ View::View(const View& that, const Layer* layer, size_t idx)
  //   return _layer->view_name(_idx);
 //}
 
-
+double View::strip_length(int s) const
+{
+    static const double halfpi = 3.14159265358979 /2.;
+    double ns = this->nstrips() - s;
+    if (this->name() == "u")
+    {
+        return  _max_length - 2. * ns * _layer->strip_width() * tan(halfpi-_layer->view_angle());
+    }
+    else // v, w
+    {
+        return  _max_length - ns * _layer->strip_width() * tan(halfpi-_layer->view_angle());
+    }
+}
 
 } // namespace clas12::geometry::preshower_cal
 } // namespace clas12::geometry

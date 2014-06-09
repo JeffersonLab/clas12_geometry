@@ -55,12 +55,12 @@ class View
     bool strip(int p) const;
 
     size_t nstrips() const;
-    double scint_width(int p) const;
-    double scint_max_length() const;
+    double max_length() const;
 
 
     // methods in cpp file
     string name() const;
+    double strip_length(int s) const;
 
   private:
     View(const Layer* layer, size_t idx);
@@ -73,15 +73,14 @@ class View
     /// object held by the Layer parent class
     size_t _idx;
 
+    ///\brief number of strips in this view
+    size_t _nstrips;
+
+    /// \brief maximum strip length in this view
+    double _max_length;
 
     /// \brief the strips in this view are either on or off
     vector<bool> _strips;
-
-    /// \brief strip width
-    vector<double> _scint_width;
-
-    /// \brief maximum strip length
-    double _scint_max_length;
 
 
     // private inline methods
@@ -136,37 +135,42 @@ bool View::strip(int p) const
     return _strips[strip_index(p)];
 }
 
-/**
- * \brief Get the width of strips in this view
- * \param [in] p a strip in this view (counting from zero)
- * \return copy of View::_strip_width[p]
- **/
-inline
-double View::scint_width(int p) const
-{
-    return _scint_width[strip_index(p)];
-}
+
 
 /**
- * \brief Get the maximum length of strips in this view
- * \return copy of View::max_strip_width
+ * \brief Get the length of strips in this view
+ * \return copy of View::_strip_length[p]
  **/
-inline
-double View::scint_max_length() const
-{
-    return _scint_max_length;
-}
+//inline
+//double View::strip_length(int p) const
+//{
+ //   return _strip_length[strip_index(p)];
+//}
 
 
 /**
  * \brief Get the number of strips in this view
- * \return copy of View::strips.size()
+ * \return reference to View::_nstrips
  **/
 inline
 size_t View::nstrips() const
 {
-    return _strips.size();
+    return _nstrips;
 }
+
+
+
+/**
+ * \brief Get the maximum strip length in this view
+ * \return constant reference to View::_max_length
+ **/
+inline
+double View::max_length() const
+{
+    return _max_length;
+}
+
+
 
 /**
  * \brief convert negative indexes to positive counting from end

@@ -37,20 +37,24 @@ BOOST_AUTO_TEST_CASE(constructor)
 
     using namespace clas12::ccdb;
     using ::ccdb::Calibration;
-
+    using namespace pugi;
+    xml_document doc;
+    stringstream doc_ss;
 
     size_t nviews = 3;
     size_t nlayers = 5;
     size_t nfoam  = 2;
+    size_t nsteel = 4;
+    double thtilt = 25;
+    double foam_thick = 5.08;
+    double steel_thick = 0.2;
     double view_angle = 62.905;
-    double wrapper_thick = 0.25;
-
-    //vector<size_t> nscint{68,62,62};
-    //vector<double> scint_width_u;
-    //vector<double> scint_width_vw;
-
-    //scint_width_u.assign(52,4.5);    for (int i=0; i<16; i++) scint_width_u.push_back(9.05);
-    //scint_width_vw.assign(15,9.05);  for (int i=0; i<46; i++) scint_width_vw.push_back(4.5);
+    double wrapper_thick = 0.025;
+    double scint_thick = 1.0;
+    double scint_width = 4.5;
+    double lead_thick = 0.215;
+    vector<size_t> nstrips{84,77,77};
+    vector<double> max_length{394.2,432.7,432.7};
 
     /// constructor with arguments
     clog << "constructor...\n";
@@ -66,8 +70,11 @@ BOOST_AUTO_TEST_CASE(constructor)
         const preshower_cal::Sector& sector = pcal.sector(sec);
 
         BOOST_CHECK_EQUAL(sector.nlayers(), nlayers);
-
-        //BOOST_CHECK_EQUAL(sector.nfoam(), nfoam);
+        BOOST_CHECK_EQUAL(sector.nfoam(), nfoam);
+        BOOST_CHECK_EQUAL(sector.nsteel(), nsteel);
+        BOOST_CHECK_CLOSE(sector.thtilt(),thtilt*deg2rad, 0.0001 );
+        BOOST_CHECK_CLOSE(sector.foam_thick(),foam_thick, 0.0001 );
+        BOOST_CHECK_CLOSE(sector.steel_thick(),steel_thick, 0.0001 );
 
         for (size_t lyr=0; lyr<sector.layers().size(); lyr++)
         {
@@ -77,93 +84,28 @@ BOOST_AUTO_TEST_CASE(constructor)
             clog << "sector " << sec << ", layer " << lyr << endl;
             BOOST_CHECK_EQUAL(layer.views().size(), nviews);
             BOOST_CHECK_CLOSE(layer.view_angle(),view_angle*deg2rad, 0.0001 );
-            BOOST_CHECK_CLOSE(layer.wrapper_thick(),wrapper_thick*0.1, 0.0001 );
-        }
-
-    }
-
-}
-
-
-
-
-/*
-
-BOOST_AUTO_TEST_CASE(pcal_scint_width)
-{
-    using namespace std;
-    using namespace geometry;
-    using namespace clas12::geometry;
-    using namespace clas12::geometry::preshower_cal;
-
-
-    using namespace clas12::ccdb;
-    using ::ccdb::Calibration;
-
-    //using namespace clas12::geometry::output;
-    using namespace pugi;
-
-    static const double double_tolerance = 1.e-8;
-
-    string ccdb_host = "clasdb.jlab.org";
-    string ccdb_user = "clas12reader";
-    string ccdb_db = "clas12";
-
-
-    ConnectionInfoMySQL conninfo;
-    ConstantSetInfo csinfo;
-    unique_ptr<Calibration> calib = get_calibration(conninfo,csinfo);
-    PreshowerCal pcal(calib.get());
-
-    //PreshowerCal pcal(ccdb_host,ccdb_user,ccdb_db);
-    xml_document doc;
-    stringstream doc_ss;
-    vector<size_t> nscint{68,62,62};
-    vector<double> scint_width_u;
-    vector<double> scint_width_vw;
-
-    scint_width_u.assign(52,4.5);    for (int i=0; i<16; i++) scint_width_u.push_back(9.05);
-    scint_width_vw.assign(15,9.05);  for (int i=0; i<47; i++) scint_width_vw.push_back(4.5);
-
-
-    for (size_t sec=0; sec<pcal.sectors().size(); sec++)
-    {
-        const preshower_cal::Sector& sector = pcal.sector(sec);
-
-        for (size_t lyr=0; lyr<sector.layers().size(); lyr++)
-        {
-            const preshower_cal::Layer& layer = sector.layer(lyr);
+            BOOST_CHECK_CLOSE(layer.wrapper_thick(),wrapper_thick, 0.0001 );
+            BOOST_CHECK_CLOSE(layer.strip_thick(),scint_thick, 0.0001 );
+            BOOST_CHECK_CLOSE(layer.strip_width(),scint_width, 0.0001 );
+            BOOST_CHECK_CLOSE(layer.lead_thick(),lead_thick, 0.0001 );
 
             for (size_t iview=0; iview<layer.nviews(); iview++)
             {
-                //layer._views.emplace_back(new View(&layer,iview));
-                //View& view = *layer._views[iview];
-                const preshower_cal::View& view = layer.view(iview);
+              const preshower_cal::View& view = layer.view(iview);
+              clog << "sector " << sec << ", layer " << lyr << ", view "<<iview<<endl;
 
-                BOOST_CHECK_EQUAL(view.strips().size(),nscint[iview]);
-
-                 if (view.name() == "u")
-                 {
-                   for (size_t i=0; i<view.strips().size(); i++)
-                   {
-                     BOOST_CHECK_CLOSE(view.scint_width(i),scint_width_u[i], 0.0001 );
-                   }
-                 }
-
-                 else if (view.name() == "v" || view.name() == "w")
-                 {
-                   for (size_t i=0; i<view.strips().size(); i++)
-                   {
-                      BOOST_CHECK_CLOSE(view.scint_width(i),scint_width_vw[i], 0.0001 );
-                   }
-                 }
+              BOOST_CHECK_EQUAL(view.nstrips(),nstrips[iview]);
+              BOOST_CHECK_CLOSE(view.max_length(),max_length[iview], 0.0001 );
             }
+
         }
+
+
+
+
     }
 
 
-
-    //pcal_scint_parms_xml(doc,pcal,"clas","cm");
     //pcal_volumes_xml(doc,pcal);
     //doc.save(doc_ss);
     //string scints_xml = doc_ss.str();
@@ -174,7 +116,7 @@ BOOST_AUTO_TEST_CASE(pcal_scint_width)
 
     //pcal_volumes_map(pcal);
 }
-*/
+
 
 
 

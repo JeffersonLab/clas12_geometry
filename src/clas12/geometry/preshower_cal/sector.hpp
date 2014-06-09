@@ -59,10 +59,13 @@ class Sector
     const double& thtilt() const;
     const double& foam_thick() const;
     const double& steel_thick() const;
+    const double& dist2tgt() const;
+    const double& yhigh() const;
 
     size_t index() const;
 
     euclid_vector<double,3>    sector_to_clas(const euclid_vector<double,3>& v   ) const;
+    euclid_vector<double,3>    pcal_to_sector(const euclid_vector<double,3>& v   ) const;
     direction_vector<double,3> sector_to_clas(const direction_vector<double,3>& v) const;
     line<double,3>             sector_to_clas(const line<double,3>& l            ) const;
     line_segment<double,3>     sector_to_clas(const line_segment<double,3>& l    ) const;
@@ -104,6 +107,13 @@ class Sector
 
     /// \brief thickness of a steel plate (mm)
     double _steel_thick;
+
+    /// \brief length of a normal line connecting CLAS12 target and PCal coordinate center (mm)
+    double _dist2tgt;
+
+    /// \brief y coordinate of the longest edge of the longest scintillator strip (U) with respect to the  PCal coordinate center (mm)
+    double _yhigh;
+
 
     // private inline methods
 
@@ -243,6 +253,25 @@ const double& Sector::steel_thick() const
     return _steel_thick;
 }
 
+/**
+ * \brief Get the distance to target
+ * \return reference to Sector::_dist2tgt
+ **/
+inline
+const double& Sector::dist2tgt() const
+{
+    return _dist2tgt;
+}
+
+/**
+ * \brief Get the y coordinate of the outer edge of the longest strip (U)
+ * \return reference to Sector::_yhigh
+ **/
+inline
+const double& Sector::yhigh() const
+{
+    return _yhigh;
+}
 
 
 } // namespace clas12::geometry::preshower_cal
