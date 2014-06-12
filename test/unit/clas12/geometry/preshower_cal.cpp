@@ -18,7 +18,7 @@ using std::endl;
 #include "geometry/line.hpp"
 
 #include "clas12/geometry/preshower_cal.hpp"
-//#include "clas12/geometry/output/pcal_volumes.hpp"
+#include "clas12/geometry/output/pcal_volumes.hpp"
 
 #include "clas12/ccdb/constants_table.hpp"
 
@@ -34,6 +34,7 @@ BOOST_AUTO_TEST_CASE(constructor)
     using ::geometry::plane;
     using namespace clas12::geometry;
     using namespace clas12::geometry::preshower_cal;
+    using namespace clas12::geometry::output;
 
     using namespace clas12::ccdb;
     using ::ccdb::Calibration;
@@ -106,15 +107,15 @@ BOOST_AUTO_TEST_CASE(constructor)
     }
 
 
-    //pcal_volumes_xml(doc,pcal);
-    //doc.save(doc_ss);
+    pcal_volumes_xml(doc,pcal);
+    doc.save(doc_ss);
     //string scints_xml = doc_ss.str();
-    //string volumes_xml = doc_ss.str();
+    string volumes_xml = doc_ss.str();
     //cout<<scint_xml<<endl;
-    //cout<<volumes_xml<<endl;
+    cout<<volumes_xml<<endl;
     //BOOST_CHECK_EQUAL(scint_xml.size(), 1235243);
 
-    //pcal_volumes_map(pcal);
+    pcal_volumes_map(pcal);
 }
 
 

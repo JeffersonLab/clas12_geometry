@@ -77,6 +77,7 @@ View::View(const View& that, const Layer* layer, size_t idx)
 
 double View::strip_length(int s) const
 {
+    static const double pi     = 3.14159265358979;
     static const double halfpi = 3.14159265358979 /2.;
     double ns = this->nstrips() - s;
     if (this->name() == "u")
@@ -85,7 +86,8 @@ double View::strip_length(int s) const
     }
     else // v, w
     {
-        return  _max_length - ns * _layer->strip_width() * tan(halfpi-_layer->view_angle());
+        return  _max_length - ns * _layer->strip_width() *
+                            (tan(halfpi-_layer->view_angle())+tan(2*_layer->view_angle() - halfpi));
     }
 }
 
