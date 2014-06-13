@@ -539,7 +539,7 @@ volmap_t pcal_volumes_map(const PreshowerCal& pcal)
               {"identifiers", vlayer_ids.str()}
            };
 
-           for (size_t is=1; is<=sector.layer(0).view(0).nstrips(); is++)
+           for (size_t is=1; is<=sector.layer(0).view(1).nstrips(); is++)
            {
            /* make V view strip volumes (77 of them), following  the G4Trap constructor.*/
 
@@ -560,12 +560,10 @@ volmap_t pcal_volumes_map(const PreshowerCal& pcal)
 
 
             /* posy = position of the strip relative to its mother volume (V view)*/
-            double y = 0.5*pcal_active_vheight - (is-0.5)*sector.layer(0).strip_width();
+            double y = 0.5*pcal_vw_height - (is-0.5)*sector.layer(0).strip_width();
                                         - (2*is-1)*sector.layer(0).wrapper_thick();
 
-            double x = -0.5*pcal_active_vheight*tan(gamma)
-                       +0.5*(is-0.5)*sector.layer(0).strip_width()*tan(gamma)
-                       +0.5*(2*is-1)*sector.layer(0).wrapper_thick()*tan(gamma);
+            double x = -y*tan(gamma);
             euclid_vector<> posy = {x,y,0};
 
             stringstream strip_name_ss;
@@ -711,7 +709,7 @@ volmap_t pcal_volumes_map(const PreshowerCal& pcal)
               {"identifiers", wlayer_ids.str()}
            };
 
-           for (size_t is=1; is<=sector.layer(0).view(0).nstrips(); is++)
+           for (size_t is=1; is<=sector.layer(0).view(2).nstrips(); is++)
            {
            /* make W view strip volumes (77 of them), following  the G4Trap constructor.*/
 
@@ -732,12 +730,12 @@ volmap_t pcal_volumes_map(const PreshowerCal& pcal)
 
 
             /* posy = position of the strip relative to its mother volume (W view)*/
-            double y = 0.5*pcal_active_vheight - (is-0.5)*sector.layer(0).strip_width();
-                                        - (2*is-1)*sector.layer(0).wrapper_thick();
+            double y = -0.5*pcal_active_vheight + (is-0.5)*sector.layer(0).strip_width();
+                                        + (2*is-1)*sector.layer(0).wrapper_thick();
 
-            double x = -0.5*pcal_active_vheight*tan(gamma)
-                       +0.5*(is-0.5)*sector.layer(0).strip_width()*tan(gamma)
-                       +0.5*(2*is-1)*sector.layer(0).wrapper_thick()*tan(gamma);
+            double x = -y*tan(gamma);
+
+
             euclid_vector<> posy = {x,y,0};
 
             stringstream strip_name_ss;
