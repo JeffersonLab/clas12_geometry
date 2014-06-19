@@ -117,12 +117,14 @@ def configure(ctx):
 
     if ctx.options.libpath != None:
         for libpath in re.split('[:,]+', ctx.options.libpath):
-            if libpath not in system_libpath:
-                ctx.env.append_unique('LIBPATH',libpath)
+            if libpath != '':
+                if libpath not in system_libpath:
+                    ctx.env.append_unique('LIBPATH',libpath)
     if ctx.options.includes != None:
         for incpath in re.split('[:,]+', ctx.options.includes):
-            if incpath not in system_includes:
-                ctx.env.append_unique('INCLUDES', incpath)
+            if incpath != '':
+                if incpath not in system_includes:
+                    ctx.env.append_unique('INCLUDES', incpath)
 
 
     ### MANDATORY DEPENDENCIES
