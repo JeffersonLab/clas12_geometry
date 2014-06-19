@@ -29,36 +29,61 @@ using ::geometry::euclid_vector;
 using ::geometry::direction_vector;
 using ::geometry::plane;
 
+
 /**
  * \brief constructor.
  *
- * This forces the region to have a parent view
+ * This forces the layer to have a parent sector
  * object pointer.
  *
- * \param [in] view a pointer to the parent View class
+ * \param [in] sector a pointer to the parent Sector class
  * \param [in] idx the index of this layer in vector<Layer>
- *             held by parent View.
+ *             held by parent Sector.
  **/
-Layer::Layer(const View* view, size_t idx)
-: _view(view)
+Layer::Layer(const Sector* sector, size_t idx)
+: _sector(sector)
 , _idx(idx)
 {}
 
 /**
  * \brief copy constructor.
  *
- * This forces the layer to have a parent view
+ * This forces the layer to have a parent sector
  * object pointer.
  *
  * \param [in] that the Layer being copied
- * \param [in] view a pointer to the parent View class
- * \param [in] idx the index of this region in vector<Layer>
- *             held by parent View.
+ * \param [in] sector a pointer to the parent Sector class
+ * \param [in] idx the index of this layer in vector<Layer>
+ *             held by parent Sector.
  **/
-Layer::Layer(const Layer& that, const View* view, size_t idx)
-: _view(view)
+Layer::Layer(const Layer& that, const Sector* sector, size_t idx)
+: _sector(sector)
 , _idx(idx)
-{}
+, _nviews(that._nviews)
+, _view_angle(that._view_angle)
+, _wrapper_thick(that._wrapper_thick)
+, _strip_thick(that._strip_thick)
+, _strip_width(that._strip_width)
+, _lead_thick(that._lead_thick)
+
+{
+    for (size_t i=0; i<that._views.size(); i++)
+    {
+        const View& iview = *that._views[i];
+        _views.emplace_back(new View(iview,this,i));
+    }
+}
+
+
+/**
+ * \brief get the name of this view (u, v or w)
+ * \return the string "u", "v" or "w"
+ **/
+string View::name() const
+{
+    return _layer->view_name(_idx);
+}
+
 
 } // namespace clas12::geometry::preshower_cal
 } // namespace clas12::geometry

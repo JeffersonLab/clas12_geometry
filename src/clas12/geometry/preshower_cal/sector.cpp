@@ -26,6 +26,7 @@ Sector::Sector(const PreshowerCal* pcal, size_t idx)
 , _idx(idx)
 {}
 
+
 /**
  * \brief copy constructor.
  *
@@ -40,14 +41,34 @@ Sector::Sector(const PreshowerCal* pcal, size_t idx)
 Sector::Sector(const Sector& that, const PreshowerCal* pcal, size_t idx)
 : _pcal(pcal)
 , _idx(idx)
+, _nlayers(that._nlayers)
+, _nfoam(that._nfoam)
+, _nsteel(that._nsteel)
+, _foam_thick(that._foam_thick)
+, _steel_thick(that._steel_thick)
+, _thtilt(that._thtilt)
+,_dist2tgt(that._dist2tgt)
+,_yhigh(that._yhigh)
 {
-    for (size_t i=0; i<that._views.size(); i++)
+    for (size_t i=0; i<that._layers.size(); i++)
     {
-        const View& view = *that._views[i];
-        _views.emplace_back(new View(view,this,i));
+        const Layer& layer = *that._layers[i];
+        _layers.emplace_back(new Layer(layer,this,i));
     }
 }
 
+euclid_vector<double,3> Sector::pcal_to_sector(const euclid_vector<double,3>& v) const
+{
+    static const double alpha = this->thtilt();
+    const double x0 = this->dist2tgt()*sin(alpha);
+    const double y0 = 0.0;
+    const double z0 = this->dist2tgt()*cos(alpha);
+    double x = x0 + v.y()*cos(alpha) + v.z()*sin(alpha);
+    double y = y0 + v.x();
+    double z = z0 - v.y()*sin(alpha) + v.z()*cos(alpha);
+    euclid_vector<double,3> ret = {x,y,z};
+    return ret;
+}
 
 euclid_vector<double,3> Sector::sector_to_clas(const euclid_vector<double,3>& v) const
 {

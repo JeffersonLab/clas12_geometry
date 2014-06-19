@@ -163,7 +163,7 @@ void ForwardTOF::fetch_nominal_parameters(Calibration* calib)
             table_p1b_pad.col<double>("Intercept"),
             table_p2_pad.col<double>("Intercept") };
 
-    // Now we fill the sectors object which holds all these
+    // Now we fill the sector object which holds all these
     // core parameters. Here, many numbers will be redundant.
     // It is expected that this will change once efficiency
     // alignment and other calibrations are taken into effect.
