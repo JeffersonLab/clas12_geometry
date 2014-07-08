@@ -20,7 +20,7 @@ namespace geometry
 
 class ElectromagneticCal;
 
-namespace preshower_cal
+namespace electromagnetic_cal
 {
 
 using std::size_t;
@@ -74,7 +74,7 @@ class Sector
 
   private:
     Sector(const ElectromagneticCal* ec, size_t idx);
-    Sector(const Sector& that, const ElectromagneticCal* pcal, size_t idx);
+    Sector(const Sector& that, const ElectromagneticCal* ec, size_t idx);
 
     /// \brief a pointer to the parent sector
     const ElectromagneticCal* _ec;
@@ -133,7 +133,7 @@ class Sector
     /// \brief deleted assignment operator
     Sector& operator=(const Sector&) = delete;
 
-    /// \brief the top-level PCal class has control of all
+    /// \brief the top-level EC class has control of all
     /// private members of this class.
     friend class ::clas12::geometry::ElectromagneticCal;
 };

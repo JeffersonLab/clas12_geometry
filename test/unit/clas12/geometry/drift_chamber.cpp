@@ -24,6 +24,7 @@ using std::endl;
 #include "clas12/geometry/drift_chamber.hpp"
 #include "clas12/geometry/output/dc_wire_endpoints.hpp"
 #include "clas12/geometry/output/dc_volumes.hpp"
+#include "clas12/ccdb/constants_table.hpp"
 
 BOOST_AUTO_TEST_SUITE(clas12_geometry_drift_chamber)
 
@@ -32,10 +33,9 @@ BOOST_AUTO_TEST_CASE(constructor)
     using namespace std;
     using namespace clas12::geometry;
     using namespace clas12::geometry::drift_chamber;
+    using namespace clas12::ccdb;
+    using ::ccdb::Calibration;
 
-    string ccdb_host = "clasdb.jlab.org";
-    string ccdb_user = "clas12reader";
-    string ccdb_db = "clas12";
 
     size_t nsectors = 6;      // sectors that make up the DC
     size_t nregions = 3;      // regions     per sector
@@ -46,8 +46,12 @@ BOOST_AUTO_TEST_CASE(constructor)
     size_t nguardwires = 2;   // guardwires  per senselayer
 
     {
+
         /// constructor with arguments
-        DriftChamber dcgeom(ccdb_host,ccdb_user,ccdb_db);
+        ConnectionInfoMySQL conninfo;
+        ConstantSetInfo csinfo;
+        unique_ptr<Calibration> calib = get_calibration(conninfo,csinfo);
+        DriftChamber dcgeom(calib.get());
 
         BOOST_CHECK_EQUAL(dcgeom.sectors().size(), nsectors);
 
@@ -89,7 +93,7 @@ BOOST_AUTO_TEST_CASE(constructor)
         DriftChamber dcgeom;
         {
             /// loading parameters in sub-scope
-            dcgeom.fetch_nominal_parameters(ccdb_host,ccdb_user,ccdb_db);
+            //dcgeom.fetch_nominal_parameters(ccdb_host,ccdb_user,ccdb_db);
         }
 
         BOOST_CHECK_EQUAL(dcgeom.sectors().size(), nsectors);
@@ -133,15 +137,18 @@ BOOST_AUTO_TEST_CASE(drift_chamber)
     using namespace std;
     using namespace clas12::geometry;
     using namespace clas12::geometry::drift_chamber;
+    using namespace clas12::ccdb;
+    using ::ccdb::Calibration;
 
     static const double double_tolerance = 1.e-8;
 
-    string ccdb_host = "clasdb.jlab.org";
-    string ccdb_user = "clas12reader";
-    string ccdb_db = "clas12";
-
 /// begin testing drift chamber methods ////////////////////////////////
-DriftChamber dcgeom(ccdb_host,ccdb_user,ccdb_db);
+    ConnectionInfoMySQL conninfo;
+    ConstantSetInfo csinfo;
+    unique_ptr<Calibration> calib = get_calibration(conninfo,csinfo);
+    DriftChamber dcgeom(calib.get());
+
+   //DriftChamber dcgeom(ccdb_host,ccdb_user,ccdb_db);
 
 /// end testing drift chamber methods //////////////////////////////////
 }
@@ -151,14 +158,15 @@ BOOST_AUTO_TEST_CASE(sector)
     using namespace std;
     using namespace clas12::geometry;
     using namespace clas12::geometry::drift_chamber;
+    using namespace clas12::ccdb;
+    using ::ccdb::Calibration;
 
     static const double double_tolerance = 1.e-8;
 
-    string ccdb_host = "clasdb.jlab.org";
-    string ccdb_user = "clas12reader";
-    string ccdb_db = "clas12";
-
-    DriftChamber dcgeom(ccdb_host,ccdb_user,ccdb_db);
+    ConnectionInfoMySQL conninfo;
+    ConstantSetInfo csinfo;
+    unique_ptr<Calibration> calib = get_calibration(conninfo,csinfo);
+    DriftChamber dcgeom(calib.get());
 
     for (size_t sec=0; sec<dcgeom.sectors().size(); sec++)
     {
@@ -174,16 +182,15 @@ BOOST_AUTO_TEST_CASE(region)
     using namespace std;
     using namespace clas12::geometry;
     using namespace clas12::geometry::drift_chamber;
+    using namespace clas12::ccdb;
+    using ::ccdb::Calibration;
 
     static const double double_tolerance = 1.e-8;
 
-    string ccdb_host = "clasdb.jlab.org";
-    string ccdb_user = "clas12reader";
-    string ccdb_db = "clas12";
-
-    //vector<double> thickness{0.,0.,0.};
-
-    DriftChamber dcgeom(ccdb_host,ccdb_user,ccdb_db);
+    ConnectionInfoMySQL conninfo;
+    ConstantSetInfo csinfo;
+    unique_ptr<Calibration> calib = get_calibration(conninfo,csinfo);
+    DriftChamber dcgeom(calib.get());
 
     for (size_t sec=0; sec<dcgeom.sectors().size(); sec++)
     {
@@ -207,12 +214,16 @@ BOOST_AUTO_TEST_CASE(superlayer)
     using namespace std;
     using namespace clas12::geometry;
     using namespace clas12::geometry::drift_chamber;
+    using namespace clas12::ccdb;
+    using ::ccdb::Calibration;
 
     static const double double_tolerance = 1.e-8;
 
-    string ccdb_host = "clasdb.jlab.org";
-    string ccdb_user = "clas12reader";
-    string ccdb_db = "clas12";
+    ConnectionInfoMySQL conninfo;
+    ConstantSetInfo csinfo;
+    unique_ptr<Calibration> calib = get_calibration(conninfo,csinfo);
+    DriftChamber dcgeom(calib.get());
+
 
     int nwplanes = 22;
     int nlayers = 8;
@@ -226,7 +237,6 @@ BOOST_AUTO_TEST_CASE(superlayer)
     //vector<double> w0mid_z{};
     //vector<double> wmid_spacing{};
 
-    DriftChamber dcgeom(ccdb_host,ccdb_user,ccdb_db);
 
     for (size_t sec=0; sec<dcgeom.sectors().size(); sec++)
     {
@@ -280,12 +290,10 @@ BOOST_AUTO_TEST_CASE(senselayer)
     using namespace std;
     using namespace clas12::geometry;
     using namespace clas12::geometry::drift_chamber;
+    using namespace clas12::ccdb;
+    using ::ccdb::Calibration;
 
     static const double double_tolerance = 1.e-8;
-
-    string ccdb_host = "clasdb.jlab.org";
-    string ccdb_user = "clas12reader";
-    string ccdb_db = "clas12";
 
     size_t nguardlayers = 2;  // guardlayers per superlayer
     size_t nsensewires = 112; // sensewires  per senselayer
@@ -302,7 +310,11 @@ BOOST_AUTO_TEST_CASE(senselayer)
 
     //vector<double> dist2tgt{};
 
-    DriftChamber dcgeom(ccdb_host,ccdb_user,ccdb_db);
+    ConnectionInfoMySQL conninfo;
+    ConstantSetInfo csinfo;
+    unique_ptr<Calibration> calib = get_calibration(conninfo,csinfo);
+    DriftChamber dcgeom(calib.get());
+
 
     for (size_t sec=0; sec<dcgeom.sectors().size(); sec++)
     {
@@ -352,12 +364,10 @@ BOOST_AUTO_TEST_CASE(wire_endpoints)
     using namespace geometry;
     using namespace clas12::geometry;
     using namespace clas12::geometry::drift_chamber;
-
+    using namespace clas12::ccdb;
+    using ::ccdb::Calibration;
     static const double double_tolerance = 1.e-8;
 
-    string ccdb_host = "clasdb.jlab.org";
-    string ccdb_user = "clas12reader";
-    string ccdb_db = "clas12";
 
     // index order: [sec][reg][slyr][lyr][wire]
     //multi_array<euclid_vector<double,3>,6,3,2,6,3> wire_begin_points = {
@@ -366,7 +376,11 @@ BOOST_AUTO_TEST_CASE(wire_endpoints)
         //{},{},{},{},{},{}
     //};
 
-    DriftChamber dcgeom(ccdb_host,ccdb_user,ccdb_db);
+    ConnectionInfoMySQL conninfo;
+    ConstantSetInfo csinfo;
+    unique_ptr<Calibration> calib = get_calibration(conninfo,csinfo);
+    DriftChamber dcgeom(calib.get());
+
 
     // vols[name][var] = val
     map<string, map<string,string> > vols;
@@ -433,17 +447,19 @@ BOOST_AUTO_TEST_CASE(dc_wire_endpoints)
     using namespace geometry;
     using namespace clas12::geometry;
     using namespace clas12::geometry::drift_chamber;
+    using namespace clas12::ccdb;
+    using ::ccdb::Calibration;
 
     using namespace clas12::geometry::output;
     using namespace pugi;
 
     static const double double_tolerance = 1.e-8;
 
-    string ccdb_host = "clasdb.jlab.org";
-    string ccdb_user = "clas12reader";
-    string ccdb_db = "clas12";
+    ConnectionInfoMySQL conninfo;
+    ConstantSetInfo csinfo;
+    unique_ptr<Calibration> calib = get_calibration(conninfo,csinfo);
+    DriftChamber dcgeom(calib.get());
 
-    DriftChamber dcgeom(ccdb_host,ccdb_user,ccdb_db);
     xml_document doc;
     stringstream doc_ss;
 
@@ -460,17 +476,19 @@ BOOST_AUTO_TEST_CASE(dc_volumes)
     using namespace geometry;
     using namespace clas12::geometry;
     using namespace clas12::geometry::drift_chamber;
+    using namespace clas12::ccdb;
+    using ::ccdb::Calibration;
 
     using namespace clas12::geometry::output;
     using namespace pugi;
 
     static const double double_tolerance = 1.e-8;
 
-    string ccdb_host = "clasdb.jlab.org";
-    string ccdb_user = "clas12reader";
-    string ccdb_db = "clas12";
+    ConnectionInfoMySQL conninfo;
+    ConstantSetInfo csinfo;
+    unique_ptr<Calibration> calib = get_calibration(conninfo,csinfo);
+    DriftChamber dcgeom(calib.get());
 
-    DriftChamber dcgeom(ccdb_host,ccdb_user,ccdb_db);
 
     xml_document doc;
     stringstream doc_ss;

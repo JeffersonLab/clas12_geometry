@@ -114,7 +114,7 @@ class Layer
     /// \brief deleted assignment operator
     Layer& operator=(const Layer&) = delete;
 
-    /// \brief the top-level PCal class has control of all
+    /// \brief the top-level EC class has control of all
     /// private members of this class.
     friend class ::clas12::geometry::ElectromagneticCal;
 

@@ -21,6 +21,8 @@ using std::endl;
 #include "clas12/geometry/output/ftof_panels_parms.hpp"
 #include "clas12/geometry/output/ftof_volumes.hpp"
 
+#include "clas12/ccdb/constants_table.hpp"
+
 BOOST_AUTO_TEST_SUITE(clas12_geometry_ftof)
 
 BOOST_AUTO_TEST_CASE(constructor)
@@ -33,10 +35,9 @@ BOOST_AUTO_TEST_CASE(constructor)
     using ::geometry::plane;
     using namespace clas12::geometry;
     using namespace clas12::geometry::forward_tof;
+    using namespace clas12::ccdb;
+    using ::ccdb::Calibration;
 
-    string ccdb_host = "clasdb.jlab.org";
-    string ccdb_user = "clas12reader";
-    string ccdb_db = "clas12";
 
     size_t npanels = 3;
     vector<size_t> npaddles{23,62,5};
@@ -52,7 +53,12 @@ BOOST_AUTO_TEST_CASE(constructor)
 
     /// constructor with arguments
     clog << "constructor...\n";
-    ForwardTOF ftof(ccdb_host,ccdb_user,ccdb_db);
+    //ForwardTOF ftof(ccdb_host,ccdb_user,ccdb_db);
+    ConnectionInfoMySQL conninfo;
+    ConstantSetInfo csinfo;
+    unique_ptr<Calibration> calib = get_calibration(conninfo,csinfo);
+
+    ForwardTOF ftof(calib.get());
 
     for (size_t sec=0; sec<ftof.sectors().size(); sec++)
     {
@@ -91,16 +97,21 @@ BOOST_AUTO_TEST_CASE(ftof_paddle_centers)
     using namespace clas12::geometry;
     using namespace clas12::geometry::forward_tof;
 
+    using namespace clas12::ccdb;
+    using ::ccdb::Calibration;
     using namespace clas12::geometry::output;
     using namespace pugi;
 
     static const double double_tolerance = 1.e-8;
 
-    string ccdb_host = "clasdb.jlab.org";
-    string ccdb_user = "clas12reader";
-    string ccdb_db = "clas12";
 
-    ForwardTOF ftof(ccdb_host,ccdb_user,ccdb_db);
+    //ForwardTOF ftof(ccdb_host,ccdb_user,ccdb_db);
+
+    ConnectionInfoMySQL conninfo;
+    ConstantSetInfo csinfo;
+    unique_ptr<Calibration> calib = get_calibration(conninfo,csinfo);
+    ForwardTOF ftof(calib.get());
+
     xml_document doc;
     stringstream doc_ss;
 

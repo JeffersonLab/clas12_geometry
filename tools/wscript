@@ -13,6 +13,7 @@ def build(ctx):
             BOOST
                 boost_program_options
                 boost_filesystem
+                boost_system
                 boost_log
                 pthread
             CCDB

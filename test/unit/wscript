@@ -8,6 +8,7 @@ def build(ctx):
             ('clas12-geometry-unit-test-dc',   'clas12/geometry/drift_chamber.cpp'),
             ('clas12-geometry-unit-test-ftof', 'clas12/geometry/forward_tof.cpp'),
             ('clas12-geometry-unit-test-pcal', 'clas12/geometry/preshower_cal.cpp'),
+            ('clas12-geometry-unit-test-ec', 'clas12/geometry/electromagnetic_cal.cpp'),
         ]
 
         for tgt,src in unit_tests:
