@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(constructor)
     using ::geometry::plane;
     using namespace clas12::geometry;
     using namespace clas12::geometry::electromagnetic_cal;
-    using namespace clas12::geometry::output;
+    //using namespace clas12::geometry::output;
 
     using namespace clas12::ccdb;
     using ::ccdb::Calibration;
@@ -72,6 +72,9 @@ BOOST_AUTO_TEST_CASE(constructor)
 
     ElectromagneticCal ec(calib.get());
 
+
+
+
     for (size_t sec=0; sec<ec.sectors().size(); sec++)
     {
         const electromagnetic_cal::Sector& sector = ec.sector(sec);
@@ -105,28 +108,27 @@ BOOST_AUTO_TEST_CASE(constructor)
               clog << "sector " << sec << ", layer " << lyr << ", view "<<iview<<endl;
 
               BOOST_CHECK_EQUAL(view.nstrips(),nstrips[iview]);
-              BOOST_CHECK_CLOSE(view.a4(),a4[iview], 0.0001 );
-              BOOST_CHECK_CLOSE(view.a5(),a5[iview], 0.0001 );
-              BOOST_CHECK_CLOSE(view.a6(),a6[iview], 0.0001 );
+              BOOST_CHECK_CLOSE(view.shift(),a4[iview], 0.0001 );
+              BOOST_CHECK_CLOSE(view.halfwidth(),a5[iview], 0.0001 );
+              BOOST_CHECK_CLOSE(view.deltahw(),a6[iview], 0.0001 );
             }
 
         }
 
 
 
-
     }
 
 
-    ec_volumes_xml(doc,pcal);
-    doc.save(doc_ss);
+    //ec_volumes_xml(doc,ec);
+    //doc.save(doc_ss);
     //string scints_xml = doc_ss.str();
-    string volumes_xml = doc_ss.str();
+    //string volumes_xml = doc_ss.str();
     //cout<<scint_xml<<endl;
-    cout<<volumes_xml<<endl;
+    //cout<<volumes_xml<<endl;
     //BOOST_CHECK_EQUAL(scint_xml.size(), 1235243);
 
-    ec_volumes_map(ec);
+    //ec_volumes_map(ec);
 }
 
 

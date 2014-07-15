@@ -29,6 +29,11 @@ def build(ctx):
             clas12/geometry/preshower_cal/layer.cpp
             clas12/geometry/preshower_cal/sector.cpp
             clas12/geometry/preshower_cal/view.cpp
+            clas12/geometry/electromagnetic_cal.cpp
+            clas12/geometry/electromagnetic_cal/layer.cpp
+            clas12/geometry/electromagnetic_cal/sector.cpp
+            clas12/geometry/electromagnetic_cal/view.cpp
+
             clas12/geometry/request.cpp
             clas12/log.cpp
         '''.split(),

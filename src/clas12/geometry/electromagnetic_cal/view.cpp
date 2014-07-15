@@ -77,6 +77,7 @@ View::View(const View& that, const Layer* layer, size_t idx)
  //   return _layer->view_name(_idx);
 //}
 
+/*
 double View::strip_length(int s) const
 {
     static const double pi     = 3.14159265358979;
@@ -92,7 +93,7 @@ double View::strip_length(int s) const
                             (tan(halfpi-_layer->view_angle())+tan(2*_layer->view_angle() - halfpi));
     }
 }
-
+*/
 } // namespace clas12::geometry::electromagnetic_cal
 } // namespace clas12::geometry
 } // namespace clas12

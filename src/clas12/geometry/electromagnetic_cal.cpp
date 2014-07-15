@@ -126,10 +126,10 @@ void ElectromagneticCal::fetch_nominal_parameters(Calibration* calib)
                << "thtilt: "        << thtilt << endl
                << "wrapper_thick: " << wrapper_thick<< endl
                << "strip_thick: "   << strip_thick<< endl
-               << "alum_thick: "    << steel_thick<< endl
+               << "alum_thick: "    << alum_thick<< endl
                << "lead_thick: "    << lead_thick<< endl
                << "dist2tgt: "      << dist2tgt<< endl
-               << "dist2cnt: "      << dist2tgt<< endl
+               << "dist2cnt: "      << dist2cnt<< endl
                << "a1: "            << a1<< endl
                << "a2: "            << a2<< endl
                << "a3: "            << a3<< endl
