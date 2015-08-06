@@ -1,3 +1,7 @@
+# Notice of Deprecation
+
+This project has been superceded by the [Java-based CLAS12 analysis package "COAT."](https://github.com/JeffersonLab/clas-geometry)
+
 # CLAS12 Detector Geometry Library
 
 ## Authors:
